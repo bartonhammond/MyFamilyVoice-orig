@@ -1,0 +1,17 @@
+<div class="clearfix" style="margin-bottom: 20px">
+<div class="pull-right">
+    <a href="#/activities/add" class="btn">New Activity</a>
+</div>
+</div>
+
+<div ng-repeat="activity in activities | orderBy: 'date.iso':true" class="well well-sm">
+    <div class="pull-right">
+        <button class="btn" ng-click="edit(activity)">Edit</button>
+        <button class="btn" ng-click="delete(activity)">Delete</button>
+    </div>
+    <div style="margin-bottom:10px">
+        <span class="label label-info" ng-repeat="tag in activity.tags | orderBy: 'tag.name'" style="margin-right:10px">{{tag.name}}</span>
+        {{activity.date.iso | date: 'yyyy-MM-dd'}}
+    </div>
+    <div ng-bind-html="activity.comment"></div>
+</div>
