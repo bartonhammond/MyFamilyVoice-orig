@@ -24,7 +24,7 @@ module.exports = function (grunt) {
   var taskConfig = {
 
     // Project settings
-    yeoman: {
+    project: {
       // configurable paths
       app: require('./bower.json').appPath || 'app',
       dist: 'public'
@@ -58,7 +58,7 @@ module.exports = function (grunt) {
       },
       dist: {
         options: {
-          base: '<%= yeoman.dist %>'
+          base: '<%= project.dist %>'
         }
       }
     },
@@ -71,7 +71,7 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
-        '<%= yeoman.app %>/scripts/{,*/}*.js'
+        'app/scripts/{,*/}*.js'
       ]
     },
 
@@ -81,7 +81,7 @@ module.exports = function (grunt) {
         files: [{
           dot: true,
           src: [
-            '<%= yeoman.dist %>/*'
+            '<%= project.dist %>/*'
           ]
         }]
       }

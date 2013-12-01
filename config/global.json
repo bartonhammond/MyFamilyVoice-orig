@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "FamilyVoice": {
+            "applicationId": "6stx2NYQVpHKrlYL28NegU4vYAV76VRPWqMwAvZd", 
+            "masterKey": "of3i0d4xd3i4zODdhqFZFDUrEaICqBKLthqK0N40"
+        }, 
+        "_default": {
+            "link": "FamilyVoice"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.13"
+    }
+}

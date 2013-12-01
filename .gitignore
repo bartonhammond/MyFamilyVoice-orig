@@ -1,9 +1,5 @@
 node_modules
-public
-cloud
-config
 .idea
-FamilyVoiceAdmin.iml
-.tmp
-.sass-cache
+MyFamilyVoice.iml
 bower_components
+public
