@@ -15,9 +15,17 @@ angular.module('parseApp')
 
         //update the angular scope when the editor changes (loses focus)
         element.data('wysihtml5').editor.on('change', function () {
-          scope.$apply(function () {
-            ngModel.$setViewValue(element.data('wysihtml5').editor.getValue());
-          });
+            _.defer(function() {
+                scope.$apply(ngModel.$setViewValue(element.data('wysihtml5').editor.getValue()));
+            });
+
+/**
+            if (scope.$$phase || scope.$root.$$phase) {
+                ngModel.$setViewValue(element.data('wysihtml5').editor.getValue());
+            } else {
+                scope.$apply(ngModel.$setViewValue(element.data('wysihtml5').editor.getValue));
+            }
+*/
         });
       }
     };

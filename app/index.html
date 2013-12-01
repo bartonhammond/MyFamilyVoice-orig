@@ -16,9 +16,10 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="vendor/css/bootstrap.css">
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="bower_components/bootstrap-datepicker/css/datepicker.css">
-    <link rel="stylesheet" href="bower_components/bootstrap-wysihtml5/dist/bootstrap-wysihtml5-0.0.2.css">
+    <link rel="stylesheet" href="vendor/css/datepicker.css">
+    <link rel="stylesheet" href="vendor/css/bootstrap-wysihtml5-0.0.2.css">
     <!-- endbuild -->
 </head>
 <body ng-app="parseApp">
@@ -44,23 +45,23 @@
 <div class="container" ng-view=""></div>
 
 
-<script src="bower_components/jquery/jquery.js"></script>
-<script src="bower_components/angular/angular.js"></script>
+<script src="vendor/jquery.js"></script>
+<script src="vendor/angular.js"></script>
 
-<!-- build:js scripts/plugins.js -->
-<script src="bower_components/bootstrap/js/bootstrap-modal.js"></script>
-<script src="bower_components/angular-collection/angular-collection.js"></script>
-<script src="bower_components/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-<script src="bower_components/angular-strap/dist/angular-strap.js"></script>
-<script src="bower_components/wysihtml5/dist/wysihtml5-0.3.0.js"></script>
-<script src="bower_components/bootstrap-wysihtml5/dist/bootstrap-wysihtml5-0.0.2.js"></script>
-<script src="bower_components/angular-route/angular-route.js"></script>
-<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-<script src="bower_components/Papp/js/services/parse-resource.js"></script>
+<script src="vendor/underscore.js"></script>
+<script src="vendor/bootstrap-modal.js"></script>
+<script src="vendor/angular-collection.js"></script>
+<script src="vendor/bootstrap-datepicker.js"></script>
+<script src="vendor/angular-strap.js"></script>
+<script src="vendor/wysihtml5-0.3.0.js"></script>
+<script src="vendor/bootstrap-wysihtml5-0.0.2.js"></script>
+<script src="vendor/angular-route.js"></script>
+<script src="vendor/angular-sanitize.js"></script>
+<script src="vendor/parse-resource.js"></script>
 
-<!-- endbuild -->
 
-<!-- build:js({.tmp,app}) scripts/scripts.js -->
+
+
 <script src="scripts/app.js"></script>
 <script src="scripts/controllers/main.js"></script>
 <script src="scripts/services/Auth.js"></script>
@@ -74,6 +75,6 @@
 <script src="scripts/services/TagCollection.js"></script>
 <script src="scripts/controllers/navbar.js"></script>
 <script src="scripts/services/Logout.js"></script>
-<!-- endbuild -->
+
 </body>
 </html>

@@ -12,7 +12,8 @@
     "Papp": "git://github.com/karlcampbell/Papp.git",
     "bootstrap-wysihtml5": "git://github.com/jhollingworth/bootstrap-wysihtml5.git",
     "bootstrap-sass": "2.3.1",
-    "angular-collection": "git://github.com/karlcampbell/angular-collection.git#master"
+    "angular-collection": "git://github.com/karlcampbell/angular-collection.git#master",
+      "underscore": "~1.5.2"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",

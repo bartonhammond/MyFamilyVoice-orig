@@ -1,5 +1,9 @@
 node_modules
-dist
+public
+cloud
+config
+.idea
+FamilyVoiceAdmin.iml
 .tmp
 .sass-cache
-app/bower_components
+bower_components
