@@ -36,7 +36,7 @@ angular.module('parseApp', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollect
     }
 
     //redirect unauthenticated users to login page if they try and access pages that require auth
-    $rootScope.$on("$routeChangeStart", function (event, next, current) {
+    $rootScope.$on('$routeChangeStart', function (event, next) {
 
       if(next.$$route.auth && !Auth.isAuthenticated()) {
         return $location.path('/');
@@ -44,16 +44,13 @@ angular.module('parseApp', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollect
 
     });
 
-});
-
-
-
-angular.module('parseApp')
-  .constant('PARSE_CONFIG',{
-    defaultHeaders: {
-      'X-Parse-Application-Id' : '6stx2NYQVpHKrlYL28NegU4vYAV76VRPWqMwAvZd',
-      'X-Parse-REST-API-Key' : 'cimfrb1oGtjKotgSOqWPFc0ZRckbKSEEZFUmjVp2'
-    },
-    defaultParams: {}
-  }
-);
+  })
+  .constant('PARSE_CONFIG',
+            { defaultHeaders:
+              {'X-Parse-Application-Id' : '6stx2NYQVpHKrlYL28NegU4vYAV76VRPWqMwAvZd',
+               'X-Parse-REST-API-Key' : 'cimfrb1oGtjKotgSOqWPFc0ZRckbKSEEZFUmjVp2'
+              },
+              defaultParams:{}
+            }
+           )
+;

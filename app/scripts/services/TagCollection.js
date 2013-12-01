@@ -15,7 +15,7 @@ angular.module('parseApp')
       Tag.query(query).then(function (response) {
         tags.addAll(response);
       });
-    }
+    };
 
     //method for clearing the checked property of each tag in the collection
     tags.clear = function () {
@@ -23,7 +23,7 @@ angular.module('parseApp')
       for (var i = 0; i < clear.length; i++) {
         clear[i].checked = false;
       }
-    }
+    };
 
     return tags;
 

@@ -1,7 +1,6 @@
 <form ng-submit="save()">
 
-    <label>Date</label>
-    <input type="text" data-date-format="yyyy-mm-dd" bs-datepicker ng-model="date">
+    <label>Date: {{activity.date.iso | date: 'yyyy-MM-dd'}} </label>
 
     <label>Comment</label>
     <textarea name="comment" ng-model="activity.comment" wysihtml5 id="wysihtml5" style="width:100%; height:300px" autofocus>

@@ -6,7 +6,7 @@ angular.module('parseApp')
     //show or hide the "Logout" button depending on the status of the user
     $scope.$watch(Auth.isAuthenticated, function(authenticated) {
       $scope.authenticated = authenticated;
-    })
+    });
 
     //
     $scope.logout = function() {
@@ -19,6 +19,6 @@ angular.module('parseApp')
 
       return $location.path('/');
 
-    }
+    };
 
   });

@@ -17,14 +17,14 @@ angular.module('parseApp')
       user = response;
       authenticated = true;
       resource.user(user.sessionToken);
-      store.ng_user = angular.toJson(user);
+      store.ngUser = angular.toJson(user);
     }
 
     function logout() {
       resource.logout();
       authenticated = false;
       user = {};
-      delete store.ng_user;
+      delete store.ngUser;
     }
 
     // Public API here
@@ -53,9 +53,9 @@ angular.module('parseApp')
       //see if we can find a stored user and log them in
       //TODO: validate the sessionToken
       restore: function() {
-        var fromStore = angular.fromJson(store.ng_user);
+        var fromStore = angular.fromJson(store.ngUser);
         if(fromStore !== undefined) {
-          var user = angular.fromJson(store.ng_user);
+          var user = angular.fromJson(store.ngUser);
           login(user);
         }
       },

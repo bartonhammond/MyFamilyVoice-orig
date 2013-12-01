@@ -8,6 +8,6 @@ angular.module('parseApp')
       console.log('reset');
       ActivityCollection._reset();
       TagCollection._reset();
-    }
+    };
 
   });

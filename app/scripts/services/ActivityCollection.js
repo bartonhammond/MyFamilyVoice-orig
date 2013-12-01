@@ -15,7 +15,7 @@ angular.module('parseApp')
       Activity.query(query).then(function (response) {
         activities.addAll(response);
       });
-    }
+    };
 
     return activities;
 

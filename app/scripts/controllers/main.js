@@ -9,14 +9,14 @@ angular.module('parseApp')
       }, function(response) {
         $scope.error = response.data.error;
       });
-    }
+    };
 
     $scope.register = function () {
       Auth.register($scope.registerUser).then(function(){
         $location.path('/activities');
-      }, function() {
+      }, function(response) {
         $scope.error = response.data.error;
       });
-    }
+    };
 
   });
