@@ -29,9 +29,15 @@ angular.module('parseApp')
       $scope.activity = activity;
 
     } else {
-      //this is a new entry, use today's date and create a new activity object
-      $scope.date  = new Date();
+      //this is a new entry, use today's date and create a new
+      //activity object
       $scope.activity = Activity.create({});
+      //need to offset the date to overcome timezone issues
+      var date = new Date();
+      var offset = date.getTimezoneOffset();
+      date = new Date(date.getTime() + offset * 60000);
+      $scope.activity.$setJsDate('date', date);
+
     }
 
     $scope.newTag = '';
@@ -58,11 +64,6 @@ angular.module('parseApp')
         activity.ACL[userId] = {read: true, write: true};
       }
 
-      //need to offset the date to overcome timezone issues
-      var date = new Date($scope.date);
-      var offset = date.getTimezoneOffset();
-      date = new Date(date.getTime() + offset * 60000);
-      activity.$setJsDate('date', date);
 
       //post to parse if new, put if updating
       if(activity.$isNew()) {

@@ -34,7 +34,6 @@ angular.module('parseApp', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollect
     if(Auth.isAuthenticated()) {
       $location.path('/activities');
     }
-
     //redirect unauthenticated users to login page if they try and access pages that require auth
     $rootScope.$on('$routeChangeStart', function (event, next) {
 
