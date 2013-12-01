@@ -111,6 +111,10 @@ angular.module('parseApp')
       $scope.audio.$saveFile('audio', $scope.audio.file).then(function(data) {
         //add it to the collection
         AudioCollection.add($scope.audio);
+        activity.file = data.url;
+        activity.$put().then(function() {
+          $location.path('/activities');
+        });
       });
     }
   });
