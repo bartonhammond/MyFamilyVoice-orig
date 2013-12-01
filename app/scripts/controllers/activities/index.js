@@ -6,7 +6,7 @@ angular.module('parseApp')
     //if the collection is empty query parse
     if(ActivityCollection.size() === 0) {
       ActivityCollection.query({
-        include: 'tags',
+        //include: 'tags',
         where: {
           user: {
             '__type': 'Pointer',

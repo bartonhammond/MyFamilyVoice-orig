@@ -3,3 +3,4 @@ node_modules
 MyFamilyVoice.iml
 bower_components
 public
+**/*.*~
