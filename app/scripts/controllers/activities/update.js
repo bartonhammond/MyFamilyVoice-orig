@@ -78,7 +78,6 @@ angular.module('parseApp')
         });
       }
     }
-
     //save a new tag
     $scope.saveTag = function() {
 

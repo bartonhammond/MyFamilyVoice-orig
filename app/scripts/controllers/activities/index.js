@@ -29,12 +29,19 @@ angular.module('parseApp')
         }
       });
     };
-
+    //file contains "http:..." and the : causes problems
+    $scope.hasFile = function(index) {
+      var activity = $scope.activities[index];
+      return _.isString(activity.file);
+    }
     //add the activities to the scope
     $scope.activities = ActivityCollection.all();
 
     $scope.edit = function(activity) {
       $location.path('/activities/edit/' + activity.objectId);
+    }
+    $scope.record = function(activity) {
+      $location.path('/activities/record/' + activity.objectId);
     }
 
     //delete from parse and remove from the collection

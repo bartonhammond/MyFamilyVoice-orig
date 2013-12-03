@@ -7,11 +7,6 @@ angular.module('parseApp', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollect
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/activities', {
-        templateUrl: 'views/activities/index.html',
-        controller: 'ActivitiesIndexCtrl',
-        auth: true
-      })
       .when('/activities/add', {
         templateUrl: 'views/activities/update.html',
         controller: 'ActivitiesUpdateCtrl',
@@ -22,6 +17,17 @@ angular.module('parseApp', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollect
         controller: 'ActivitiesUpdateCtrl',
         auth: true
       })
+      .when('/activities/record/:id', {
+        templateUrl: 'views/activities/record.html',
+        controller: 'ActivitiesRecorderCtrl',
+        auth: true
+      })
+      .when('/activities', {
+        templateUrl: 'views/activities/index.html',
+        controller: 'ActivitiesIndexCtrl',
+        auth: true
+      })
+
       .otherwise({
         redirectTo: '/'
       });
@@ -30,10 +36,11 @@ angular.module('parseApp', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollect
   .run(function(Auth, $rootScope, $location) {
     //try and restore the user session from localstore
     Auth.restore();
-
+/*
     if(Auth.isAuthenticated()) {
       $location.path('/activities');
     }
+*/
     //redirect unauthenticated users to login page if they try and access pages that require auth
     $rootScope.$on('$routeChangeStart', function (event, next) {
 

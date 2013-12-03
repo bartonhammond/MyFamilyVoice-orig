@@ -13,7 +13,8 @@
     "bootstrap-wysihtml5": "git://github.com/jhollingworth/bootstrap-wysihtml5.git",
     "bootstrap-sass": "2.3.1",
     "angular-collection": "git://github.com/bartonhammond/angular-collection.git",
-    "underscore": "~1.5.2"
+    "underscore": "~1.5.2",
+    "AudioRecorder": "git://github.com/cwilso/AudioRecorder.git"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",

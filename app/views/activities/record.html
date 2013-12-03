@@ -1,0 +1,13 @@
+<form ng-submit="save()">
+  <div class="row">
+    <label>Date: {{activity.date.iso | date: 'yyyy-MM-dd'}} </label>
+  </div>
+  <div class="row">
+    <div ng-bind-html="activity.comment"></div>
+  </div>
+  <div  class="row">
+    <input type="button" class='btn btn-primary' ng-click="record()" value="Record" />
+    <button type="submit" class="btn btn-primary">Save</button>
+  </div>
+
+</form>
