@@ -4,7 +4,7 @@
 </div>
 </div>
 
-<div ng-repeat="activity in activities | orderBy: 'date.iso':true" class="well well-sm">
+<div ng-repeat="activity in activities" class="well well-sm">
     <div class="pull-right">
         <button class="btn" ng-click="edit(activity)">Edit</button>
         <button class="btn" ng-click="record(activity)">Record</button>

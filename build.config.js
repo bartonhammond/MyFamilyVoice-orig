@@ -24,7 +24,9 @@ module.exports = {
             'bower_components/angular-route/angular-route.js',
             'bower_components/angular-sanitize/angular-sanitize.js',
             'bower_components/Papp/js/services/parse-resource.js',
-            'bower_components/underscore/underscore.js'
+            'bower_components/underscore/underscore.js',
+            'bower_components/AudioRecorder/js/recorderjs/recorder.js',
+            'bower_components/AudioRecorder/js/recorderjs/recorderWorker.js'
         ],
         css: [
             'bower_components/bootstrap/bootstrap/css/bootstrap.css',
