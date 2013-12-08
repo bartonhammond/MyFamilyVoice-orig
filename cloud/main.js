@@ -7,24 +7,22 @@ var url = require('url');
 var  twilioAccountSID =  'AC5be60567ea132f150762244ccf788ae6';
 var  twilioAuthToken = '42420dd155a5997e75882993599a2d25';
 var  twilioAppSID = 'AP8302a09988efdeb8e14ab812b71eb790';
+var Activity = Parse.Object.extend('Activity');
 
 // Create an Express web app (more info: http://expressjs.com/)
 var app = express();
 
 /**
-* The recording message
-*see: https://www.twilio.com/docs/howto/twilio-client-record
-*/
+ * The recording message
+ *see: https://www.twilio.com/docs/howto/twilio-client-record
+ */
 
 app.get('/record', function(request, response) {
   // Create a TwiML response generator object
   var twiml = new twilio.TwimlResponse();
   
-  twiml.say('Welcome to My Family Voice!',
+  twiml.say('Welcome to My Family Voice!  Please record your thoughts at the beep.',
             {voice:'alice', language:'en-GB'})
-    .pause({ length:1 })
-    .say('Please record your message at the beep.', 
-         {voice:'alice', language:'en-GB'})
     .record({action:"/thanks",
              method:'GET',
              finishOnKey:'#',
@@ -37,14 +35,26 @@ app.get('/record', function(request, response) {
   
 });
 /**
-* The thanks recording
-*/
+ * The thanks recording
+ */
 app.get('/thanks', function(request, response) {
   // Create a TwiML response generator object
   var parseQueryString = true;
   var queryData = url.parse(request.url, parseQueryString).query;
+  var refererData = url.parse(request.headers.referer, parseQueryString).query;
+
   
-  console.log(url);
+  try {
+    //Override ACL!
+    Parse.Cloud.useMasterKey();
+    console.log('activity: ' + refererData.activity);
+    var activity = new Activity();
+    activity.id = refererData.activity;
+    activity.save({file: queryData.RecordingUrl});
+  } catch(e) {
+    console.log(e);
+  }
+    
   var twiml = new twilio.TwimlResponse();
   twiml.say('Thanks for your Family Voice recording. Here is what I heard',
             {voice:'alice', language:'en-GB'})
@@ -59,21 +69,6 @@ app.get('/thanks', function(request, response) {
   
 });
 
-// Create a route that will respond to am HTTP GET request with some
-// simple TwiML instructions
-app.get('/hello', function(request, response) {
-  // Create a TwiML response generator object
-  var twiml = new twilio.TwimlResponse();
-  
-  // add some instructions
-  twiml.say('Hello there! Isn\'t Parse cool?', {
-    voice:'woman'
-  });
-  
-  // Render the TwiML XML document
-  response.type('text/xml');
-  response.send(twiml.toString());
-});
 
 // Start the Express app
 app.listen();
