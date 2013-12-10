@@ -14,7 +14,7 @@
         <span class="label label-info" ng-repeat="tag in activity.tags | orderBy: 'tag.name'" style="margin-right:10px">{{tag.name}}</span>
         {{activity.date.iso | date: 'yyyy-MM-dd'}}
     </div>
-    <span ng-show="hasFile($index)"> <a  ng-href={{activity.file}}
+    <span ng-show="hasFile($index)"> <a ng-href={{activity.file.url}}
     target=_blank>Audio</a></span> 
     <div ng-bind-html="activity.comment"></div>
 </div>

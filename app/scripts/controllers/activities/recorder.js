@@ -33,14 +33,16 @@ angular.module('parseApp')
 
     }
     $scope.beginRecording = function() {
+      $scope.recording = true;
       Twilio.Device.connect({activity: $scope.activity.objectId});
     }
     $scope.stopRecording = function() {
+      $scope.recording = false;
       self.connection.sendDigits("#");
     }
     $scope.init = function() {
+      $scope.recording = false;
       var audio  = Audio.create({});
-      
       audio.$call('getToken',{}).then(function(data) {
         console.log(data);
         Twilio.Device.setup(data.result,{"debug":true});

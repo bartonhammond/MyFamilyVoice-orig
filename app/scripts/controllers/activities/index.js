@@ -32,7 +32,7 @@ angular.module('parseApp')
     //file contains "http:..." and the : causes problems
     $scope.hasFile = function(index) {
       var activity = $scope.activities[index];
-      return _.isString(activity.file);
+      return !_.isUndefined(activity.file);
     }
     //add the activities to the scope
     $scope.activities = ActivityCollection.all();
