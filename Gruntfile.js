@@ -84,10 +84,41 @@ module.exports = function (grunt) {
             '<%= project.dist %>/*'
           ]
         }]
+      },
+      harp: {
+        options: {
+          force: true
+        },
+        files: [{
+          dot: true,
+          src: [
+            '<%= harp_public %>/*'
+          ]
+        }]
       }
     },
     // Copies remaining files to places other tasks can use
     copy: {
+      harp: {
+        expand: true,
+        flatten: false,
+        src: '*/**',
+        dest: '<%= harp_public %>',
+        cwd: '<%= public_dir %>'
+      },
+      harpRoot: {
+        expand: true,
+        flatten: false,
+        src: '*.*',
+        dest: '<%= harp_public %>',
+        cwd: '<%= public_dir %>'
+      },
+        harpJson: {
+        expand: true,
+        src: '*',
+        dest: '<%= harp_public %>',
+        cwd: '<%= harp_src %>'
+      },
       fvHtml: {
         files: [
           {
@@ -192,7 +223,7 @@ module.exports = function (grunt) {
       'watch'
     ]);
   });
-
+  
   grunt.registerTask('dist', function () {
     grunt.task.run([
       'clean:dist',
@@ -207,12 +238,19 @@ module.exports = function (grunt) {
       'copy:vendorFonts'
     ]);
   });
+  grunt.registerTask('harp', function () {
+    grunt.task.run([
+      'clean:harp',
+      'copy:harp',
+      'copy:harpJson',
+      'copy:harpRoot'
+    ]);
+  });
 
   grunt.registerTask('server', function () {
     grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
     grunt.task.run(['serve']);
   });
-
 
 
   grunt.registerTask('default', [

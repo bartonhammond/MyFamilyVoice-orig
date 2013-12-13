@@ -4,6 +4,8 @@
 
 module.exports = {
   public_dir: 'public',
+  harp_public: '/home/barton/Dropbox/harp.io/apps/myfamilyvoice.harp.io/',
+  harp_src: 'harp.io',
   fv: {
     js: [ '**/*.js' ],
     css: ['styles/*.css'],

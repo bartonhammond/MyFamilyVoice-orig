@@ -829,20 +829,23 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 input, button, select, textarea {
   font-family: 'Open Sans', sans-serif; 
 }
-
 .input-append .add-on, .input-prepend .add-on {
-    background-color: #dfe5e8;
-    border: none;
+    background-color: #DFE5E8;
+    border: medium none;
     display: inline-block;
     font-size: 14px;
     font-weight: normal;
-    height: 35px;
+    height: 37px;
     line-height: 25px;
     min-width: 28px;
-    padding: 5px 5px 4px 5px;
+    padding: 10px 5px 4px;
     text-align: center;
     text-shadow: 0 1px 0 #FFFFFF;
     width: auto;
+}
+
+.add-on i {
+    vertical-align: top;
 }
 
 .form-horizontal .controls {
