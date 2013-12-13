@@ -360,17 +360,17 @@ a:hover {
 }
 
 .one {
-  background: url(../img/header1.jpg) no-repeat center center;
+  background: url(../images/header1.jpg) no-repeat center center;
   background-size: cover;
 }
 
 .two {
-  background: url(../img/header2.jpg) no-repeat center center;
+  background: url(../images/header2.jpg) no-repeat center center;
   background-size: cover;
 }
 
 .three {
-  background: url(../img/header3.jpg) no-repeat center center;
+  background: url(../images/header3.jpg) no-repeat center center;
   background-size: cover;
 }
 
