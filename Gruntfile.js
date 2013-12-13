@@ -120,6 +120,17 @@ module.exports = function (grunt) {
           }
         ]
       },
+      fvImages: {
+        files: [
+          {
+            src: '<%= fv.images %>',
+            dest: '<%= public_dir %>',
+            cwd: 'app',
+            expand: true,
+            flatten: false
+          }
+        ]
+      },
       vendorCss: {
         files: [
           {
@@ -152,7 +163,19 @@ module.exports = function (grunt) {
             flatten: true
           }
         ]
-      }
+      },
+      vendorFonts: {
+        files: [
+          {
+            src: ['<%= vendor.fonts %>'],
+            dest: '<%= public_dir %>/fonts',
+            cwd: '.',
+            expand: true,
+            flatten: true
+          }
+        ]
+      },
+
     }
   };
 
@@ -177,9 +200,11 @@ module.exports = function (grunt) {
       'copy:fvHtml',
       'copy:fvJs',
       'copy:fvCss',
+      'copy:fvImages',
       'copy:vendorCss',
       'copy:vendorJs',
-      'copy:vendorImg'
+      'copy:vendorImg',
+      'copy:vendorFonts'
     ]);
   });
 

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('parseApp')
+angular.module('fv')
   .factory('TagCollection', function ($collection, Tag) {
 
     //angular-collection https://github.com/tomkuk/angular-collection

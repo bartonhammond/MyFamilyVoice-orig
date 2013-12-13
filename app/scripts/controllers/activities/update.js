@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('parseApp')
+angular.module('fv')
   .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, ActivityCollection, TagCollection, AudioCollection, Activity, Tag, Audio,  Auth) {
 
     //get the list of tags, and clear off all the checkmarks

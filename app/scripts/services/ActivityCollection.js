@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('parseApp')
+angular.module('fv')
   .factory('ActivityCollection', function ($collection, Activity) {
 
     //angular-collection https://github.com/tomkuk/angular-collection

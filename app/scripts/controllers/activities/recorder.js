@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('parseApp')
-  .controller('ActivitiesRecorderCtrl', function ($scope, $routeParams, $location, ActivityCollection, TagCollection, AudioCollection, Activity, Tag, Audio,  Auth) {
+angular.module('fv')
+  .controller('ActivitiesRecorderCtrl', function ($scope, $routeParams, $location, ActivityCollection, TagCollection, Activity, Tag, Auth) {
     var self = this;
     // variables
     self.connection = null;
@@ -42,8 +42,7 @@ angular.module('parseApp')
     }
     $scope.init = function() {
       $scope.recording = false;
-      var audio  = Audio.create({});
-      audio.$call('getToken',{}).then(function(data) {
+      activity.$call('getToken',{}).then(function(data) {
         console.log(data);
         Twilio.Device.setup(data.result,{"debug":true});
       });

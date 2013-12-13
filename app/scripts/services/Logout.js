@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('parseApp')
+angular.module('fv')
   .service('Logout', function Logout(ActivityCollection, TagCollection) {
 
     //empty out the collections on logout so private data is not visible to the next user

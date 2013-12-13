@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('parseApp')
+angular.module('fv')
   .controller('MainCtrl', function ($scope, Auth, $location) {
 
     $scope.login = function() {

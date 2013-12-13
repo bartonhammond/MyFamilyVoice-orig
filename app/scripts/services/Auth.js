@@ -5,7 +5,7 @@ Auth uses the parse-resource service to register and login users. Those methods 
 to deal with.
  */
 
-angular.module('parseApp')
+angular.module('fv')
   .factory('Auth', function (User, $window) {
 
     var user = {};

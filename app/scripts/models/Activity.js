@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('parseApp')
+angular.module('fv')
   .factory('Activity', function ($parseResource) {
 
     var Activity = new $parseResource('Activity');

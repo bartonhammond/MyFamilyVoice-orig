@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('parseApp')
+angular.module('fv')
   .controller('ActivitiesIndexCtrl', function ($scope, $location, ActivityCollection, TagCollection, Auth) {
 
     //if the collection is empty query parse
