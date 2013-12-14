@@ -43,6 +43,9 @@ angular.module('fv')
     $scope.record = function(activity) {
       $location.path('/activities/record/' + activity.objectId);
     }
+    $scope.newQuestion = function() {
+      $location.path('/activities/add');
+    }
 
     //delete from parse and remove from the collection
     $scope.delete = function(activity) {
@@ -50,5 +53,5 @@ angular.module('fv')
         ActivityCollection.remove(activity);
       });
     }
-
+    
   });

@@ -1,9 +1,8 @@
 <div class="clearfix" style="margin-bottom: 20px">
-<div class="pull-right">
-    <a href="#/activities/add" class="btn">New Activity</a>
+  <div class="pull-right">
+    <button class="btn" ng-click="newQuestion()">New Question</button>
+  </div>
 </div>
-</div>
-
 <div ng-repeat="activity in activities" class="well well-sm">
     <div class="pull-right">
         <button class="btn" ng-click="edit(activity)">Edit</button>
