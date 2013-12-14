@@ -3,5 +3,9 @@
    override existing main.css stylesheets.
    ========================================================================== */ 
 .lower {
-    margin-top: 100px;
+    margin-top: 91px;
+}
+.fv-warning {
+    color:tomato;
+    padding-bottom: 5px;
 }

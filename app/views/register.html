@@ -1,14 +1,80 @@
-<h2>Register</h2>
-
-<form ng-submit="register()" novalidate="">
-    <div class="form-group">
-        <input type="email" class="form-control" ng-model="registerUser.username" placeholder="email"/>
-    </div>
-    <div class="form-group">
-        <input type="password" class="form-control" ng-model="registerUser.password" placeholder="password">
-    </div>
-    <button type="submit" class="btn">Register</button>
-</form>
+<!--Content-->
+<section id="signup" ng-init="init()">
+  <div class="container">
+    <div class="row margin-40">
+      
+      <div class="col-sm-6 col-sm-offset-3 text-center signup">
+        <h3>Register</h3><br />
+        
+        <form ng-submit="register()" novalidate 
+              id="signupForm" name="signupForm" 
+              class="form-horizontal">
+          <div ng-show="$scope.error">{{$
+        </div>
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+          	<span class="add-on"><i class="fa fa-user"></i></span>
+          	<input  
+                   type="email" ng-model="registerUser.username"
+                       class="input-xlarge"
+                       required id="fname" name="fname" placeholder="Email">
+              </div>
+            </div>
+          </div>
+          <div>
+            <span class="fv-warning" ng-show="signupForm.fname.$dirty && signupForm.fname.$invalid && signupForm.submitted">Please provide
+          valid email.</span>
+          </div>
+          
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+          	<span class="add-on"><i class="fa fa-lock"></i></span>
+          	<input 
+                   type="Password" ng-model="registerUser.password"
+                       id="passwd" class="input-xlarge"
+                       name="passwd" required placeholder="Password"
+                       ng-minlength=5 ng-maxlength=10>
+              </div>
+            </div>
+          </div>
+          <div class="fv-warning" ng-show="signupForm.passwd.$dirty &&
+          signupForm.passwd.$invalid && signupForm.submitted">Password must be between 5 and 10 characters.
+        </div>
+          
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+          	<span class="add-on"><i class="fa fa-lock"></i></span>
+          	<input type="Password" ng-focus ng-model="confirmPassword"
+                       id="confirmpasswd" class="input-xlarge"
+                       name="confirmpasswd" required 
+                       placeholder="Confirm Password"
+                       ng-minlength=5 ng-maxlength=10>
+              </div>
+            </div>
+          </div>
+          <div class="fv-warning" ng-show="signupForm.confirmpasswd.$dirty &&
+          signupForm.confirmpasswd.$invalid && signupForm.submitted">Password must be between 5 and 10 characters.
+        </div>
+           <div class="fv-warning"  ng-show="signupForm.submitted && !passwordsMatch()">Passwords don't match
+        </div>
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn btn-primary"><i class="fa
+              fa-sign-in"></i> Register</button>
+            </div>
+            <!--a class="small-message" href="#"><small>Need An Account?</small></a-->
+          </div>
+          
+        </form>
+      	
+      </div><!--End Span6-->
+      
+    </div><!--End Row-->
+  </div><!--End Container-->
+</section>
 
 
 <div class="alert alert-error" ng-show="error">{{error}}</div>

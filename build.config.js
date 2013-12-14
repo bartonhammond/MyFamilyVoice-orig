@@ -7,7 +7,7 @@ module.exports = {
   harp_public: '/home/barton/Dropbox/harp.io/apps/myfamilyvoice.harp.io/',
   harp_src: 'harp.io',
   fv: {
-    js: [ '**/*.js' ],
+    js: [ 'js/**', 'scripts/**' ],
     css: ['styles/*.css'],
     images: ['images/*.png', 'images/*.jpg']
   },

@@ -815,7 +815,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
   padding-bottom: 120px;
 }
 
-#signup-form input {
+#signupForm input {
   width: 60%;
 } 
 
