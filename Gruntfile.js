@@ -113,7 +113,7 @@ module.exports = function (grunt) {
         dest: '<%= harp_public %>',
         cwd: '<%= public_dir %>'
       },
-        harpJson: {
+      harpJson: {
         expand: true,
         src: '*',
         dest: '<%= harp_public %>',
@@ -240,6 +240,7 @@ module.exports = function (grunt) {
   });
   grunt.registerTask('harp', function () {
     grunt.task.run([
+      'dist',
       'clean:harp',
       'copy:harp',
       'copy:harpJson',

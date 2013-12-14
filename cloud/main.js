@@ -2,6 +2,8 @@
 var express = require('express'),
 twilio = require('twilio');
 var url = require('url');
+var _ = require('underscore');
+
 var Buffer = require('buffer').Buffer;
 
 var  twilioAccountSID =  'AC5be60567ea132f150762244ccf788ae6';
@@ -36,102 +38,162 @@ app.get('/record', function(request, response) {
   
 });
 /**
- * The thanks recording
- */
-app.get('/thanks', function(request, response) {
-  // Create a TwiML response generator object
+* Create a Sid file to hold the relationship of the activity and 
+* recording
+*/
+var makeSid = function(request, response) {
+  console.log('in makeSid');
   var parseQueryString = true;
   var queryData = url.parse(request.url, parseQueryString).query;
   var refererData = url.parse(request.headers.referer, parseQueryString).query;
 
   //Save the recordSid for reference in callback
-  console.log('in thanks');
+
   console.log('RecordingSid: ' + queryData.RecordingSid);
   console.log('refererData.activity: ' + refererData.activity);
-  Parse.Cloud.useMasterKey();
+
   var callSid = new CallSid();
   callSid.save({
     sid: queryData.RecordingSid,
     activity: refererData.activity
-  }).then(function(sid) {
-    console.log('got saved sid');
-    console.log(sid);
-  }).fail(function(error) {
-    console.log('saving sid failed');
-    console.log(error);
+  }, {
+    success: function() {
+      response.success(queryData);
+    },
+    error: function(something, error) {
+      response.error('MakeSid:sid not saved');
+    }
+  });
+};
+/**
+* Save the recording 
+*/
+var saveWave = function(httpResponse) {
+  console.log('saveWave');
+  var file = new Parse.File('recording.mp3',{base64: httpResponse.buffer.toString('base64')});
+  return file.save();
+};
+/**
+* Get the wave from Twilio
+*/
+var getWave = function(request) {
+  console.log('getWave');
+  var parseQueryString = true;
+  var refererData = url.parse(request.headers.referer, parseQueryString).query;
+  console.log('getWave: recordingUrl:' + refererData.RecordingUrl);
+  return Parse.Cloud.httpRequest({url: refererData.RecordingUrl + ".mp3"});
+};
+
+/**
+ * Update activity w/ masterkey override
+ */
+var updateActivity = function(activity,file) {
+  Parse.Cloud.useMasterKey()
+  return activity.save({file: file});
+};
+/**
+ * Find activity by id and return promise
+ */
+var findActivity = function(id) {
+  console.log('findActivity: ' + id);
+  Parse.Cloud.useMasterKey()
+
+  var query = new Parse.Query(Activity);
+  var promise = new Parse.Promise();
+  query.get(id, {
+    success: function(object) {
+      promise.resolve(object);
+    },
+    error: function(object, error) {
+      promise.reject(error);
+    }
+    
+  });
+  return promise;
+};
+
+/**
+ * Find sid and return it or error
+ */
+var findSid = function(request) {
+  var parseQueryString = true;
+  var refererData = url.parse(request.headers.referer, parseQueryString).query;
+  
+  var query = new Parse.Query(CallSid);   
+  query.equalTo("sid", refererData.RecordingSid);
+  var promise = new Parse.Promise();
+
+  query.find()
+    .then(function(results) {
+      var sid = results[0];
+      console.log('findSid:');
+      console.log(sid);
+      promise.resolve(sid);
+    }, function(error) {
+      promise.reject(error);
+    });
+  return promise;
+};
+
+/**
+ * The thanks recording
+ */
+app.get('/thanks', function(request, response) {
+  // Create a TwiML response generator object
+  //Make sure Sid is saved before responding to Twilio
+  makeSid(request, {
+    success: function(queryData) {
+      var twiml = new twilio.TwimlResponse();
+      twiml.say('Thanks for your Family Voice recording. Here is what I heard and recorded for you.',
+                {voice:'alice', language:'en-GB'})
+        .pause({ length: 1 })
+        .play(queryData.RecordingUrl)
+        .say('Goodbye',
+             {voice:'alice', language:'en-GB'});
+      
+      // Render the TwiML XML document
+      response.type('text/xml');
+      response.send(twiml.toString());
+    }, 
+    error: function(error) {
+      response.error(error);
+    }
   });
 
-
-  var twiml = new twilio.TwimlResponse();
-  twiml.say('Thanks for your Family Voice recording. Here is what I heard and recorded for you.',
-            {voice:'alice', language:'en-GB'})
-    .pause({ length: 1 })
-    .play(queryData.RecordingUrl)
-    .say('Goodbye',
-         {voice:'alice', language:'en-GB'});
-  
-  // Render the TwiML XML document
-  response.type('text/xml');
-  response.send(twiml.toString());
-
 });
+
 /**
  * At completion, move file form Twilio to Parse
  */
 app.get('/callback', function(request, response) {
   // Create a TwiML response generator object
-  var parseQueryString = true;
-  var queryData = url.parse(request.url, parseQueryString).query;
-  var refererData = url.parse(request.headers.referer, parseQueryString).query;
-
   console.log('in callback');
-  console.log('refererData.RecordingSid: ' + refererData.RecordingSid);
-  var _callSid = null;
-  var _file = null;
-  var query = new Parse.Query(CallSid);   
-  query.equalTo("sid", refererData.RecordingSid);
-  query.find()
-    .then(function(callSidArray) {
-      console.log('found callSid');
-      console.log(callSidArray);
-      _callSid = callSidArray[0];
-      console.log(_callSid);
-      console.log('recordingUrl:' + refererData.RecordingUrl);
-      var url = refererData.RecordingUrl + ".wav";
-      return Parse.Cloud.httpRequest({url: url});
-    }).then(function(httpResponse) {
-      console.log('got response');
-      console.log(_callSid);
-      return new Parse.File('recording.wav',{base64: httpResponse.buffer.toString('base64')}).save();
-    }).then(function(file) {
-      _file = file;
-      console.log('got file');
-      console.log(file);
-      console.log('_callSid');
-      console.log(_callSid);
-      Parse.Cloud.useMasterKey();
-      var query = new Parse.Query(Activity);
-      query.equalTo('id',_callSid.activity);
-      return query.find();
-    }).then(function(activityArray) {
-      var activity = activityArray[0];
-      console.log('got the activity');
-      console.log(activity);
-      console.log('_file:');
-      console.log(_file);
-      Parse.Cloud.useMasterKey();
-      return activity.save({file: _file});
-    }).then(function(activity) {
-      console.log('activity was saved');
-      console.log(activity);
-    }).fail(function(error) {
-      console.log('error');
-      console.log(error);
-    }).always(function() {
-      console.log('always');
-    });
+  var self = this;
+  self.sid = null;
+  self.file = null;
+  self.request = request;
+
+  Parse.Promise.when([findSid(request), getWave(request)]).then(
+    function(sid, httpResponse) {// wave){
+      console.log('callback sid');
+      console.log(sid);
+      self.sid = sid;
+      Parse.Promise.when([findActivity(sid.get('activity')), saveWave(httpResponse)]).then(
+        function(activity, file) {
+          console.log('callback file & activity');
+          console.log(activity);
+          console.log(file);
+          Parse.Promise.when([updateActivity(activity, file)]).then(
+            function(result) {
+              console.log(result);
+              response.send('ok');
+            });
+        }
+      )
+    }
+  );
 });
-       
+
 // Start the Express app
 app.listen();
 

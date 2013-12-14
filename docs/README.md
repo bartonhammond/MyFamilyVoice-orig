@@ -1,8 +1,7 @@
 ## Parse.com
 * server side code
 *   parse deploy - pushes cloud/main.js
-*   parse log -100 MyFamilyVoice > log.txt
-
+*   parse log -n 100 FamilyVoice >log.txt
 ## Twilio
 * Voice for questions
 
