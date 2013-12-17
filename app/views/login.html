@@ -1,13 +1,14 @@
 <!--Content-->
-<section id="signup">
+<section id="signup" ng-init="init()">
   <div class="container">
     <div class="row margin-40">
       
       <div class="col-sm-6 col-sm-offset-3 text-center signup">
         <h3>Log In</h3><br />
-        
+
+        <div id="interfacecontainerdiv" class="interfacecontainerdiv"></div>        
         <form ng-submit="login()" novalidate="" 
-              id="signup-form" class="form-horizontal">
+              id="signupForm" class="form-horizontal">
           <div class="control-group">
             <div class="controls">
               <div class="input-prepend">

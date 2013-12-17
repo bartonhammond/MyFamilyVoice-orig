@@ -3,17 +3,34 @@ var express = require('express'),
 twilio = require('twilio');
 var url = require('url');
 var _ = require('underscore');
-
+var lr = require('cloud/loginradius.js');
 var Buffer = require('buffer').Buffer;
 
-var  twilioAccountSID =  'AC5be60567ea132f150762244ccf788ae6';
-var  twilioAuthToken = '42420dd155a5997e75882993599a2d25';
-var  twilioAppSID = 'AP8302a09988efdeb8e14ab812b71eb790';
+//Twilio
+var twilioAccountSID =  'AC5be60567ea132f150762244ccf788ae6';
+var twilioAuthToken = '42420dd155a5997e75882993599a2d25';
+var twilioAppSID = 'AP8302a09988efdeb8e14ab812b71eb790';
+
+//loginRadius
+var loginRadiusAPIKey = 'cf3d185d-0ab6-45f1-9b52-d62cb26157ac';
+var loginRadiusAPISecret = '324c8612-7ef3-41ca-8fc1-8b89f182be61';
+
+
 var Activity = Parse.Object.extend('Activity');
 var CallSid = Parse.Object.extend('CallSid');
 
+/**
+ * configure Express
+ */
+function logErrors(err, req, res, next) {
+  console.error(err.stack);
+  next(err);
+}
+
 // Create an Express web app (more info: http://expressjs.com/)
 var app = express();
+app.use(logErrors);
+app.use(express.bodyParser());
 
 /**
  * The recording message
@@ -192,6 +209,23 @@ app.get('/callback', function(request, response) {
       )
     }
   );
+});
+/**
+ * The callback from LoginRadius
+ * see https://www.loginradius.com/account/manage
+ */
+app.post('/logincallback/', function(request, response) {
+  console.log('logincallback');
+  console.log(request);
+  
+  lr.loginradiusauth(req.body.token ,loginRadiusAPISecret,function(isauthenticated,profile) {
+    if(isauthenticated){
+      response.write(profile);
+    } else {
+      response.write('not logged in');
+    }
+    response.end();
+  });
 });
 
 // Start the Express app

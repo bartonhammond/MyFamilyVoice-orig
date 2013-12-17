@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, ActivityCollection, TagCollection, AudioCollection, Activity, Tag, Audio,  Auth) {
+  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, ActivityCollection, TagCollection, Activity, Tag, Auth) {
 
     //get the list of tags, and clear off all the checkmarks
     $scope.tags = TagCollection.all();
@@ -100,20 +100,5 @@ angular.module('fv')
         $scope.newTag = '';
       }
 
-    }
-    $scope.setFiles = function(element) {
-      $scope.audio = Audio.create({});
-      $scope.audio.file = element.files[0];
-    }
-    $scope.uploadFile = function() {
-      console.log('uploadFile');
-      $scope.audio.$saveFile('audio', $scope.audio.file).then(function(data) {
-        //add it to the collection
-        AudioCollection.add($scope.audio);
-        activity.file = data.url;
-        activity.$put().then(function() {
-          $location.path('/activities');
-        });
-      });
     }
   });
