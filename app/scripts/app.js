@@ -11,6 +11,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
         templateUrl: 'views/login.html',
         controller: 'LoginCtrl'
       })
+      .when('/account', {
+        templateUrl: 'views/account.html',
+        controller: 'AccountCtrl'
+      })
       .when('/register', {
         templateUrl: 'views/register.html',
         controller: 'RegisterCtrl'
@@ -44,7 +48,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
     Auth.restore();
     
     // enumerate routes that don't need authentication
-    var routesThatDontRequireAuth = ['/', '/login', '/register'];
+    var routesThatDontRequireAuth = ['/', '/login', '/register', '/account'];
     
     // check if current location matches route  
     var routeClean = function (route) {

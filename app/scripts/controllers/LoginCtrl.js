@@ -1,6 +1,6 @@
     /* jshint ignore:start */
 angular.module('fv')
-  .controller('LoginCtrl', function ($scope, Auth, $location) {
+  .controller('LoginCtrl', function ($scope, $rootScope, Auth, $location) {
     /**
      *  loginRadius
      */
@@ -10,8 +10,8 @@ angular.module('fv')
       options.login=true;       
       LoginRadius_SocialLogin.util.ready(function () { 
         $ui = LoginRadius_SocialLogin.lr_login_settings;
-        $ui.interfacesize = "small";
-        $ui.apikey = "cf3d185d-0ab6-45f1-9b52-d62cb26157ac";
+        $ui.interfacesize = "";
+        $ui.apikey = "f36321df-34bc-4c0a-9a0b-aac96ccfa9ac";
         $ui.callback=""; 
         $ui.lrinterfacecontainer ="interfacecontainerdiv"; 
         LoginRadius_SocialLogin.init(options);  
@@ -22,6 +22,13 @@ angular.module('fv')
       function Successfullylogin() {
         LoginRadiusSDK.getUserprofile(function (data) {
           console.log(JSON.stringify(data));
+          $rootScope.user = data;
+          if ($scope.$$phase || $scope.$root.$$phase) {
+            $scope.$eval($location.path('/account'));
+          } else {
+            $scope.$apply($location.path('/account'));
+          }
+          
         });
          return false;
       };  

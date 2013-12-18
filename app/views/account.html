@@ -1,0 +1,56 @@
+<!--Content-->
+<section id="signup" ng-init="init()">
+  <div class="container">
+    <div class="row margin-40">
+      
+      <div class="col-sm-6 col-sm-offset-3 text-center signup">
+        <h3>Account</h3><br />
+
+        <div id="interfacecontainerdiv" class="interfacecontainerdiv"></div>        
+        <form ng-submit="login()" novalidate="" 
+              id="signupForm" class="form-horizontal">
+        
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+          	<span class="add-on"><i class="fa fa-user"></i></span>
+          	<input type="email" ng-model="user.Email[0].Value"
+                       class="input-xlarge" id="fname" name="fname" placeholder="Email">
+              </div>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+          	<span class="add-on"><i class="fa fa-user"></i></span>
+          	<input type="input" ng-model="user.FirstName"
+                       id="passwd" class="input-xlarge" name="passwd" placeholder="Password">
+              </div>
+            </div>
+          </div>
+          <input type="hidden" name="authdata" value="{{user.authdata}}"/>{{user.authdata}}
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+          	<span class="add-on"><i class="fa fa-user"></i></span>
+          	<input type="input" ng-model="user.LastName"
+                       id="passwd" class="input-xlarge" name="passwd" placeholder="Password">
+              </div>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn-main"><i class="fa fa-sign-in"></i> Log In</button>
+            </div>
+            <a class="small-message" href="#"><small>Need An Account?</small></a>
+          </div>
+          
+        </form>
+      	
+      </div><!--End Span6-->
+      
+    </div><!--End Row-->
+  </div><!--End Container-->
+</section>
