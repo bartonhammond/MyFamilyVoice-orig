@@ -17,21 +17,42 @@ angular.module('fv')
       }); 
       
       LoginRadiusSDK.onlogin = Successfullylogin;
-      
+      /**
+{"ID":"112845155672155697294","Provider":"google","Prefix":null,"FirstName":"Barton","MiddleName":null,"LastName":"Hammond","Suffix":null,"FullName":"Barton
+      Hammond","NickName":null,"ProfileName":null,"BirthDate":null,"Gender":"U","ImageUrl":null,"ThumbnailImageUrl":null,"Email":[{"Type":"Primary","Value":"admin@myfamilyvoice.com"}],"Country":null,"LocalCountry":"United
+      States","ProfileCountry":null} 
+*/
       function Successfullylogin() {
         LoginRadiusSDK.getUserprofile(function (data) {
           console.log(JSON.stringify(data));
-          $rootScope.user = data;
-          $rootScope.user.authdata= {
-            "anonymous": {
-              "id": $rootScope.user.ID
+          registerUser = {};
+          registerUser.username = data.FullName;
+          registerUser.provider = data.Provider;
+          registerUser.firstName = data.FirstName;
+          registerUser.lastName = data.LastName;
+          
+          if (_.isArray(data.Email)
+             && !_.isUndefined(data.Email[0])) {
+            registerUser.email = data.Email[0].Value;
+
+            Auth.register($scope.registerUser).then(function(){
+              $location.path('/activities');
+            }, function(response) {
+              $scope.error = response.data.error;
+            });
+          } else {
+            $rootScope.registerUser = registerUser;
+            $rootScope.registerUser.authdata= {
+              "anonymous": {
+                "id": $rootScope.data.ID
+              }
+            };
+            if ($scope.$$phase || $scope.$root.$$phase) {
+              $scope.$eval($location.path('/account'));
+            } else {
+              $scope.$apply($location.path('/account'));
             }
           };
-          if ($scope.$$phase || $scope.$root.$$phase) {
-            $scope.$eval($location.path('/account'));
-          } else {
-            $scope.$apply($location.path('/account'));
-          }
           
         });
          return false;
