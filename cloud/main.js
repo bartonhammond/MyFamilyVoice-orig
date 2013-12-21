@@ -18,6 +18,7 @@ var loginRadiusAPISecret = '324c8612-7ef3-41ca-8fc1-8b89f182be61';
 
 var Activity = Parse.Object.extend('Activity');
 var CallSid = Parse.Object.extend('CallSid');
+var RegisterUser = Parse.Object.extend('RegisterUser');
 
 /**
  * configure Express
@@ -105,7 +106,7 @@ var getWave = function(request) {
  * Update activity w/ masterkey override
  */
 var updateActivity = function(activity,file) {
-  Parse.Cloud.useMasterKey()
+  Parse.Cloud.useMasterKey();
   return activity.save({file: file});
 };
 /**
@@ -246,4 +247,97 @@ Parse.Cloud.define('getToken', function(request, response) {
 
   var token = capability.generate();
   response.success(token);
+});
+/**
+*
+*/
+var generateUUID = function(){
+  var d = new Date().getTime();
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = (d + Math.random()*16)%16 | 0;
+    d = Math.floor(d/16);
+    return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+  });
+  return uuid;
+};
+/**
+* Create registerUser
+*/
+var createRegisterUser = function(request, response) {
+  console.log('createRegisterUser:');
+  console.log('request: ');
+  console.log(request);
+  var user = JSON.parse(request.body);
+  console.log('user:');
+  console.log(user);
+  
+  var registerUser = new RegisterUser();
+  Parse.Cloud.useMasterKey();
+  console.log('provider: ' + user.provider);
+  console.log('firstName: ' + user.firstName);
+  console.log('lastName: ' + user.lastName);
+  console.log('primaryEmail: ' + user.primaryEmail);
+  return registerUser.save({
+    provider: user.provider,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    primaryEmail: user.primaryEmail
+  });
+
+};
+/**
+* find registerUser
+*/
+var findRegisterUser = function(request, response) {
+  console.log('findRegisterUser: ' );
+  console.log(request.body);
+  var user = JSON.parse(request.body);
+  console.log(user);
+  var query = new Parse.Query(RegisterUser);   
+  query.equalTo("primaryEmail", user.primaryEmail);
+  var promise = new Parse.Promise();
+
+  query.find()
+    .then(function(results) {
+      console.log('findRegisterUser: results:');
+      console.log(results);
+      //Not found check
+      if (results.length === 0) {
+        promise.reject('register user not found');
+      } else {
+        var user = results[0];
+        console.log('findRegisterUser user:');
+        console.log(user);
+        promise.resolve(user);
+      }
+     
+    }, function(error) {
+      promise.reject(error);
+    });
+  return promise;
+
+};
+// Use Parse's RPC functionality to make an outbound call
+Parse.Cloud.define('getUUID', function(request, response) {
+  console.log(request);
+  Parse.Promise.when([findRegisterUser(request, response)]).then(
+    function(user) {
+      console.log('getUUID found user');
+      console.log(user);
+      response.success(user);
+      },
+    function(error) {
+      console.log('getUUID did not find user');
+      Parse.Promise.when([createRegisterUser(request,response)]).then(
+        function(user) {
+          console.log('getUUID createRegisterUser:');
+          console.log(user);
+          response.success(user);
+        }, 
+        function(error) {
+          console.log('getUUID createRegisterUser error');
+          console.log(error);
+          response.error(error);
+        });
+    });
 });

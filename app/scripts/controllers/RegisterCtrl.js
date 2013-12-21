@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 angular.module('fv')
-  .controller('RegisterCtrl', function ($rootScope, $scope, Auth, $location) {
+  .controller('RegisterCtrl', function ($rootScope, $scope, RegisterUser, Auth, $location) {
        /**
      *  loginRadius
      */
@@ -25,28 +25,35 @@ angular.module('fv')
       function Successfullylogin() {
         LoginRadiusSDK.getUserprofile(function (data) {
           console.log(JSON.stringify(data));
-          registerUser = {};
-          registerUser.username = data.FullName;
+          var registerUser = {};
           registerUser.provider = data.Provider;
           registerUser.firstName = data.FirstName;
           registerUser.lastName = data.LastName;
           
-          if (_.isArray(data.Email)
-             && !_.isUndefined(data.Email[0])) {
-            registerUser.email = data.Email[0].Value;
+          var email = _.find(data.Email,function(address) {
+            console.log('find: ' + address);
+              return address.Type === 'Primary';
+          });
+          if (email) {
+            registerUser.primaryEmail = email.Value;
+            console.log(registerUser);
+            RegisterUser.create({}).$call('getUUID',registerUser).then(function(data) {
+              console.log('Successfulllogin: ' + data);
+              }, function(error) {
+                console.log('Successfulllogin: error: ' + error);
+              });
 
-            Auth.register($scope.registerUser).then(function(){
+            //Send local registerUser
+            /*
+            Auth.register(registerUser).then(function(){
               $location.path('/activities');
             }, function(response) {
               $scope.error = response.data.error;
             });
+            */
           } else {
             $rootScope.registerUser = registerUser;
-            $rootScope.registerUser.authdata= {
-              "anonymous": {
-                "id": $rootScope.data.ID
-              }
-            };
+            
             if ($scope.$$phase || $scope.$root.$$phase) {
               $scope.$eval($location.path('/account'));
             } else {

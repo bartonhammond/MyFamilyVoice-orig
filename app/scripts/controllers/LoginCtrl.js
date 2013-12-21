@@ -52,5 +52,8 @@ angular.module('fv')
       });
 */
     };
+    $scope.register = function() {
+      $location.path('/register');
+    }
    });
     /* jshint ignore:end */
