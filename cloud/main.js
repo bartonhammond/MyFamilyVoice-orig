@@ -251,7 +251,7 @@ Parse.Cloud.define('getToken', function(request, response) {
 /**
 *
 */
-var generateUUID = function(){
+var guid = function(){
   var d = new Date().getTime();
   var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = (d + Math.random()*16)%16 | 0;
@@ -260,6 +260,7 @@ var generateUUID = function(){
   });
   return uuid;
 };
+
 /**
 * Create registerUser
 */
@@ -270,18 +271,15 @@ var createRegisterUser = function(request, response) {
   var user = JSON.parse(request.body);
   console.log('user:');
   console.log(user);
-  
+
   var registerUser = new RegisterUser();
   Parse.Cloud.useMasterKey();
-  console.log('provider: ' + user.provider);
-  console.log('firstName: ' + user.firstName);
-  console.log('lastName: ' + user.lastName);
-  console.log('primaryEmail: ' + user.primaryEmail);
   return registerUser.save({
     provider: user.provider,
     firstName: user.firstName,
     lastName: user.lastName,
-    primaryEmail: user.primaryEmail
+    primaryEmail: user.primaryEmail,
+    password: guid()
   });
 
 };

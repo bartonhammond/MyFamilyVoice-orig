@@ -37,10 +37,25 @@ angular.module('fv')
           if (email) {
             registerUser.primaryEmail = email.Value;
             console.log(registerUser);
-            RegisterUser.create({}).$call('getUUID',registerUser).then(function(data) {
-              console.log('Successfulllogin: ' + data);
+            RegisterUser.create({}).$call('getUUID',registerUser).then(
+              function(user) {
+                console.log('SuccessfullyLogin success');
+                console.log(user);
+                Auth.register({
+                  username: user.result.primaryEmail,
+                  password: user.result.password}).then(
+                    function(){
+                      if ($scope.$$phase || $scope.$root.$$phase) {
+                        $scope.$eval($location.path('/activities'));
+                      } else {
+                        $scope.$apply($location.path('/activities'));
+                      }
+                    }, function(response) {
+                      $scope.error = response.data.error;
+                    });
+                
               }, function(error) {
-                console.log('Successfulllogin: error: ' + error);
+                console.log('SuccessfullyLogin: error: ' + error);
               });
 
             //Send local registerUser
