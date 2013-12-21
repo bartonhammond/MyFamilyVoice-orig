@@ -9,3 +9,7 @@
     color:tomato;
     padding-bottom: 5px;
 }
+.error {
+    background-color: red;
+    color: wheat;
+}

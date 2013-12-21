@@ -1,6 +1,6 @@
     /* jshint ignore:start */
 angular.module('fv')
-  .controller('LoginCtrl', function ($scope, $rootScope, Auth, $location) {
+  .controller('LoginCtrl', function ($scope, $rootScope, Auth, RegisterUser, $location) {
     /**
      *  loginRadius
      */
@@ -22,15 +22,32 @@ angular.module('fv')
       function Successfullylogin() {
         LoginRadiusSDK.getUserprofile(function (data) {
           console.log(JSON.stringify(data));
-          $rootScope.user = data;
-          if ($scope.$$phase || $scope.$root.$$phase) {
-            $scope.$eval($location.path('/account'));
-          } else {
-            $scope.$apply($location.path('/account'));
-          }
-          
+          var registerUser = {};
+          registerUser.provider = data.Provider;
+          registerUser.providerId = data.ID;
+          RegisterUser.create({}).$call('loginWithSocialLogin',registerUser).then(
+            function(response) {
+              console.log('loginCtrl user was registered');
+              console.log(response);
+              Auth.login({
+                username: response.result.primaryEmail,
+                password: response.result.password}).then(
+                  function() {
+                    if ($scope.$$phase || $scope.$root.$$phase) {
+                      $scope.$eval($location.path('/activities'));
+                    } else {
+                      $scope.$apply($location.path('/activities'));
+                    }
+                    $location.path('/activities');
+                  }, function(response) {
+                    $('#error').text(response.data.error);
+                  });
+            }, function(error) {
+              console.log('LoginCtrl error with social login ');
+              console.log(error);
+              $('#error').text(error.data.error);
+            });
         });
-         return false;
       };  
     }
     /**
@@ -43,17 +60,11 @@ angular.module('fv')
      *  Login
      */
     $scope.login = function() {
-   
-/**
       Auth.login($scope.loginUser).then(function() {
         $location.path('/activities');
       }, function(response) {
         $scope.error = response.data.error;
       });
-*/
     };
-    $scope.register = function() {
-      $location.path('/register');
-    }
    });
     /* jshint ignore:end */

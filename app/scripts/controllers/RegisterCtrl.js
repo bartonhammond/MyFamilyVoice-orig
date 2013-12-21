@@ -17,16 +17,13 @@ angular.module('fv')
       }); 
       
       LoginRadiusSDK.onlogin = Successfullylogin;
-      /**
-{"ID":"112845155672155697294","Provider":"google","Prefix":null,"FirstName":"Barton","MiddleName":null,"LastName":"Hammond","Suffix":null,"FullName":"Barton
-      Hammond","NickName":null,"ProfileName":null,"BirthDate":null,"Gender":"U","ImageUrl":null,"ThumbnailImageUrl":null,"Email":[{"Type":"Primary","Value":"admin@myfamilyvoice.com"}],"Country":null,"LocalCountry":"United
-      States","ProfileCountry":null} 
-*/
+     
       function Successfullylogin() {
         LoginRadiusSDK.getUserprofile(function (data) {
           console.log(JSON.stringify(data));
           var registerUser = {};
           registerUser.provider = data.Provider;
+          registerUser.providerId = data.ID;
           registerUser.firstName = data.FirstName;
           registerUser.lastName = data.LastName;
           
@@ -37,13 +34,15 @@ angular.module('fv')
           if (email) {
             registerUser.primaryEmail = email.Value;
             console.log(registerUser);
-            RegisterUser.create({}).$call('getUUID',registerUser).then(
-              function(user) {
+            RegisterUser.create({}).$call('registerSocialLogin',registerUser).then(
+              function(data) {
                 console.log('SuccessfullyLogin success');
-                console.log(user);
+                console.log(data);
+                //Register and subsequently login
                 Auth.register({
-                  username: user.result.primaryEmail,
-                  password: user.result.password}).then(
+                  username: data.result.primaryEmail,
+                  password: data.result.password,
+                  verifiedEmail: false}).then(
                     function(){
                       if ($scope.$$phase || $scope.$root.$$phase) {
                         $scope.$eval($location.path('/activities'));
@@ -51,21 +50,14 @@ angular.module('fv')
                         $scope.$apply($location.path('/activities'));
                       }
                     }, function(response) {
-                      $scope.error = response.data.error;
+                      $('#error').text(response.data.error);
                     });
                 
-              }, function(error) {
-                console.log('SuccessfullyLogin: error: ' + error);
+              }, function(response) {
+                console.log('SuccessfullyLogin: error: ');
+                console.log(response);
+                $('#error').text(response.data.error);
               });
-
-            //Send local registerUser
-            /*
-            Auth.register(registerUser).then(function(){
-              $location.path('/activities');
-            }, function(response) {
-              $scope.error = response.data.error;
-            });
-            */
           } else {
             $rootScope.registerUser = registerUser;
             
@@ -90,6 +82,7 @@ angular.module('fv')
     };
     $scope.register = function () {
       if ($scope.signupForm.$valid && $scope.passwordsMatch()) {
+        $scope.registerUser.verifiedEmail = false;
         Auth.register($scope.registerUser).then(function(){
           $location.path('/activities');
         }, function(response) {

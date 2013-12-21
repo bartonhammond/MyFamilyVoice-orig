@@ -276,6 +276,7 @@ var createRegisterUser = function(request, response) {
   Parse.Cloud.useMasterKey();
   return registerUser.save({
     provider: user.provider,
+    providerId: user.providerId,
     firstName: user.firstName,
     lastName: user.lastName,
     primaryEmail: user.primaryEmail,
@@ -286,25 +287,26 @@ var createRegisterUser = function(request, response) {
 /**
 * find registerUser
 */
-var findRegisterUser = function(request, response) {
-  console.log('findRegisterUser: ' );
+var findRegisteredUser = function(request, response) {
+  console.log('findRegisteredUser: ' );
   console.log(request.body);
   var user = JSON.parse(request.body);
   console.log(user);
   var query = new Parse.Query(RegisterUser);   
-  query.equalTo("primaryEmail", user.primaryEmail);
+  query.equalTo("provider", user.provider);
+  query.equalTo("providerId", user.providerId);
   var promise = new Parse.Promise();
 
   query.find()
     .then(function(results) {
-      console.log('findRegisterUser: results:');
+      console.log('findRegisteredUser: results:');
       console.log(results);
       //Not found check
       if (results.length === 0) {
         promise.reject('register user not found');
       } else {
         var user = results[0];
-        console.log('findRegisterUser user:');
+        console.log('findRegisteredUser user:');
         console.log(user);
         promise.resolve(user);
       }
@@ -316,14 +318,15 @@ var findRegisterUser = function(request, response) {
 
 };
 // Use Parse's RPC functionality to make an outbound call
-Parse.Cloud.define('getUUID', function(request, response) {
+Parse.Cloud.define('registerSocialLogin', function(request, response) {
   console.log(request);
-  Parse.Promise.when([findRegisterUser(request, response)]).then(
+  Parse.Promise.when([findRegisteredUser(request, response)]).then(
     function(user) {
       console.log('getUUID found user');
       console.log(user);
-      response.success(user);
-      },
+      //Already registered
+      response.error('Already registered.  Please use Login');
+    },
     function(error) {
       console.log('getUUID did not find user');
       Parse.Promise.when([createRegisterUser(request,response)]).then(
@@ -337,5 +340,18 @@ Parse.Cloud.define('getUUID', function(request, response) {
           console.log(error);
           response.error(error);
         });
+    });
+});
+// Use Parse's RPC functionality to make an outbound call
+Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
+  console.log(request);
+  Parse.Promise.when([findRegisteredUser(request, response)]).then(
+    function(user) {
+      console.log('loginWithSocialLogin found user');
+      console.log(user);
+      response.success(user);
+    },
+    function(error) {
+      response.error('Please register first');
     });
 });

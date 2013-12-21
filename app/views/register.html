@@ -2,17 +2,17 @@
 <section id="signup" ng-init="init()">
   <div class="container">
     <div class="row margin-40">
-      
+
       <div class="col-sm-6 col-sm-offset-3 text-center signup">
         <h3>Register</h3><br />
         <div id="interfacecontainerdiv"
         class="interfacecontainerdiv"></div> 
+        <div class='error' id='error'></div>
        <p>------------ OR -------------</p>
         <form ng-submit="register()" novalidate 
               id="signupForm" name="signupForm" 
               class="form-horizontal">
-          <div ng-show="$scope.error">{{$
-        </div>
+
           <div class="control-group">
             <div class="controls">
               <div class="input-prepend">
