@@ -66,5 +66,13 @@ angular.module('fv')
         $scope.error = response.data.error;
       });
     };
+    $scope.sendWelcome = function() {
+      RegisterUser.create({}).$call('sendConfirmEmail').then(
+        function(response) {
+          console.log(response);
+      }, function(error) {
+        console.log(error);
+      });
+    }
    });
     /* jshint ignore:end */

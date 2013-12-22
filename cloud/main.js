@@ -15,6 +15,8 @@ var twilioAppSID = 'AP8302a09988efdeb8e14ab812b71eb790';
 var loginRadiusAPIKey = 'cf3d185d-0ab6-45f1-9b52-d62cb26157ac';
 var loginRadiusAPISecret = '324c8612-7ef3-41ca-8fc1-8b89f182be61';
 
+//Mandrill
+var mandrillKey = '4BjxT9QwZCAb-vs1IlON-g';
 
 var Activity = Parse.Object.extend('Activity');
 var CallSid = Parse.Object.extend('CallSid');
@@ -56,9 +58,9 @@ app.get('/record', function(request, response) {
   
 });
 /**
-* Create a Sid file to hold the relationship of the activity and 
-* recording
-*/
+ * Create a Sid file to hold the relationship of the activity and 
+ * recording
+ */
 var makeSid = function(request, response) {
   console.log('in makeSid');
   var parseQueryString = true;
@@ -84,16 +86,16 @@ var makeSid = function(request, response) {
   });
 };
 /**
-* Save the recording 
-*/
+ * Save the recording 
+ */
 var saveWave = function(httpResponse) {
   console.log('saveWave');
   var file = new Parse.File('recording.mp3',{base64: httpResponse.buffer.toString('base64')});
   return file.save();
 };
 /**
-* Get the wave from Twilio
-*/
+ * Get the wave from Twilio
+ */
 var getWave = function(request) {
   console.log('getWave');
   var parseQueryString = true;
@@ -249,8 +251,8 @@ Parse.Cloud.define('getToken', function(request, response) {
   response.success(token);
 });
 /**
-*
-*/
+ *
+ */
 var guid = function(){
   var d = new Date().getTime();
   var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -262,8 +264,8 @@ var guid = function(){
 };
 
 /**
-* Create registerUser
-*/
+ * Create registerUser
+ */
 var createRegisterUser = function(request, response) {
   console.log('createRegisterUser:');
   console.log('request: ');
@@ -285,8 +287,8 @@ var createRegisterUser = function(request, response) {
 
 };
 /**
-* find registerUser
-*/
+ * find registerUser
+ */
 var findRegisteredUser = function(request, response) {
   console.log('findRegisteredUser: ' );
   console.log(request.body);
@@ -310,7 +312,7 @@ var findRegisteredUser = function(request, response) {
         console.log(user);
         promise.resolve(user);
       }
-     
+      
     }, function(error) {
       promise.reject(error);
     });
@@ -354,4 +356,41 @@ Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
     function(error) {
       response.error('Please register first');
     });
+});
+// Use Parse's RPC functionality to make an outbound call
+Parse.Cloud.define('sendConfirmEmail', function(request, response) {
+  var params = {
+    "key": mandrillKey,
+    "template_name": "welcome",
+    "template_content": [
+     
+    ],
+    "message": {
+      "to": [
+        {
+          "email": "barton@acclivyx.com",
+          "name": "Barton",
+          "type": "to"
+        }
+      ],
+      "auto_html": true
+    },
+    "async": true
+  };
+
+  Parse.Cloud.httpRequest({
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
+    body: params,
+    success: function(data) {
+      response.success(data);
+    },
+    error: function(error) {
+      response.error(error);
+    }
+  });
+  
 });
