@@ -22,15 +22,13 @@ angular.module('fv')
       function Successfullylogin() {
         LoginRadiusSDK.getUserprofile(function (data) {
           console.log(JSON.stringify(data));
-          var registerUser = {};
-          registerUser.provider = data.Provider;
-          registerUser.providerId = data.ID;
-          RegisterUser.create({}).$call('loginWithSocialLogin',registerUser).then(
+
+          RegisterUser.create({}).$call('loginWithSocialLogin',data).then(
             function(response) {
               console.log('loginCtrl user was registered');
               console.log(response);
               Auth.login({
-                username: response.result.primaryEmail,
+                username: response.result.password,
                 password: response.result.password}).then(
                   function() {
                     if ($scope.$$phase || $scope.$root.$$phase) {
@@ -43,10 +41,35 @@ angular.module('fv')
                     $('#error').text(response.data.error);
                   });
             }, function(error) {
-              console.log('LoginCtrl error with social login ');
-              console.log(error);
-              $('#error').text(error.data.error);
-            });
+              //Use was not registered
+              RegisterUser.create({}).$call('registerSocialLogin', data).then(
+                function(data) {
+                  console.log('SuccessfullyLogin success');
+                  console.log(data);
+                  //Register and subsequently login
+                  Auth.register({
+                    username: data.result.password,
+                    password: data.result.password,
+                    firstName: data.result.firstName,
+                    lastName: data.result.lastName,
+                    primaryEmail: data.result.primaryEmail,
+                    verifiedEmail: false}).then(
+                      function(){
+                        if ($scope.$$phase || $scope.$root.$$phase) {
+                          $scope.$eval($location.path('/account'));
+                        } else {
+                          $scope.$apply($location.path('/account'));
+                        }
+                      }, function(response) {
+                        $('#error').text(response.data.error);
+                      });
+                  
+                }, function(response) {
+                  console.log('SuccessfullyLogin: error: ');
+                  console.log(response);
+                  $('#error').text(response.data.error);
+                });
+             });
         });
       };  
     }

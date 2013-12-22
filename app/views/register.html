@@ -5,10 +5,8 @@
 
       <div class="col-sm-6 col-sm-offset-3 text-center signup">
         <h3>Register</h3><br />
-        <div id="interfacecontainerdiv"
-        class="interfacecontainerdiv"></div> 
         <div class='error' id='error'></div>
-       <p>------------ OR -------------</p>
+
         <form ng-submit="register()" novalidate 
               id="signupForm" name="signupForm" 
               class="form-horizontal">
@@ -20,12 +18,12 @@
           	<input  
                    type="email" ng-model="registerUser.username"
                        class="input-xlarge"
-                       required id="fname" name="fname" placeholder="Email">
+                       required id="email" name="email" placeholder="Email">
               </div>
             </div>
           </div>
           <div>
-            <span class="fv-warning" ng-show="signupForm.fname.$dirty && signupForm.fname.$invalid && signupForm.submitted">Please provide
+            <span class="fv-warning" ng-show="signupForm.email.$dirty && signupForm.fname.$invalid && signupForm.submitted">Please provide
           valid email.</span>
           </div>
           
@@ -67,7 +65,6 @@
               <button type="submit" class="btn btn-primary"><i class="fa
               fa-sign-in"></i> Register</button>
             </div>
-            <!--a class="small-message" href="#"><small>Need An Account?</small></a-->
           </div>
           
         </form>

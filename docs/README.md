@@ -34,7 +34,28 @@ MyFamilyVoice records the voice of your family for future generations
 ## MailChimp
 *  Used to create Template that is sent to Mandrill
 
+# Registration
+* Social Login
+*   loginRadius 
+*      create registerUser with provideId and provider password (guid) username (guid)
+*      create user with firstName, LastName, primaryEmail (if available as Twitter does not provide)
+*         user: password and username are registerUser.username/password
+          user: verifiedEmail is false
+*      goto Account.html and verify contact info
+*      send Email verifcation
+*      set user verifiedEmail true
+* Regular
+*   accept FirstName, LastName, Email
+*   send Email verification      
+*   set user verifiedEmail true
 
+# Login
+*  Social Login
+*    read registeredUser, using ProvideID and Provider
+*    return registeredUser.username/password
+*    login 
+*  Regular
+*    normal
 
 ## SSL process
 openssl req -out CSR.csr -new -newkey rsa:2048 -nodes -keyout privateKey.key

@@ -6,18 +6,22 @@ to deal with.
  */
 
 angular.module('fv')
-  .factory('Auth', function (User, $window) {
+  .factory('Auth', function (User, $window, $q) {
 
     var user = {};
     var authenticated = false;
     var store = $window.localStorage;
     var resource = User;
 
+    function storeUser() {
+      store.ngUser = angular.toJson(user);
+    }
+
     function login(response) {
       user = response;
       authenticated = true;
-      resource.user(user.sessionToken);
-      store.ngUser = angular.toJson(user);
+      resource.user(response.sessionToken);
+      storeUser();
     }
 
     function logout() {
@@ -49,6 +53,22 @@ angular.module('fv')
         }, function(response) {
           throw response;
         });
+      },
+      update: function(data) {
+        var deferred  = $q.defer();
+        
+        resource.update(data.objectId,
+                        _.pick(data,'firstName', 'lastName', 'primaryEmail')).then(
+          function(response) {
+            user.firstName = response.firstName;
+            user.lastName = response.lastName;
+            user.primaryEmail = response.primaryEmail;
+            storeUser();
+            deferred.resolve();
+          }, function(error) {
+            deferred.reject(error);
+          });
+        return deferred.promise;
       },
       //see if we can find a stored user and log them in
       //TODO: validate the sessionToken

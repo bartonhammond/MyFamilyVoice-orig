@@ -37,7 +37,6 @@ angular.module('fv')
       var offset = date.getTimezoneOffset();
       date = new Date(date.getTime() + offset * 60000);
       $scope.activity.$setJsDate('date', date);
-
     }
 
     $scope.newTag = '';

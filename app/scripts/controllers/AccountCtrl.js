@@ -1,12 +1,24 @@
 'use strict';
 
 angular.module('fv')
-  .controller('AccountCtrl', function ($scope) {
+  .controller('AccountCtrl', function ($scope, Auth, $location) {
     /**
      * Init loginRadius
      */
     $scope.init = function() {
-      $scope.user=$scope.$parent.user;
+      //Clone so changes are only made when successfull put
+      $scope.user = _.clone(Auth.me());
       console.log($scope);
+    };
+    $scope.save = function() {
+      if ($scope.signupForm.$valid) {
+        Auth.update($scope.user).then(function() {
+          $location.path('/activities');
+        }, function(error) {
+          $scope.error = error.data.error;
+        });
+      } else {
+        $scope.signupForm.submitted = true;
+      }
     };
   });

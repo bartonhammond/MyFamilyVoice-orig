@@ -9,6 +9,10 @@
     color:tomato;
     padding-bottom: 5px;
 }
+.fv-label {
+    margin-right: 10px;
+    font-weight: bold;
+}
 .error {
     background-color: red;
     color: wheat;

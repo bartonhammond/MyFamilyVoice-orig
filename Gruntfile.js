@@ -29,7 +29,14 @@ module.exports = function (grunt) {
       app: require('./bower.json').appPath || 'app',
       dist: 'public'
     },
-
+    shell: {
+      parse: {
+        command: 'parse deploy',
+        options: {
+          stdout: true
+        }
+      }
+    },
     // Watches files for changes and runs tasks based on the changed files
     watch: {
       js: {
@@ -244,7 +251,8 @@ module.exports = function (grunt) {
       'clean:harp',
       'copy:harp',
       'copy:harpJson',
-      'copy:harpRoot'
+      'copy:harpRoot',
+      'shell:parse'
     ]);
   });
 
