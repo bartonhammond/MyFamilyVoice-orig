@@ -373,7 +373,18 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
           "type": "to"
         }
       ],
-      "auto_html": true
+      "inline_css": "true",
+      "merge_vars": [
+        {
+                "rcpt": "barton@acclivyx.com",
+                "vars": [
+                    {
+                        "name": "CONFIRMREGISTRATION",
+                        "content": "https://myfamilyvoice.com/master.html"
+                    }
+                ]
+            }
+        ],
     },
     "async": true
   };

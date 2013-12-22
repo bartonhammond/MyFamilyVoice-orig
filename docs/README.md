@@ -25,7 +25,16 @@ MyFamilyVoice records the voice of your family for future generations
 *  $50/yr
 
 ## LoginRadius
+*  Social login w/ 4 providers Google, Twitter, Facebook, Linkedin
 *  admin@myfamilyvoice.com 
+
+## Mandrill
+*  Email sending
+
+## MailChimp
+*  Used to create Template that is sent to Mandrill
+
+
 
 ## SSL process
 openssl req -out CSR.csr -new -newkey rsa:2048 -nodes -keyout privateKey.key
