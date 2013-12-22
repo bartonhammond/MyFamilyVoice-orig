@@ -13,7 +13,8 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
       })
       .when('/account', {
         templateUrl: 'views/account.html',
-        controller: 'AccountCtrl'
+        controller: 'AccountCtrl',
+        auth: true
       })
       .when('/register', {
         templateUrl: 'views/register.html',

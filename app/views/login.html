@@ -10,28 +10,53 @@
         class="interfacecontainerdiv"></div>
         <p>Use the Social Login above to easily login with no need to register.</p>
         <p>------------ OR -------------</p>
-        <form ng-submit="login()" novalidate="" 
-              id="signupForm" class="form-horizontal">
+        <form ng-submit="login()" 
+              novalidate="" 
+              id="signupForm" 
+              name="signupForm"
+              class="form-horizontal">
           <div class="control-group">
             <div class="controls">
               <div class="input-prepend">
           	<span class="add-on"><i class="fa fa-user"></i></span>
-          	<input type="email" ng-model="loginUser.username"
-                       class="input-xlarge" id="fname" name="fname" placeholder="Email">
+          	<input type="email"
+                       ng-focus 
+                       ng-model="loginUser.username"
+                       class="input-xlarge" 
+                       required
+                       id="fname" 
+                       name="fname" 
+                       placeholder="Email">
               </div>
             </div>
           </div>
-          
+           <div class="fv-warning" 
+               ng-show="signupForm.fname.$invalid &&
+                        signupForm.submitted">
+            Please provide valid email.
+          </div>
           <div class="control-group">
             <div class="controls">
               <div class="input-prepend">
           	<span class="add-on"><i class="fa fa-lock"></i></span>
-          	<input type="Password"ng-model="loginUser.password"
-                       id="passwd" class="input-xlarge" name="passwd" placeholder="Password">
+          	<input type="Password"
+                       ng-model="loginUser.password"
+                       id="passwd" 
+                       required
+                       class="input-xlarge" 
+                       name="passwd" 
+                       ng-minlength=5 
+                       ng-maxlength=10
+                       placeholder="Password">
               </div>
             </div>
           </div>
-          
+           <div class="fv-warning" 
+               ng-show="signupForm.passwd.$invalid &&
+                        signupForm.submitted">
+             Please provide password between 5 and 10 characters.
+          </div>
+           <div class="fv-warning" ng-show="error">{{error}}</div>          
           <div class="control-group">
             <div class="controls">
               <button type="submit" class="btn-main"><i class="fa fa-sign-in"></i> Log In</button>

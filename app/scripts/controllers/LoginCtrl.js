@@ -83,12 +83,17 @@ angular.module('fv')
      *  Login
      */
     $scope.login = function() {
-      Auth.login($scope.loginUser).then(function() {
-        $location.path('/activities');
-      }, function(response) {
-        $scope.error = response.data.error;
-      });
+      if ($scope.signupForm.$valid) {
+        Auth.login($scope.loginUser).then(function() {
+          $location.path('/activities');
+        }, function(response) {
+          $scope.error = response.data.error;
+        });
+      } else {
+        $scope.signupForm.submitted = true;
+      };
     };
+    
     $scope.sendWelcome = function() {
       RegisterUser.create({}).$call('sendConfirmEmail').then(
         function(response) {
