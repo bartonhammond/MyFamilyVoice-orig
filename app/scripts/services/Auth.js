@@ -12,6 +12,7 @@ angular.module('fv')
     var authenticated = false;
     var store = $window.localStorage;
     var resource = User;
+    var change = {};
 
     function storeUser() {
       store.ngUser = angular.toJson(user);
@@ -56,13 +57,18 @@ angular.module('fv')
       },
       update: function(data) {
         var deferred  = $q.defer();
-        
-        resource.update(data.objectId,
-                        _.pick(data,'firstName', 'lastName', 'primaryEmail')).then(
-          function(response) {
-            user.firstName = response.firstName;
-            user.lastName = response.lastName;
-            user.primaryEmail = response.primaryEmail;
+        change =  _.pick(data,'firstName', 'lastName', 'primaryEmail', 'verifiedEmail');
+        if (user.isSocial) {
+          if (!_.isEqual(user.primaryEmail,data.primaryEmail)) {
+            change.verifiedEmail = false;
+          }
+        }
+        resource.update(data.objectId,change).then(
+          function() {
+            user.firstName = change.firstName;
+            user.lastName = change.lastName;
+            user.primaryEmail = change.primaryEmail;
+            user.verifiedEmail = change.verifiedEmail;
             storeUser();
             deferred.resolve();
           }, function(error) {

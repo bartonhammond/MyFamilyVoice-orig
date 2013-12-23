@@ -6,6 +6,7 @@ var _ = require('underscore');
 var lr = require('cloud/loginradius.js');
 var Buffer = require('buffer').Buffer;
 
+
 //Twilio
 var twilioAccountSID =  'AC5be60567ea132f150762244ccf788ae6';
 var twilioAuthToken = '42420dd155a5997e75882993599a2d25';
@@ -21,6 +22,7 @@ var mandrillKey = '4BjxT9QwZCAb-vs1IlON-g';
 var Activity = Parse.Object.extend('Activity');
 var CallSid = Parse.Object.extend('CallSid');
 var RegisterUser = Parse.Object.extend('RegisterUser');
+var ConfirmEmail = Parse.Object.extend('ConfirmEmail');
 
 /**
  * configure Express
@@ -274,8 +276,7 @@ var createRegisterUser = function(request, response) {
   console.log('user:');
   console.log(user);
   var email = _.find(user.Email,function(address) {
-    console.log('find: ' + address);
-              return address.Type === 'Primary';
+    return address.Type === 'Primary';
   });
   
   var registerUser = new RegisterUser();
@@ -340,16 +341,12 @@ Parse.Cloud.define('registerSocialLogin', function(request, response) {
     });
 
 });
-/**
-* Update the user account
-*/
-Parse.Cloud.define('updateUser', function(request, response) {
-  
-});
+
 /*
- * 
+ * Find the registeredUser or error 
  */
 Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
+  console.log('loginWithSocialLogin request');
   console.log(request);
   Parse.Promise.when([findRegisteredUser(request, response)]).then(
     function(user) {
@@ -361,51 +358,166 @@ Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
       response.error('Please register first');
     });
 });
-// Use Parse's RPC functionality to make an outbound call
-Parse.Cloud.define('sendConfirmEmail', function(request, response) {
-  var params = {
-    "key": mandrillKey,
-    "template_name": "welcome",
-    "template_content": [
-     
-    ],
-    "message": {
-      "to": [
-        {
-          "email": "barton@acclivyx.com",
-          "name": "Barton",
-          "type": "to"
-        }
-      ],
-      "inline_css": "true",
-      "merge_vars": [
-        {
-                "rcpt": "barton@acclivyx.com",
-                "vars": [
-                    {
-                        "name": "CONFIRMREGISTRATION",
-                        "content": "https://myfamilyvoice.com/master.html"
-                    }
-                ]
-            }
-        ],
-    },
-    "async": true
-  };
-
-  Parse.Cloud.httpRequest({
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
-    body: params,
-    success: function(data) {
-      response.success(data);
+/**
+ * Verify user email
+ */
+var findUser = function(request) {
+  var id = request.get('userId');
+  var promise = new Parse.Promise();
+  var query = new Parse.Query(Parse.User);
+  query.get(id, {
+    success: function(user) {
+      promise.resolve(user);
     },
     error: function(error) {
-      response.error(error);
+      promise.reject(error);
     }
   });
+  return promise;
+}
+/**
+ * Find confirmEmai record and return it or error
+ */
+var findConfirmEmail = function(request) {
+  console.log('findConfirmEmail request:');
+  console.log(request);
+  var link = JSON.parse(request.body);
+  console.log('link: ' + link.link);
+  var query = new Parse.Query(ConfirmEmail);   
+  query.equalTo("link", link.link);
+  var promise = new Parse.Promise();
+
+  query.find()
+    .then(function(results) {
+      var link = results[0];
+      console.log('findConfirmEmail link');
+      console.log(link);
+      promise.resolve(link);
+    }, function(error) {
+      promise.reject(error);
+    });
+  return promise;
+};
+/*
+ * Confirm the email 
+ */
+Parse.Cloud.define('confirmEmail', function(request, response) {
+  console.log('confirmEmail request');
+  console.log(request);
+  Parse.Promise.when([findConfirmEmail(request, response)]).then(
+    function(link) {
+      console.log('confirmEmail found link');
+      console.log(link);
+      Parse.Promise.when([findUser(link)]).then(
+        function(user) {
+          console.log('confirmEmail found user:');
+          console.log(user);
+          user.set('verifiedEmail', true);
+          Parse.Cloud.useMasterKey();
+          user.save().then(
+            function(result) {
+              console.log('confirmEmail updated user');
+              console.log(result);
+              response.success();
+            },function(error) {
+              console.log('confirmEmail update user error');
+              console.log(error);
+              response.error(error);
+            });
+        },
+        function(error) {
+          console.log('confirmEmail findUser error');
+          console.log(error);
+          response.error(error);
+        });
+    },
+    function(error) {
+      console.log('confirmEmail findConfirmEmail error');
+      console.log(error);
+      response.error(error);
+    });
+});
+/**
+ * Create email for confirmation
+ */
+var createConfirmEmail = function(user, response) {
+  console.log('createConfirmEmail:');
+  console.log('user:');
+  console.log(user);
+  var link = guid() + guid();
+  link = link.replace(/-/g,"");
+  var confirmEmail = new ConfirmEmail();
+  Parse.Cloud.useMasterKey();
+  return confirmEmail.save({
+    userId: user.objectId,
+    link: link
+  });
+
+};
+// Use Parse's RPC functionality to make an outbound call
+Parse.Cloud.define('sendConfirmEmail', function(request, response) {
+  console.log('sendConfirmEmail request:');
+  console.log(request);
+  var user = JSON.parse(request.body);
   
+  Parse.Promise.when([createConfirmEmail(user, response)]).then(
+    function(confirmEmail) {
+      console.log('sendConfirmEmail create');
+      
+      var link = "https://myfamilyvoice.com/master.html#/confirmEmail/" 
+      link += confirmEmail.get('link');
+        
+      var params = {
+        "key": mandrillKey,
+        "template_name": "welcome",
+        "template_content": [
+          
+        ],
+        "message": {
+          "to": [
+            {
+              "email": user.primaryEmail,
+              "name":  user.firstName,
+              "type": "to"
+            }
+          ],
+          "inline_css": "true",
+          "merge_vars": [
+            {
+              "rcpt": user.primaryEmail,
+              "vars": [
+                {
+                  "name": "CONFIRMREGISTRATION",
+                  "content": link
+                }
+              ]
+            }
+          ],
+        },
+        "async": true
+      };
+      Parse.Cloud.httpRequest({
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
+        body: params,
+        success: function(data) {
+          console.log('sendConfirmEmail success:');
+          console.log(data);
+          response.success(data);
+        },
+        error: function(error) {
+          console.log('sendConfirmEmail error:');
+          response.error(error);
+        }
+      });
+    },
+   function(error) {
+     console.log('sendConfirmEmail error');
+     console.log(error);
+     response.error(error);
+
+   });
 });

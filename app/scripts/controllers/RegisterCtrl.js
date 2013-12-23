@@ -12,6 +12,14 @@ angular.module('fv')
     };
     $scope.register = function () {
       if ($scope.signupForm.$valid && $scope.passwordsMatch()) {
+        
+        //Keep primaryEmail as the confirmation email requirement
+        $scope.registerUser.primaryEmail = $scope.registerUser.username;
+
+        //non-social users can not change their email
+        $scope.registerUser.isSocial = false;
+
+        //Email needs to be verified
         $scope.registerUser.verifiedEmail = false;
         Auth.register($scope.registerUser).then(function(){
           $location.path('/activities');
@@ -23,4 +31,3 @@ angular.module('fv')
       }
     };
   });
- 

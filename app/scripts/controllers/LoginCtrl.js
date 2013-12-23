@@ -53,6 +53,7 @@ angular.module('fv')
                     firstName: data.result.firstName,
                     lastName: data.result.lastName,
                     primaryEmail: data.result.primaryEmail,
+                    isSocial: true,
                     verifiedEmail: false}).then(
                       function(){
                         if ($scope.$$phase || $scope.$root.$$phase) {

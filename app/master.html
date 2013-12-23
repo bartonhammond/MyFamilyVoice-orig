@@ -60,6 +60,7 @@
               </li>
               <li><a href="blog.html">Blog</a></li>
               <li><a href="contact.php">Contact</a></li>
+              <li><a href="#/account" ng-show='authenticated'>Account</a></li>
               <li><a ng-click="logout()" ng-show='authenticated'>Log Out</a></li>
               <li><a href="#/login" ng-show='!authenticated'>Login</a></li>
             </ul>
@@ -72,7 +73,7 @@
       <div class="container">
         <div class="row">
           <div class="col-sm-12 text-center">
-            <p>@ Copyright. All Rights Reserved. Created by <a href="http://www.themearmada.com">Theme Armada.</a></p>
+            <p>@ Copyright. All Rights Reserved. <a href="http://www.myfamilyvoice.com">MyFamilyVoice.</a></p>
           </div>
         </div>
       </div>
@@ -92,6 +93,7 @@
     <script src="scripts/controllers/LoginCtrl.js"></script>
     <script src="scripts/controllers/AccountCtrl.js"></script>
     <script src="scripts/controllers/RegisterCtrl.js"></script>
+    <script src="scripts/controllers/ConfirmEmailCtrl.js"></script>
     <script src="scripts/controllers/activities/index.js"></script>
     <script src="scripts/controllers/activities/update.js"></script>
     <script src="scripts/controllers/activities/recorder.js"></script>

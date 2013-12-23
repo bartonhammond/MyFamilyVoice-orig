@@ -16,6 +16,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
         controller: 'AccountCtrl',
         auth: true
       })
+      .when('/confirmEmail/:link', {
+        templateUrl: 'views/confirmEmail.html',
+        controller: 'ConfirmEmailCtrl'
+      })
       .when('/register', {
         templateUrl: 'views/register.html',
         controller: 'RegisterCtrl'
@@ -49,13 +53,16 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
     Auth.restore();
     
     // enumerate routes that don't need authentication
-    var routesThatDontRequireAuth = ['/', '/login', '/register', '/account'];
+    var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail'];
     
     // check if current location matches route  
     var routeClean = function (route) {
+      if (route === '/') {
+        return true;
+      }
       return _.find(routesThatDontRequireAuth,
                     function (noAuthRoute) {
-                      return _.isEqual(route, noAuthRoute);
+                      return route.indexOf(noAuthRoute) > -1;
                     });
     };
     
