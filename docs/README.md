@@ -57,6 +57,10 @@ MyFamilyVoice records the voice of your family for future generations
 *  Regular
 *    normal
 
+# Logo
+*   http://cooltext.com/
+*   Use Google admin@myfamilyvoice.com account
+
 ## SSL process
 openssl req -out CSR.csr -new -newkey rsa:2048 -nodes -keyout privateKey.key
 Generating a 2048 bit RSA private key
