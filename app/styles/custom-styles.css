@@ -17,3 +17,40 @@
     background-color: red;
     color: wheat;
 }
+/* Styling for loading container */
+
+#loading-container{
+    position:fixed;
+    top:0;
+    right:0;
+    left:0;
+    z-index:99999;
+    padding:0;
+    margin:0
+}
+#loading-container #loading{
+    z-index:99998;
+    display:block;
+    width:125px;
+    height:34px;
+    padding:0;
+    margin-top:91px;
+    margin-right:auto;
+    margin-left:auto;
+    font-weight:600;
+    background-color:#e1e1e1;
+    border:1px solid #b3b3b3;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    border-radius:5px;
+    opacity:0;
+    -webkit-background-clip:padding-box;
+    -moz-background-clip:padding;
+    background-clip:padding-box
+}
+#loading-container #loading img{
+    margin-top:6px;
+    margin-right:10px;
+    margin-left:10px;
+    vertical-align:bottom
+}

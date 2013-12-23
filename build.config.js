@@ -9,7 +9,7 @@ module.exports = {
   fv: {
     js: [ 'js/**', 'scripts/**' ],
     css: ['styles/*.css'],
-    images: ['images/*.png', 'images/*.jpg']
+    images: ['images/*.png', 'images/*.jpg', 'images/*.gif']
   },
 
   vendor: {

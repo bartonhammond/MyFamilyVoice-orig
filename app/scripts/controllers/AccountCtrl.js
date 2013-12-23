@@ -13,18 +13,19 @@ angular.module('fv')
     $scope.save = function() {
       if ($scope.signupForm.$valid) {
         Auth.update($scope.user).then(function() {
-          console.log(Auth.me());
           if (!Auth.me().verifiedEmail) {
             RegisterUser.create({}).$call('sendConfirmEmail', Auth.me()).then(
               function(response) {
                 console.log('AccountCtrl sendConfirmEmail response');
                 console.log(response);
+                $location.path('/activities');
               },
               function(error) {
                 console.log('AccountCtrl sendConfirmEmail error');
                 console.log(error);
               }
             );
+          } else {
             $location.path('/activities');
           }
         }, function(error) {
