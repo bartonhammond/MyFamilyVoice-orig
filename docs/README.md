@@ -61,6 +61,25 @@ MyFamilyVoice records the voice of your family for future generations
 *   http://cooltext.com/
 *   Use Google admin@myfamilyvoice.com account
 
+# Admin
+*   /admin
+*   
+
+# Security 
+* Registered
+*    can see all users
+* Verified Email
+*    can listen to audio
+*    can friend someone
+*    can accept/reject friend request
+*    can create/delete questions on self
+*    can delete/ignore/answer questions from others
+* Friended
+*    can ask questions of friend
+*    can delete their own questions
+* Subscribe
+     notified of new audio 
+
 ## SSL process
 openssl req -out CSR.csr -new -newkey rsa:2048 -nodes -keyout privateKey.key
 Generating a 2048 bit RSA private key

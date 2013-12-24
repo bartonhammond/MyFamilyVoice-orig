@@ -521,3 +521,34 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
 
    });
 });
+/**
+ * Find all users
+ */
+var findUsers = function(request) {
+  var query = new Parse.Query(Parse.User);
+  return query.find();
+}
+
+/*
+ * Search
+ */
+Parse.Cloud.define('search', function(request, response) {
+  console.log('search request');
+  console.log(request);
+  Parse.Promise.when([findUsers(request)]).then(
+    function(users) {
+      console.log('search found users');
+      console.log(users);
+      var results = [];
+      _.each(users,function(user) {
+        console.log(user);
+        console.log('is object: ' + _.isObject(user));
+        var obj = {description: user.get('firstName') + ' ' + user.get('lastName')};
+        results.push(obj);
+      });
+      response.success(results);
+    },
+    function(error) {
+      response.error(error);
+    });
+});

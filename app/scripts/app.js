@@ -7,6 +7,11 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
+      .when('/search', {
+        templateUrl: 'views/search.html',
+        controller: 'SearchCtrl',
+        auth: true
+      })
       .when('/login', {
         templateUrl: 'views/login.html',
         controller: 'LoginCtrl'
@@ -44,6 +49,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
         controller: 'ActivitiesIndexCtrl',
         auth: true
       })
+      .when('/admin', {
+        templateUrl: 'views/admin/index.html',
+        controller: 'AdminCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
@@ -53,7 +62,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
     Auth.restore();
     
     // enumerate routes that don't need authentication
-    var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail'];
+    var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail', '/admin'];
     
     // check if current location matches route  
     var routeClean = function (route) {

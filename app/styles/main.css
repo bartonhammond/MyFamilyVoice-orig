@@ -768,6 +768,7 @@ z-index: 1;
 
 /* ==========================================================================
    Contact Page styles
+
    ========================================================================== */
 
 #map {
@@ -817,14 +818,15 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 #signupForm input {
   width: 60%;
 } 
-
+#roleForm input {
+  width: 60%;
+} 
 .signup {
   background: url(../images/grid_noise.png) repeat;
   background-color: #ebebeb;
   padding: 40px;
   margin-top: 22px;
 }
-
 input, button, select, textarea {
   font-family: 'Lato', sans-serif;
 }

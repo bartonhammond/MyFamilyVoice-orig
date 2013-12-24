@@ -129,7 +129,7 @@ module.exports = function (grunt) {
       fvHtml: {
         files: [
           {
-            src: ['**/*.html'],
+            src: ['**/*.html', '**/*.ico', '**/*.png'],
             dest: '<%= public_dir %>',
             cwd: 'app',
             expand: true
