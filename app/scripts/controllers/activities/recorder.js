@@ -34,7 +34,8 @@ angular.module('fv')
     }
     $scope.beginRecording = function() {
       $scope.recording = true;
-      Twilio.Device.connect({activity: $scope.activity.objectId});
+      Twilio.Device.connect({activity: $scope.activity.objectId,
+                             user: $scope.activity.user.objectId});
     }
     $scope.stopRecording = function() {
       $scope.recording = false;

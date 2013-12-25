@@ -5,7 +5,7 @@ var url = require('url');
 var _ = require('underscore');
 var lr = require('cloud/loginradius.js');
 var Buffer = require('buffer').Buffer;
-
+var moment = require('moment');
 
 //Twilio
 var twilioAccountSID =  'AC5be60567ea132f150762244ccf788ae6';
@@ -73,13 +73,16 @@ var makeSid = function(request, response) {
 
   console.log('RecordingSid: ' + queryData.RecordingSid);
   console.log('refererData.activity: ' + refererData.activity);
+  console.log('refererData.user: ' + refererData.user);
 
   var callSid = new CallSid();
   callSid.save({
     sid: queryData.RecordingSid,
-    activity: refererData.activity
+    activity: refererData.activity,
+    user: refererData.user
   }, {
     success: function() {
+      console.log('makeSid: callSid saved');
       response.success(queryData);
     },
     error: function(something, error) {
@@ -105,13 +108,32 @@ var getWave = function(request) {
   console.log('getWave: recordingUrl:' + refererData.RecordingUrl);
   return Parse.Cloud.httpRequest({url: refererData.RecordingUrl + ".mp3"});
 };
-
 /**
- * Update activity w/ masterkey override
+ * Update user recording count if new recording
+ */
+var updateUserRecordingCount = function(user, activity) {
+  console.log('updateUserRecordingCount');
+  console.log(user);
+  console.log(activity);
+  var audio = activity.get('file');
+
+  if (audio) {
+    console.log('updateUserRecordingCount re-recording');
+    return user;
+  } else {
+    console.log('updateUserRecordingCount new recording');
+    Parse.Cloud.useMasterKey();
+    user.increment('recordings');
+    return user.save();
+  }
+};
+/**
+ * Update activity with file of recording
  */
 var updateActivity = function(activity,file) {
-  Parse.Cloud.useMasterKey();
-  return activity.save({file: file});
+  return activity.save({file: file, 
+                        recordedDate: new Date()
+                       });
 };
 /**
  * Find activity by id and return promise
@@ -138,9 +160,10 @@ var findActivity = function(id) {
  * Find sid and return it or error
  */
 var findSid = function(request) {
+  console.log('findSid');
   var parseQueryString = true;
   var refererData = url.parse(request.headers.referer, parseQueryString).query;
-  
+  console.log('sid: ' + refererData.RecordingSid);
   var query = new Parse.Query(CallSid);   
   query.equalTo("sid", refererData.RecordingSid);
   var promise = new Parse.Promise();
@@ -148,10 +171,12 @@ var findSid = function(request) {
   query.find()
     .then(function(results) {
       var sid = results[0];
-      console.log('findSid:');
+      console.log('findSid: sid:');
       console.log(sid);
       promise.resolve(sid);
     }, function(error) {
+      console.log('findSid error:');
+      console.log(error);
       promise.reject(error);
     });
   return promise;
@@ -172,7 +197,7 @@ app.get('/thanks', function(request, response) {
         .play(queryData.RecordingUrl)
         .say('Goodbye',
              {voice:'alice', language:'en-GB'});
-      
+      console.log('ending thanks');
       // Render the TwiML XML document
       response.type('text/xml');
       response.send(twiml.toString());
@@ -189,31 +214,43 @@ app.get('/thanks', function(request, response) {
  */
 app.get('/callback', function(request, response) {
   // Create a TwiML response generator object
-  console.log('in callback');
-  var self = this;
-  self.sid = null;
-  self.file = null;
-  self.request = request;
-
-  Parse.Promise.when([findSid(request), getWave(request)]).then(
-    function(sid, httpResponse) {// wave){
-      console.log('callback sid');
-      console.log(sid);
-      self.sid = sid;
-      Parse.Promise.when([findActivity(sid.get('activity')), saveWave(httpResponse)]).then(
-        function(activity, file) {
-          console.log('callback file & activity');
-          console.log(activity);
-          console.log(file);
-          Parse.Promise.when([updateActivity(activity, file)]).then(
-            function(result) {
-              console.log(result);
-              response.send('ok');
-            });
-        }
-      )
-    }
-  );
+  console.log('in /callback');
+  
+  Parse.Promise.when([findSid(request),
+                      getWave(request)])
+     .then(
+       function(sid, httpResponse) {
+         console.log('callback sid');
+         console.log(sid);
+         console.log('userId: ' + sid.get('user'));
+         return Parse.Promise.when([saveWave(httpResponse),
+                                    findUser({userId: sid.get('user')}),
+                                    findActivity(sid.get('activity'))
+                                   ]);
+       })
+    .then(
+     function(file, user, activity) {
+       console.log('callback file, user, activity');
+       console.log(file);
+       console.log(user)
+       console.log(activity);
+       return Parse.Promise.when([
+         updateUserRecordingCount(user, activity),
+         updateActivity(activity, file)
+       ]);
+     })
+    .then(
+      function(userUpdate, activityUpdate) {
+        console.log('callback: userUpdate and activityUpdate result');
+        console.log(userUpdate);
+        console.log(activityUpdate);
+        response.send('ok');
+      },
+      function(error){
+        console.log('callback error on updateActivity:');
+        console.log(error);
+        response.error(error);
+      });
 });
 /**
  * The callback from LoginRadius
@@ -221,9 +258,7 @@ app.get('/callback', function(request, response) {
  */
 app.post('/logincallback/', function(request, response) {
   console.log('logincallback');
-  console.log(request);
-  
-  lr.loginradiusauth(req.body.token ,loginRadiusAPISecret,function(isauthenticated,profile) {
+  lr.loginradiusauth(request.body.token ,loginRadiusAPISecret,function(isauthenticated,profile) {
     if(isauthenticated){
       response.write(profile);
     } else {
@@ -270,8 +305,6 @@ var guid = function(){
  */
 var createRegisterUser = function(request, response) {
   console.log('createRegisterUser:');
-  console.log('request: ');
-  console.log(request);
   var user = JSON.parse(request.body);
   console.log('user:');
   console.log(user);
@@ -359,17 +392,24 @@ Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
     });
 });
 /**
- * Verify user email
+ * Find user - expect request to be {userId: id}
  */
 var findUser = function(request) {
-  var id = request.get('userId');
+  console.log('findUser request');
+  console.log(request);
+  var id = request.userId;
+  console.log('findUser id: ' + id);
   var promise = new Parse.Promise();
   var query = new Parse.Query(Parse.User);
   query.get(id, {
     success: function(user) {
+      console.log('findUser:');
+      console.log(user);
       promise.resolve(user);
     },
     error: function(error) {
+      console.log('findUser error');
+      console.log(error);
       promise.reject(error);
     }
   });
@@ -404,38 +444,33 @@ var findConfirmEmail = function(request) {
 Parse.Cloud.define('confirmEmail', function(request, response) {
   console.log('confirmEmail request');
   console.log(request);
-  Parse.Promise.when([findConfirmEmail(request, response)]).then(
-    function(link) {
-      console.log('confirmEmail found link');
-      console.log(link);
-      Parse.Promise.when([findUser(link)]).then(
-        function(user) {
-          console.log('confirmEmail found user:');
-          console.log(user);
-          user.set('verifiedEmail', true);
-          Parse.Cloud.useMasterKey();
-          user.save().then(
-            function(result) {
-              console.log('confirmEmail updated user');
-              console.log(result);
-              response.success();
-            },function(error) {
-              console.log('confirmEmail update user error');
-              console.log(error);
-              response.error(error);
-            });
-        },
-        function(error) {
-          console.log('confirmEmail findUser error');
-          console.log(error);
-          response.error(error);
-        });
-    },
-    function(error) {
-      console.log('confirmEmail findConfirmEmail error');
-      console.log(error);
-      response.error(error);
-    });
+  Parse.Promise.when([findConfirmEmail(request, response)])
+    .then(
+      function(link) {
+        console.log('confirmEmail found link');
+        console.log(link);
+        var id = link.get('userId');
+        return Parse.Promise.when([findUser({userId: id})]);
+      })
+    .then(
+      function(user) {
+        console.log('confirmEmail found user:');
+        console.log(user);
+        user.set('verifiedEmail', true);
+        Parse.Cloud.useMasterKey();
+        return user.save();
+      })
+    .then(
+      function(updatedUser) {
+        console.log('confirmEmail updated user');
+        console.log(updatedUser);
+        response.success();
+      },
+      function(error) {
+        console.log('confirmEmail findConfirmEmail error');
+        console.log(error);
+        response.error(error);
+      });
 });
 /**
  * Create email for confirmation
@@ -466,7 +501,7 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
       
       var link = "https://myfamilyvoice.com/master.html#/confirmEmail/" 
       link += confirmEmail.get('link');
-        
+      
       var params = {
         "key": mandrillKey,
         "template_name": "welcome",
@@ -514,12 +549,12 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
         }
       });
     },
-   function(error) {
-     console.log('sendConfirmEmail error');
-     console.log(error);
-     response.error(error);
+    function(error) {
+      console.log('sendConfirmEmail error');
+      console.log(error);
+      response.error(error);
 
-   });
+    });
 });
 /**
  * Find all users
@@ -528,24 +563,51 @@ var findUsers = function(request) {
   var query = new Parse.Query(Parse.User);
   return query.find();
 }
-
+/**
+ * Find all activities with audio
+ */
+var findActivities = function(request) {
+  Parse.Cloud.useMasterKey();
+  var query = new Parse.Query(Activity);
+  query.exists("file");
+  return query.find();
+}
 /*
  * Search
  */
 Parse.Cloud.define('search', function(request, response) {
   console.log('search request');
   console.log(request);
-  Parse.Promise.when([findUsers(request)]).then(
-    function(users) {
+  Parse.Promise.when([findUsers(request), findActivities(request)]).then(
+    function(users, activities) {
       console.log('search found users');
       console.log(users);
+      console.log('search found activities');
+      console.log(activities)
       var results = [];
-      _.each(users,function(user) {
+      _.each(users,function(user, index) {
         console.log(user);
-        console.log('is object: ' + _.isObject(user));
-        var obj = {description: user.get('firstName') + ' ' + user.get('lastName')};
+        var obj = {
+          type: 'user',
+          objectId: users[index].id,
+          description: user.get('firstName') + ' ' + user.get('lastName'),
+          active: moment(user.createdAt).fromNow(),
+          views: user.get('recordings')
+        };
         results.push(obj);
       });
+      _.each(activities, function(activity,index) {
+        var obj = {
+          type: 'activity',
+          objectId: activities[index].id,
+          description: activity.get('comment'),
+          active: moment(activity.get('recordedDate')).fromNow(),
+          views: activity.get('views'),
+          audio: activity.get('file')
+        }
+        results.push(obj);
+      });
+
       response.success(results);
     },
     function(error) {
