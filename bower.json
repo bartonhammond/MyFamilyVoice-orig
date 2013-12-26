@@ -9,7 +9,6 @@
     "jquery": "~1.10.1",
     "angular-sanitize": "~1.2.4",
     "angular-route": "~1.2.4",
-    "Papp": "git://github.com/bartonhammond/Papp.git",
     "bootstrap-wysihtml5": "git://github.com/jhollingworth/bootstrap-wysihtml5.git",
     "angular-collection": "git://github.com/bartonhammond/angular-collection.git",
     "underscore": "~1.5.2"

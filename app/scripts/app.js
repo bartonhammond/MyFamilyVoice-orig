@@ -57,7 +57,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
       .otherwise({
         redirectTo: '/'
       });
-
+    
   }).run(function(Auth, $rootScope, $location) {
     //try and restore the user session from localstore
     Auth.restore();

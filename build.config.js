@@ -20,7 +20,6 @@ module.exports = {
       'bower_components/angular-collection/angular-collection.js',
       'bower_components/angular-route/angular-route.js',
       'bower_components/angular-sanitize/angular-sanitize.js',
-      'bower_components/Papp/js/services/parse-resource.js',
       'bower_components/underscore/underscore.js'
     ],
     css: [

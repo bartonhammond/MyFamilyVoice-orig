@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('AdminCtrl', function ($scope, Role, RoleCollection) {
+  .controller('AdminCtrl', function ($scope, RoleCollection) {
     /**
      */
     $scope.init = function() {
