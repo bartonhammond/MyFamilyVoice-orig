@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('AccountCtrl', function ($scope, Auth, $location, RegisterUser) {
+  .controller('AccountCtrl', function ($scope, Auth, $location) {
     /**
      * Init loginRadius
      */
@@ -13,6 +13,9 @@ angular.module('fv')
     $scope.save = function() {
       if ($scope.signupForm.$valid) {
         Auth.update($scope.user).then(function() {
+          $location.path('/activities');
+        });
+          /**
           if (!Auth.me().verifiedEmail) {
             RegisterUser.create({}).$call('sendConfirmEmail', Auth.me()).then(
               function(response) {
@@ -31,6 +34,7 @@ angular.module('fv')
         }, function(error) {
           $scope.error = error.data.error;
         });
+        */
       } else {
         $scope.signupForm.submitted = true;
       }

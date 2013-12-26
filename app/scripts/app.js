@@ -51,7 +51,8 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'parseResource', 'ngCollection'])
       })
       .when('/admin', {
         templateUrl: 'views/admin/index.html',
-        controller: 'AdminCtrl'
+        controller: 'AdminCtrl',
+        admin: true
       })
       .otherwise({
         redirectTo: '/'

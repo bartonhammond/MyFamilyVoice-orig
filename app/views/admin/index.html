@@ -5,13 +5,29 @@
     <div class="row margin-40">
       <div class="col-sm-6 col-sm-offset-3 text-center signup">
         <h3>Admin</h3><br />
+        <div class="table-responsive">
+          <table class="table table-striped table-hover table-condensed">
+            <tr ng-repeat="role in roles">
+              <td ng-click="setRole($index)">
+                {{role.name}}
+              </td>
+              <td>
+                {{role.roles}}
+              </td>
+              <td>
+                {{role.users}}
+              </td>
+            </tr>
+          </table>
+        </div>
+
         <form id="roleForm" 
-              ng-submit="createRole()"
+              ng-submit="createUpdateRole()"
               novalidate="" 
               id="roleForm"
               name="roleForm"
               class="form-horizontal">
-
+          <!-- RoleName ------------------------------------------>
           <div class="control-group">
             <div class="controls">
              <div class="input-prepend">
@@ -32,10 +48,61 @@
                         roleForm.submitted">
             Role name is required.
           </div>
+
+          <!-- Roles ------------------------------------------>
+          <div class="control-group">
+            <div class="controls">
+             <div class="input-prepend">
+                <span class='fv-label'>Roles</span>
+          	<span class="add-on"><i class="fa fa-chevron-right"></i></span>
+          	<input type="text" 
+                       ng-model="role.roles"
+                       class="input-xlarge" 
+                       id="roles" 
+                       name="roles"
+                       required
+                       placeholder="Roles">
+              </div>
+            </div>
+          </div>
+
+          <!-- Roles ------------------------------------------>
+          <div class="control-group">
+            <div class="controls">
+             <div class="input-prepend">
+                <span class='fv-label'>Roles</span>
+          	<span class="add-on"><i class="fa fa-chevron-right"></i></span>
+          	<input type="text" 
+                       ng-model="role.roles"
+                       class="input-xlarge" 
+                       id="roles" 
+                       name="roles"
+                       placeholder="Roles">
+              </div>
+            </div>
+          </div>
+
+          <!-- Users ------------------------------------------>
+          <div class="control-group">
+            <div class="controls">
+             <div class="input-prepend">
+                <span class='fv-label'>Users</span>
+          	<span class="add-on"><i class="fa fa-chevron-right"></i></span>
+          	<input type="text" 
+                       ng-model="role.users"
+                       class="input-xlarge" 
+                       id="users" 
+                       name="users"
+                       placeholder="Users">
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit ------------------------------------------>
           <div class="control-group">
             <div class="controls">
               <button type="submit" class="btn-main"><i class="fa
-              fa-sign-in"></i> Create Role</button>
+              fa-sign-in"></i>Create/Update Role</button>
             </div>
             <br>
           </div>
