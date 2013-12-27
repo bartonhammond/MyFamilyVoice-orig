@@ -43,6 +43,13 @@ angular.module('fv').
       },
       save: function (activity) {
         var defer = $q.defer();
+        if (_.isUndefined(activity.createdAt)) {
+          var roleACL = new Parse.ACL();
+          roleACL.setWriteAccess(Parse.User.current().id, true);
+          roleACL.setPublicReadAccess(true);
+          activity.setACL(roleACL);
+        }
+        
         activity.save()
         .then(
           function(activity) {

@@ -30,7 +30,11 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         templateUrl: 'activities/index.html',
         controller: 'ActivitiesIndexCtrl'
       })
-      .when('/activities/edit/:id', {
+      .when('/activities/:action/:id', {
+        templateUrl: 'activities/update.html',
+        controller: 'ActivitiesUpdateCtrl'
+      })
+      .when('/activities/:action', {
         templateUrl: 'activities/update.html',
         controller: 'ActivitiesUpdateCtrl'
       })

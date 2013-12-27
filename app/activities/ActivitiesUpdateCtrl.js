@@ -2,9 +2,9 @@
 
 angular.module('fv')
   .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, Activity) {
-  
+
     //if this is an edit request, it will have an objectId parameter
-    if($routeParams.id) {
+    if($routeParams.action ==='edit' && $routeParams.id) {
       
       //let's find the activity object from our collection of activities
       Activity.get($routeParams.id)
