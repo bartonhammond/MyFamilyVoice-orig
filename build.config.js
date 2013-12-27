@@ -8,7 +8,8 @@ module.exports = {
   harp_src: 'harp.io',
   fv: {
     js: [ 'js/**', '*.js', 'main/**/*.js','navbar/**/*.js', 'login/**/*.js',
-          'admin/**/*.js', 'models/**/*.js'],
+          'admin/**/*.js', 'models/**/*.js', 'confirmEmail/**/*.js',
+        'account/**/*.js'],
     css: ['styles/*.css'],
     images: ['images/*.png', 'images/*.jpg', 'images/*.gif']
   },

@@ -24,18 +24,17 @@ angular.module('fv')
           console.log(JSON.stringify(data));
 
           Parse.Cloud.run('loginWithSocialLogin',data).then(
-            function(response) {
+            function(registeredUser) {
               console.log('loginCtrl user was registered');
-              console.log(response);
-              Parse.User.logIn(response.result.password,
-                               response.result.password).then(
+              Parse.User.logIn(registeredUser.get('password'),
+                               registeredUser.get('password'))
+                .then(
                   function() {
                     if ($scope.$$phase || $scope.$root.$$phase) {
                       $scope.$eval($location.path('/activities'));
                     } else {
                       $scope.$apply($location.path('/activities'));
                     }
-                    $location.path('/activities');
                   }, function(response) {
                     $('#error').text(response.data.error);
                   });
@@ -47,12 +46,12 @@ angular.module('fv')
                   console.log(data);
                   //Register and subsequently login
                   Parse.User.signUp(
-                    data.result.password,
-                    data.result.password,
+                    data.get('password'),
+                    data.get('password'),
                     {
-                      firstName: data.result.firstName,
-                      lastName: data.result.lastName,
-                      primaryEmail: data.result.primaryEmail,
+                      firstName: data.get('firstName'),
+                      lastName: data.get('lastName'),
+                      primaryEmail: data.get('primaryEmail'),
                       isSocial: true,
                       verifiedEmail: false}
                   ).then(

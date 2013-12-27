@@ -492,7 +492,9 @@ var createConfirmEmail = function(user, response) {
 // Use Parse's RPC functionality to make an outbound call
 Parse.Cloud.define('sendConfirmEmail', function(request, response) {
   console.log('sendConfirmEmail user:');
+  console.log(request);
   var user = JSON.parse(request.body);
+  console.log(user);
   
   Parse.Promise.when([createConfirmEmail(user, response)]).then(
     function(confirmEmail) {
@@ -618,20 +620,22 @@ Parse.Cloud.define('search', function(request, response) {
 */
 Parse.Cloud.afterSave(Parse.User, function(request) {
   query = new Parse.Query("Parse.User");
-  
-  console.log('afterSave: objectId = ' + request.user.id);
-  var user = {objectId : request.user.id,
-              primaryEmail: request.user.get('primaryEmail'),
-              firstName: request.user.get('firstName')};
-  Parse.Cloud.run('sendConfirmEmail', user, {
-    success: function(data) {
-      console.log('afterSave Parse.User data: success');
-    },
-    error: function(error) {
-      console.log('afterSave Parse.User error:');
-      console.log(error);
-    }
-  });
 
+  if (!request.user.get('verifiedEmail')) {
+    var user = {objectId : request.user.id,
+                primaryEmail: request.user.get('primaryEmail'),
+                firstName: request.user.get('firstName')};
+    Parse.Cloud.run('sendConfirmEmail', user, {
+      success: function(data) {
+        console.log('afterSave Parse.User data: success');
+      },
+      error: function(error) {
+        console.log('afterSave Parse.User error:');
+        console.log(error);
+      }
+    });
+  } else {
+    console.log('afterSave Parse.User verifiedEmail is true');
+  }
 });
  

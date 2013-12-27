@@ -18,6 +18,15 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         templateUrl: 'admin/index.html',
         controller: 'AdminCtrl'
       })
+      .when('/confirmEmail/:link', {
+        templateUrl: 'confirmEmail/confirmEmail.html',
+        controller: 'ConfirmEmailCtrl'
+      })
+      .when('/account', {
+        templateUrl: 'account/account.html',
+        controller: 'AccountCtrl',
+        auth: true
+      })
       .otherwise({
         redirectTo: '/'
       });
