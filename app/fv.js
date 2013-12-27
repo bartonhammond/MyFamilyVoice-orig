@@ -10,6 +10,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         templateUrl: 'main/main.html',
         controller: 'MainCtrl'
       })
+      .when('/login', {
+        templateUrl: 'login/login.html',
+        controller: 'LoginCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
