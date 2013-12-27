@@ -12,23 +12,15 @@ angular.module('fv')
     };
     $scope.save = function() {
       if ($scope.signupForm.$valid) {
-        //Trigger email verification if primaryEmail has changed
-        if (!_.isEqual(Parse.User.current().get('primaryEmail'),
-                       $scope.user.primaryEmail)) {
-          Parse.User.current().set('verifiedEmail',false);
-        }
-        Parse.User.current().set('firstName',$scope.user.firstName);
-        Parse.User.current().set('lastName',$scope.user.lastName);
-        Parse.User.current().set('primaryEmail',$scope.user.primaryEmail);
-        
-        Parse.User.current().save(Parse.User.current().attributes)
-          .then(function() {
-            if ($scope.$$phase || $scope.$root.$$phase) {
-              $scope.$eval($location.path('/activities'));
-            } else {
-              $scope.$apply($location.path('/activities'));
-            }
-          });
+        $scope.user.save()
+          .then(
+            function() {
+              $location.path('/activities');
+            },
+            function(error) {
+              $scope.signupForm.submitted = true;
+              console.log(error);
+            });
       } else {
         $scope.signupForm.submitted = true;
       }
