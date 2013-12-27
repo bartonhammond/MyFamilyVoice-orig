@@ -10,7 +10,7 @@
         class="interfacecontainerdiv"></div>
         <p>Use the Social Login above to easily login with no need to register.</p>
         <p>------------ OR -------------</p>
-        <form ng-submit="login()" 
+        <form ng-submit="logIn()" 
               novalidate="" 
               id="signupForm" 
               name="signupForm"
@@ -59,7 +59,8 @@
            <div class="fv-warning" ng-show="error">{{error}}</div>          
           <div class="control-group">
             <div class="controls">
-              <button type="submit" class="btn-main"><i class="fa fa-sign-in"></i> Log In</button>
+              <button type="submit"
+                      class="btn-main"><i class="fa fa-sign-in"></i> Log In</button>
             </div>
             <br>
             <a class="small-message" href="#/register"><small>Need An Account?</small></a>

@@ -14,7 +14,19 @@ angular.module('fv').
         this.lastName = user.get('lastName');
         this.isSocial = user.get('isSocial');
       },
-      
+      logIn: function(userid, password) {
+        var defer = $q.defer();
+        
+        Parse.User.logIn(userid, password)
+        .then(
+          function(data) {
+            defer.resolve(data);
+          },
+          function(error) {
+            defer.reject(error);
+          });
+        return defer.promise;
+      },
       save: function() {
         //Trigger email verification if primaryEmail has changed
         if (!_.isEqual(Parse.User.current().get('primaryEmail'),

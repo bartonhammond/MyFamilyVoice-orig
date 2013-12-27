@@ -24,13 +24,15 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
       })
       .when('/account', {
         templateUrl: 'account/account.html',
-        controller: 'AccountCtrl',
-        auth: true
+        controller: 'AccountCtrl'
       })
       .when('/activities', {
         templateUrl: 'activities/index.html',
-        controller: 'ActivitiesIndexCtrl',
-        auth: true
+        controller: 'ActivitiesIndexCtrl'
+      })
+      .when('/activities/edit/:id', {
+        templateUrl: 'activities/update.html',
+        controller: 'ActivitiesUpdateCtrl'
       })
       .otherwise({
         redirectTo: '/'

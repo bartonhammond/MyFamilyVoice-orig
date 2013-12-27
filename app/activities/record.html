@@ -1,0 +1,29 @@
+<div ng-init="init()">
+  <h3>Create a Recording</h3>
+  <input type="button"  
+         class='btn btn-primary'  
+         id="call"
+         value="Begin Recording"
+         ng-disabled="recording"
+         ng-click="beginRecording()"/>
+  <br>
+  <input type="button" 
+         class='btn btn-primary' 
+         id="hangup"
+         value="Stop Recording"
+         ng-disabled="!recording"
+         ng-click="stopRecording()"/>
+  <br>
+  <div id="status">Offline</div>
+  <hr>
+
+    <div class="row">
+      <label>Date: {{activity.updatedAt.iso | date: 'yyyy-MM-dd'}} </label>
+    </div>
+    <div class="row">
+      <label>Your question<label>
+      <div ng-bind-html="activity.comment"></div>
+    </div>
+
+
+</div>

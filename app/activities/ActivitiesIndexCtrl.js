@@ -1,47 +1,25 @@
 'use strict';
 
 angular.module('fv')
-  .controller('ActivitiesIndexCtrl', function ($scope, $location) {
-/*
-    //if the collection is empty query parse
-    if(ActivityCollection.size() === 0) {
-      ActivityCollection.query({
-        //include: 'tags',
-        where: {
-          user: {
-            '__type': 'Pointer',
-            'className': '_User',
-            'objectId': Auth.me().objectId
-          }
-        }
-      });
+  .controller('ActivitiesIndexCtrl', function ($scope, $location, Activity) {
+    $scope.init = function() {
+      Activity.list()
+      .then(
+        function(activities) {
+          $scope.activities = activities;
+        });
     }
 
-    //if the tag collection is empty, let's get all the tags as well
-    if(TagCollection.size() === 0) {
-      TagCollection.query({
-        where: {
-          user: {
-            '__type': 'Pointer',
-            'className': '_User',
-            'objectId': Auth.me().objectId
-          }
-        }
-      });
-    };
     //file contains "http:..." and the : causes problems
     $scope.hasFile = function(index) {
       var activity = $scope.activities[index];
       return !_.isUndefined(activity.file);
     }
-    //add the activities to the scope
-    $scope.activities = ActivityCollection.all();
-
     $scope.edit = function(activity) {
-      $location.path('/activities/edit/' + activity.objectId);
+      $location.path('/activities/edit/' + activity.id);
     }
     $scope.record = function(activity) {
-      $location.path('/activities/record/' + activity.objectId);
+      $location.path('/activities/record/' + activity.id);
     }
     $scope.newQuestion = function() {
       $location.path('/activities/add');
@@ -53,5 +31,4 @@ angular.module('fv')
         ActivityCollection.remove(activity);
       });
     }
-*/    
   });

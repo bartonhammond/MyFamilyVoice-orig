@@ -1,0 +1,78 @@
+
+<!--Content-->
+<section id="signup" ng-init="init()">
+  <div class="container">
+    <div class="row margin-40">
+      <div class="col-sm-6 col-sm-offset-3 signup">
+        <h3>Question</h3><br />
+        <form id="roleForm" 
+              novalidate="" 
+              id="roleForm"
+              name="roleForm"
+              class="form-horizontal">
+         
+          <!-- Questin --------------------------------------->
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+                <span class='fv-label'>Please enter your question below</span>
+                <br>
+          	<textarea
+                   ng-model="activity.comment"
+                   class="input-xlarge" 
+                   id="comment" 
+                   name="comment"
+                   required
+                   ng-minlength=10
+                   ng-maxlength=250
+                   rows=5
+                   cols=50
+                   placeholder="Question">
+                </textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="fv-warning" 
+               ng-show="roleForm.comment.$invalid &&
+                        roleForm.submitted">
+            A question should be between 10 and 250 characters.
+          </div>
+
+           <!-- File ------------------------------------------>
+           <span  ng-show="hasFile()">
+             <div class="control-group">
+               <div class="controls">
+                 <div class="input-prepend">
+                   <span class='fv-label'>Audio</span>
+          	   <a ng-href={{activity.file._url}}
+          	      target=_blank>
+                     Listen
+                   </a>
+                 </div>
+               </div>
+             </div>
+           </span>
+
+          <!-- Submit ------------------------------------------>
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" 
+                      ng-click="submit()"
+                      class="btn-main"><i class="fa
+              fa-sign-in"></i>Submit</button>
+            </div>
+            <br>
+          </div>
+
+        </form>
+   
+
+      </div> <!-- form -->
+    </div><!--End Row-->
+  </div><!--End Container-->
+  
+</section>
+
+
+

@@ -2,7 +2,7 @@
 angular.module('fv').
   factory('Activity', function($q) {
     
-    var Activity = Parse.Activity.extend({
+    var Activity = Parse.Object.extend('Activity', {
       // Instance methods
       //Add prototypes for roles & users
       //
@@ -11,9 +11,8 @@ angular.module('fv').
         console.log(attr);
         console.log(options);
         console.log('extend Activity');
-        var fields = ['name'];
+        var fields = ['file', 'views','comment', 'date'];
         _.each(fields, function(field) {
-          console.log('field: ' + field);
           // Properties
           Activity.prototype.__defineGetter__(field, function() {
             return this.get(field);
@@ -25,13 +24,43 @@ angular.module('fv').
       }
     }, {
       // Class methods
-      
+      get: function (id) {
+        var defer = $q.defer();
+        
+        var query = new Parse.Query(this);
+
+        query.get(id,{
+          success : function(activity) {
+            defer.resolve(activity);
+          },
+          error : function(aError) {
+            defer.reject(aError);
+          }
+        });
+ 
+        return defer.promise;
+
+      },
+      save: function (activity) {
+        var defer = $q.defer();
+        activity.save()
+        .then(
+          function(activity) {
+            defer.resolve(activity);
+          },
+          function(aError) {
+            defer.reject(aError);
+          });
+ 
+        return defer.promise;
+
+      },
       list : function() {
         var defer = $q.defer();
         
         var query = new Parse.Query(this);
         query.find({
-          success : function(activites) {
+          success : function(activities) {
             defer.resolve(activities);
           },
           error : function(aError) {
@@ -44,5 +73,5 @@ angular.module('fv').
       
     });
     
-    return Role;
+    return Activity;
   });

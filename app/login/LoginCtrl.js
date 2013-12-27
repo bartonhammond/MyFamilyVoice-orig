@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 angular.module('fv')
-  .controller('LoginCtrl', function ($scope, $rootScope, $location) {
+  .controller('LoginCtrl', function ($scope, $rootScope, $location, User) {
     /**
      *  loginRadius
      */
@@ -26,15 +26,12 @@ angular.module('fv')
           Parse.Cloud.run('loginWithSocialLogin',data).then(
             function(registeredUser) {
               console.log('loginCtrl user was registered');
-              Parse.User.logIn(registeredUser.get('password'),
-                               registeredUser.get('password'))
+              User.logIn(registeredUser.get('password'),
+                         registeredUser.get('password'))
                 .then(
-                  function() {
-                    if ($scope.$$phase || $scope.$root.$$phase) {
-                      $scope.$eval($location.path('/activities'));
-                    } else {
-                      $scope.$apply($location.path('/activities'));
-                    }
+                  function(data) {
+                    console.log(data);
+                    $location.path('/activities');
                   }, function(response) {
                     $('#error').text(response.data.error);
                   });
@@ -81,10 +78,10 @@ angular.module('fv')
       LoginRadius_SocialLogin.util.ready(loginRadius);
     }
 
-    $scope.login = function() {
+    $scope.logIn = function() {
       if ($scope.signupForm.$valid) {
-        Parse.User.logIn($scope.loginUser.username,
-                        $scope.loginUser.password)
+        User.logIn($scope.loginUser.username,
+                   $scope.loginUser.password)
           .then(
             function() {
               $location.path('/activities');
