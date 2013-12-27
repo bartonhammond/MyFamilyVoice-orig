@@ -14,6 +14,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         templateUrl: 'login/login.html',
         controller: 'LoginCtrl'
       })
+      .when('/admin', {
+        templateUrl: 'admin/index.html',
+        controller: 'AdminCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
@@ -80,6 +84,8 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
   }).run(function($rootScope, $location) {
     // Initialize Parse with your Parse application javascript keys
     // enumerate routes that don't need authentication
+
+    $rootScope.sessionUser = Parse.User.current();
     var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail', '/admin'];
     
     // check if current location matches route  

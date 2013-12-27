@@ -40,8 +40,11 @@ module.exports = function (grunt) {
     // Watches files for changes and runs tasks based on the changed files
     watch: {
       js: {
-        files: ['app/scripts/**/*.js', 'app/js/*.js'],
-        tasks: ['newer:jshint:all', 'newer:copy:fvJs']
+        files: ['<%= fv.js %>', 'app/js/*.js'],
+        tasks: ['newer:jshint:all', 'newer:copy:fvJs'],
+        options: {
+          cwd: 'app'
+        }
       },
       views: {
         files: ['app/**/*.html'],
