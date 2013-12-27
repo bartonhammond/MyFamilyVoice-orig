@@ -38,6 +38,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         templateUrl: 'activities/update.html',
         controller: 'ActivitiesUpdateCtrl'
       })
+      .when('/search', {
+        templateUrl: 'search/search.html',
+        controller: 'SearchCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
