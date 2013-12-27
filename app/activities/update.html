@@ -38,7 +38,30 @@
                         roleForm.submitted">
             A question should be between 10 and 250 characters.
           </div>
-
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+                <span class='fv-label'>Record your thoughts</span>
+                <br>
+                <input type="button"  
+                       class='btn btn-primary'  
+                       id="call"
+                       value="Begin Recording"
+                       ng-disabled="recording"
+                       ng-click="beginRecording()"/>
+                <br>
+                <input type="button" 
+                       class='btn btn-primary' 
+                       id="hangup"
+                       value="Stop Recording"
+                       ng-disabled="!recording"
+                       ng-click="stopRecording()"/>
+                <br>
+              </div>
+            </div>
+          </div>
+          <div id="status">Offline</div>
+          <hr>
            <!-- File ------------------------------------------>
            <span  ng-show="hasFile()">
              <div class="control-group">

@@ -21,7 +21,11 @@ angular.module('fv')
       $scope.activity = new Activity();
     }
     $scope.hasFile = function() {
-      return !_.isUndefined($scope.activity.get('file'));
+      if (_.isUndefined($scope.activity)) {
+        return false;
+      } else {
+        return !_.isUndefined($scope.activity.get('file'));
+      }
     }
     $scope.submit = function() {
       Activity.save($scope.activity)
@@ -33,4 +37,52 @@ angular.module('fv')
           $scope.error = error;
         });
     }
+    $scope.beginRecording = function() {
+      $scope.recording = true;
+      Twilio.Device.connect({activity: $scope.activity.id,
+                             user: Parse.User.current().id});
+    }
+    $scope.stopRecording = function() {
+      $scope.recording = false;
+      self.connection.sendDigits("#");
+    }
+    $scope.init = function() {
+      $scope.recording = false;
+      Parse.Cloud.run('getToken')
+        .then(
+          function(data) {
+            console.log(data);
+            Twilio.Device.setup(data,{"debug":true});
+          });
+      
+    }
+    Twilio.Device.incoming(function(conn) {
+      self.connection = conn;
+    });
+ 
+    Twilio.Device.ready(function (device) {
+      $('#status').text('Ready to start recording');
+    });
+    
+    Twilio.Device.offline(function (device) {
+      $('#status').text('Offline');
+    });
+    
+    Twilio.Device.error(function (error) {
+      $('#status').text(error);
+    });
+
+    Twilio.Device.connect(function(conn) {
+      self.connection = conn;
+      $('#status').text("On Air");
+      $('#status').css('color', 'red');
+    });
+    
+    Twilio.Device.disconnect(function (conn) {
+      self.connection = conn;
+      console.log('disconnect');
+      console.log(conn);
+      $('#status').html('Recording ended');
+      $('#status').css('color', 'black');
+    });
   });
