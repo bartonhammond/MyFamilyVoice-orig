@@ -7,7 +7,7 @@
         <h3>Account Information</h3><br />
         <p>Please confirm or complete the following information.</p>
         </br>
-        <form ng-submit="save()" novalidate="" 
+        <form  novalidate="" 
               id="signupForm"
               name="signupForm"
               class="form-horizontal">
@@ -121,7 +121,14 @@
           <!---- Submit -------------------------------------------------->          
           <div class="control-group">
             <div class="controls">
-              <button type="submit" class="btn-main"><i class="fa fa-check-square-o"></i>Submit</button>
+              <button type='button' 
+                      name="submitBtn"
+                      id="submitBtn"
+                      ng-click="save()"
+                      class="btn btn-main">
+                <i class="fa fa-check-square-o"></i>
+                Submit
+              </button>
             </div>
             <br>
           </div>

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('AccountCtrl', function ($scope, $location, User) {
+  .controller('AccountCtrl', function ($scope, $location, User, requestNotificationChannel) {
     /**
      * Init loginRadius
      */
@@ -19,6 +19,8 @@ angular.module('fv')
  
     $scope.save = function() {
       if ($scope.signupForm.$valid) {
+        requestNotificationChannel.requestStarted();
+        $('#submitBtn').attr('disabled','disabled');
         $scope.user.save($scope.photoFile)
           .then(
             function() {
@@ -27,7 +29,13 @@ angular.module('fv')
             function(error) {
               $scope.signupForm.submitted = true;
               console.log(error);
+            })
+          .finally(
+            function() {
+              $('#submitBtn').attr('disabled',false);
+              requestNotificationChannel.requestEnded();
             });
+
       } else {
         $scope.signupForm.submitted = true;
       }

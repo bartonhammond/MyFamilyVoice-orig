@@ -32,11 +32,6 @@ angular.module('fv').
        * Optional param: file
        */
       saveUser: function(file) {
-        //Trigger email verification if primaryEmail has changed
-        if (!_.isEqual(Parse.User.current().get('primaryEmail'),
-                       this.primaryEmail)) {
-          Parse.User.current().set('verifiedEmail',false);
-        }
         Parse.User.current().set('firstName', this.firstName);
         Parse.User.current().set('lastName', this.lastName);
         Parse.User.current().set('primaryEmail',this.primaryEmail);
@@ -48,7 +43,7 @@ angular.module('fv').
         //ones not set, are unset
         Parse.User.current().save(Parse.User.current().attributes)
           .then(
-            function() {
+            function(user) {
               defer.resolve();
             }, function(error) {
               defer.reject(error);

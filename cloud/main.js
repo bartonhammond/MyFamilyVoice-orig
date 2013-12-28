@@ -615,16 +615,52 @@ Parse.Cloud.define('search', function(request, response) {
     });
 });
 /**
+ * Need to control the verifiedEmail
+ * If an email confirmation came in, the flag would be set to true
+ * But the user in the browser stil has the false flag
+ * So if the database and request have same primaryEmail, and the flag
+ * is verified, reset to verified.
+ */
+Parse.Cloud.beforeSave(Parse.User, function(request, response) {
+
+  findUser({userId: request.object.id})
+  .then(
+    function(user) {
+
+      if (_.isEqual(user.get('primaryEmail'), request.object.get('primaryEmail'))) {
+        //Email confirmation 
+        if (!request.object.get('verifiedEmail')) {
+          //Some other update is overwriting like the Account process
+          //This happens when the email confirmation happens and the
+          //user is logged in and therefore out of sync
+          if (user.get('verifiedEmail')) {
+            request.object.set('verifiedEmail',true);
+          }
+        }
+        //If different, set verifiedEmail to false
+      } else {
+        request.object.set('verifiedEmail',false);
+      }
+    },
+    function(error) {
+      console.log('beforeSave user not found error:');
+      console.log(error);
+    })
+    .always(
+      function() {
+        response.success();
+      });
+});
+/**
  * If user is saved with VerifiedEmail false, 
  * send Email Confirmation
 */
 Parse.Cloud.afterSave(Parse.User, function(request) {
   query = new Parse.Query("Parse.User");
-
-  if (!request.user.get('verifiedEmail')) {
-    var user = {objectId : request.user.id,
-                primaryEmail: request.user.get('primaryEmail'),
-                firstName: request.user.get('firstName')};
+  if (!request.object.get('verifiedEmail')) {
+    var user = {objectId : request.object.id,
+                primaryEmail: request.object.get('primaryEmail'),
+                firstName: request.object.get('firstName')};
     Parse.Cloud.run('sendConfirmEmail', user, {
       success: function(data) {
         console.log('afterSave Parse.User data: success');
@@ -637,5 +673,6 @@ Parse.Cloud.afterSave(Parse.User, function(request) {
   } else {
     console.log('afterSave Parse.User verifiedEmail is true');
   }
+
 });
  
