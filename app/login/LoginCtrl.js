@@ -5,7 +5,7 @@ angular.module('fv')
      *  loginRadius
      */
     var  loginRadius = function() {
-
+      
       var options={};      
       options.login=true;       
       LoginRadius_SocialLogin.util.ready(function () { 
@@ -18,59 +18,58 @@ angular.module('fv')
       }); 
       
       LoginRadiusSDK.onlogin = Successfullylogin;
-      
-      function Successfullylogin() {
-        LoginRadiusSDK.getUserprofile(function (data) {
-          console.log(JSON.stringify(data));
+    }
 
-          Parse.Cloud.run('loginWithSocialLogin',data).then(
+    function Successfullylogin() {
+      LoginRadiusSDK.getUserprofile(function (data) {
+        console.log(JSON.stringify(data));
+        
+        Parse.Cloud.run('loginWithSocialLogin',data)
+          .then(
             function(registeredUser) {
               console.log('loginCtrl user was registered');
-              User.logIn(registeredUser.get('password'),
-                         registeredUser.get('password'))
+              return User.logIn(registeredUser.get('password'),
+                                registeredUser.get('password'));
+            })
+          .then(
+            function(data) {
+              console.log(data);
+              $location.path('/activities');
+            },
+            function(error) {
+              //Use was not registered
+              Parse.Cloud.run('registerSocialLogin', data)
                 .then(
                   function(data) {
+                    console.log('SuccessfullyLogin register success');
                     console.log(data);
-                    $location.path('/activities');
-                  }, function(response) {
+                    //Register and subsequently login
+                    return Parse.User.signUp(
+                      data.get('password'),
+                      data.get('password'),
+                      {
+                        firstName: data.get('firstName'),
+                        lastName: data.get('lastName'),
+                        primaryEmail: data.get('primaryEmail'),
+                        isSocial: true,
+                        verifiedEmail: false
+                      });
+                  })
+                .then(
+                  function(){
+                    if ($scope.$$phase || $scope.$root.$$phase) {
+                      $scope.$eval($location.path('/account'));
+                    } else {
+                      $scope.$apply($location.path('/account'));
+                    }
+                  },
+                  function(response) {
                     $('#error').text(response.data.error);
                   });
-            }, function(error) {
-              //Use was not registered
-              Parse.Cloud.run('registerSocialLogin', data).then(
-                function(data) {
-                  console.log('SuccessfullyLogin success');
-                  console.log(data);
-                  //Register and subsequently login
-                  Parse.User.signUp(
-                    data.get('password'),
-                    data.get('password'),
-                    {
-                      firstName: data.get('firstName'),
-                      lastName: data.get('lastName'),
-                      primaryEmail: data.get('primaryEmail'),
-                      isSocial: true,
-                      verifiedEmail: false}
-                  ).then(
-                    function(){
-                      if ($scope.$$phase || $scope.$root.$$phase) {
-                        $scope.$eval($location.path('/account'));
-                      } else {
-                        $scope.$apply($location.path('/account'));
-                      }
-                      }, function(response) {
-                        $('#error').text(response.data.error);
-                      });
-                  
-                }, function(response) {
-                  console.log('SuccessfullyLogin: error: ');
-                  console.log(response);
-                  $('#error').text(response.data.error);
-                });
-             });
-        });
-      };  
+            });
+      });
     }
+    
     /**
      * Init loginRadius
      */
@@ -92,5 +91,5 @@ angular.module('fv')
         $scope.signupForm.submitted = true;
       };
     };
-});
+  });
 /* jshint ignore:end */

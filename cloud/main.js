@@ -485,7 +485,9 @@ var createConfirmEmail = function(user, response) {
   Parse.Cloud.useMasterKey();
   return confirmEmail.save({
     userId: user.objectId,
-    link: link
+    primaryEmail: user.primaryEmail,
+    link: link,
+    processed: false
   });
 
 };
@@ -661,18 +663,36 @@ Parse.Cloud.afterSave(Parse.User, function(request) {
     var user = {objectId : request.object.id,
                 primaryEmail: request.object.get('primaryEmail'),
                 firstName: request.object.get('firstName')};
-    Parse.Cloud.run('sendConfirmEmail', user, {
-      success: function(data) {
-        console.log('afterSave Parse.User data: success');
-      },
-      error: function(error) {
-        console.log('afterSave Parse.User error:');
+   
+    //Only Send Email if no outstanding request
+    var query = new Parse.Query(ConfirmEmail);   
+    query.equalTo("userId", user.objectId);
+    query.equalTo("primaryEmail", user.primaryEmail);
+    query.equalTo("processed", false);
+    query.find()
+      .then(function(results) {
+        console.log('afterSave - found results of outstanding ConfirmEmail');
+        console.log(results);
+        if (results.length === 0) {
+          Parse.Cloud.run('sendConfirmEmail', user, {
+            success: function(data) {
+              console.log('afterSave Parse.User data: success');
+            },
+            error: function(error) {
+              console.log('afterSave Parse.User error:');
+              console.log(error);
+            }
+          });
+        } else {
+          console.log('Existing email confirmation pending');
+        }
+      }, function(error) {
+        console.log('afterSave - error finding ConfirmEmail');
         console.log(error);
-      }
-    });
+      });
   } else {
     console.log('afterSave Parse.User verifiedEmail is true');
   }
-
+  
 });
  
