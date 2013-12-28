@@ -80,6 +80,60 @@ MyFamilyVoice records the voice of your family for future generations
 * Subscribe
      notified of new audio 
 
+# Things to do
+* Search
+*   Multiple options
+*   Pagination
+*   Splitting words out for better indexing 
+*
+# Adsense
+*   Setup account and place on search results page
+*
+# Invitation email
+*   Ability to ask questions before invite is accepted
+*   Have link established from email
+*   When registered, questions are waiting
+*
+# Notifications / Stats
+*   How big is family/suscribers
+*   How many questions un/answered
+*   How many listens
+*   Family requests pending
+*
+# Account 
+*   Upload picture
+*   Support flagging as inappropriate
+*   Show all subscriptions to/from
+*   Show stats: questions asked/answered/viewed
+*   Unsubscribe
+*
+# Questions
+*   countdown timer
+*   private recipient
+*   Support flagging as inappropriate
+*
+# Background jobs
+*   Clear out SID, ConfirmEmail, etc
+*
+# Security
+*   Lock down 
+*
+# Production
+*   Logging (paperTrail)
+*   Minification
+*
+# Admin
+*   Create test data
+*   Cancel membership
+*   Edit accounts
+*
+# Site cleanup
+*   FAQ
+*   Pictures / testimony
+*   More instructions
+*   Video instructions
+ 
+
 ## SSL process
 openssl req -out CSR.csr -new -newkey rsa:2048 -nodes -keyout privateKey.key
 Generating a 2048 bit RSA private key
