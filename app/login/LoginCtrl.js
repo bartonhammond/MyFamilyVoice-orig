@@ -64,7 +64,7 @@ angular.module('fv')
                     }
                   },
                   function(response) {
-                    $('#error').text(response.data.error);
+                    $('#error').text(response.message);
                   });
             });
       });
@@ -85,7 +85,7 @@ angular.module('fv')
             function() {
               $location.path('/activities');
             }, function(response) {
-              $scope.error = response.data.error;
+              $scope.error = response.message;
             });
       } else {
         $scope.signupForm.submitted = true;

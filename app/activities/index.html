@@ -1,18 +1,46 @@
 <div ng-init="init()" class="clearfix" style="margin-bottom: 20px">
-  <div class="pull-right">
-    <button class="btn" ng-click="newQuestion()">New Question</button>
+  <div>
+    <table class="table">
+      <tr>
+        <td class="col-md-1">
+   <img ng-src="{{user.get('thumbnail')._url}}"></img>
+   </td>
+        <td class="col-md-11">
+          <strong>Name:</strong> {{user.get('firstName')}} {{user.get('lastName')}}
+          <br>
+          <strong>Joined:</strong> {{user.createdAt | date:simple}}
+          <br>
+          <strong>Recordings:</strong> {{user.get('recordings')}}
+          <br>
+          <strong>Has listened to:</strong> {{user.get('viewed')}}
+          <br>
+          <strong>Has been heard:</strong> {{user.get('audioViews')}}
+        </td>
+      </tr>
+    </table>
   </div>
+  <span ng-if="activity.hasWriteAccess()">
+    <div class="pull-right">
+      <button class="btn" ng-click="newQuestion()">New Question</button>
+    </div>
+  </span>
 </div>
 <div ng-repeat="activity in activities" class="well well-sm">
-    <div class="pull-right">
+    <div ng-if="activity.hasWriteAccess($index)" class="pull-right">
         <button class="btn" ng-click="edit(activity)">Edit</button>
         <button class="btn" ng-click="record(activity)">Record</button>
         <button class="btn" ng-click="delete(activity)">Delete</button>
     </div>
     <div style="margin-bottom:10px">
-      {{activity.date.iso | date: 'yyyy-MM-dd'}}
+      Created: {{activity.createdAt | date: simple}}
     </div>
-    <span ng-show="hasFile($index)"> <a ng-href={{activity.file._url}}
-    target=_blank>Audio</a></span> 
+    <span ng-show="hasFile($index)"> 
+      <a ng-href="{{activity.file._url}}" target=_blank>
+        Audio
+      </a>
+    </span> 
     <div ng-bind-html="activity.comment"></div>
+    <div>
+      Listened: {{activity.views}} times
+    </div>
 </div>

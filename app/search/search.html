@@ -9,13 +9,34 @@
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
       <tr ng-repeat="item in search.items">
-        <td ng-if="item.type === 'user'">
-          {{item.description}} Active {{item.active}} {{item.views}}
+        <td class="col-md-1">
+          <img ng-click="listened($index)" ng-src="{{item.thumbnail._url}}"></img>
         </td>
-        <td ng-if="item.type === 'activity'">
-           <a ng-href={{item.audio._url}}
-              target=_blank>{{item.description}}</a>
-           {{item.active}} {{item.views}} listened
+        <td class="col-md-11">
+          <div ng-if="item.type === 'user'">
+            {{item.description}}
+            <br>
+            Active since: {{item.active}}
+            <br>
+            Has listened to: {{item.viewed}}
+            <br>
+            Has been heard: {{item.audioViews}}            
+          </div>
+          <div ng-if="item.type === 'activity'">
+            <a ng-href="#/activities/edit/{{item.objectId}}">
+               {{item.description}}
+            </a>
+            <br>
+            <a ng-click="listened($index)" ng-href={{item.audio._url}}
+               target=_blank>Audio</a>
+            <br>
+            By: <a ng-href="#/activities/list/{{item.userId}}"
+                   >{{item.userName}}</a>
+            <br>
+            {{item.active}}
+            <br>
+            {{item.views}} listened
+          </div>
         </td>
       </tr>
   </table>

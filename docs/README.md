@@ -101,7 +101,8 @@ MyFamilyVoice records the voice of your family for future generations
 *   Family requests pending
 *
 # Account 
-*   Upload picture
+*   Upload picture (done)
+*   Resize picture to thumbnail for search results
 *   Support flagging as inappropriate
 *   Show all subscriptions to/from
 *   Show stats: questions asked/answered/viewed
@@ -132,7 +133,12 @@ MyFamilyVoice records the voice of your family for future generations
 *   Pictures / testimony
 *   More instructions
 *   Video instructions
- 
+*
+# FAQ
+*   notes for everyone
+*
+# Test verification
+*   How to know everything is working properly 
 
 ## SSL process
 openssl req -out CSR.csr -new -newkey rsa:2048 -nodes -keyout privateKey.key

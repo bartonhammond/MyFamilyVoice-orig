@@ -20,7 +20,7 @@ angular.module('fv')
       return deferred.promise;
     };
     /**
-     * Init 
+     * Init - doing 2 cause an error isn't quite correct
      */
     $scope.init = function() {
       $scope.confirmed = false;

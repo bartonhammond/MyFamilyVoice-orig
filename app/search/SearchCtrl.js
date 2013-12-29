@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('SearchCtrl', function ($scope, $location, Search) {
+  .controller('SearchCtrl', function ($scope, $location, Search, Activity) {
     $scope.init = function() {
       $scope.search = {};
       $scope.search.q = '';
@@ -18,7 +18,10 @@ angular.module('fv')
             console.log(error);
           });
     };
-    
+    $scope.listened = function(index) {
+      Activity.listened($scope.search.items[index].objectId,
+                        $scope.search.items[index].userId);
+    }
     $scope.edit = function(activity) {
       $location.path('/activities/edit/' + activity.objectId);
     };

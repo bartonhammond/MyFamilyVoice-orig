@@ -6,6 +6,7 @@ var _ = require('underscore');
 var lr = require('cloud/loginradius.js');
 var Buffer = require('buffer').Buffer;
 var moment = require('moment');
+var Image = require("parse-image");
 
 //Twilio
 var twilioAccountSID =  'AC5be60567ea132f150762244ccf788ae6';
@@ -451,6 +452,7 @@ Parse.Cloud.define('confirmEmail', function(request, response) {
         console.log(link);
         var id = link.get('userId');
         return Parse.Promise.when([findUser({userId: id})]);
+
       })
     .then(
       function(user) {
@@ -572,6 +574,7 @@ var findActivities = function(request) {
   Parse.Cloud.useMasterKey();
   var query = new Parse.Query(Activity);
   query.exists("file");
+  query.include("user");
   return query.find();
 }
 /*
@@ -592,9 +595,12 @@ Parse.Cloud.define('search', function(request, response) {
         var obj = {
           type: 'user',
           objectId: users[index].id,
+          thumbnail: user.get('thumbnail'),
           description: user.get('firstName') + ' ' + user.get('lastName'),
           active: moment(user.createdAt).fromNow(),
-          views: user.get('recordings')
+          recordings: user.get('recordings'),
+          viewed: user.get('viewed'),
+          audioViews: user.get('audioViews')
         };
         results.push(obj);
       });
@@ -602,6 +608,11 @@ Parse.Cloud.define('search', function(request, response) {
         var obj = {
           type: 'activity',
           objectId: activities[index].id,
+          userId: activities[index].get('user').id,
+          userName: activities[index].get('user').get('firstName')
+            + ' ' 
+            + activities[index].get('user').get('lastName'),
+          thumbnail: activities[index].get('user').get('thumbnail'),
           description: activity.get('comment'),
           active: moment(activity.get('recordedDate')).fromNow(),
           views: activity.get('views'),
@@ -616,6 +627,77 @@ Parse.Cloud.define('search', function(request, response) {
       response.error(error);
     });
 });
+
+/**
+ * Scale thumbnail image
+ */
+var scaleImage = function(request, response) {
+  var user = request.object;
+  
+  if (!user.get("photo")) {
+    return response.success();
+  }
+  
+  if (!user.dirty("photo")) {
+    return response.success();
+  }
+  
+  Parse.Cloud.httpRequest({
+    url: user.get("photo").url()
+  })
+    .then(
+    function(response) {
+      var image = new Image();
+      return image.setData(response.buffer);
+      
+    })
+    .then(function(image) {
+      // Crop the image to the smaller of width or height.
+      var size = Math.min(image.width(), image.height());
+      return image.crop({
+        left: (image.width() - size) / 2,
+        top: (image.height() - size) / 2,
+        width: size,
+        height: size
+      });
+    })
+    .then(
+      function(image) {
+        // Resize the image to 104x104
+        return image.scale({
+          width: 104,
+          height: 104
+        });
+      })
+    .then(
+      function(image) {
+        // Make sure it's a JPEG to save disk space and bandwidth.
+        return image.setFormat("JPEG");
+      })
+    .then(
+      function(image) {
+        // Get the image data in a Buffer.
+        return image.data();
+      })
+    .then(
+      function(buffer) {
+        // Save the image into a new file.
+        var base64 = buffer.toString("base64");
+        var cropped = new Parse.File("thumbnail.jpg", { base64: base64 });
+        return cropped.save();
+      })
+    .then(
+      function(cropped) {
+        // Attach the image file to the original object.
+        user.set("thumbnail", cropped);
+      })
+    .then(
+      function(result) {
+        response.success();
+      }, function(error) {
+        response.error(error);
+      });  
+}
 /**
  * Need to control the verifiedEmail
  * If an email confirmation came in, the flag would be set to true
@@ -650,7 +732,7 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     })
     .always(
       function() {
-        response.success();
+        return scaleImage(request,response);
       });
 });
 /**
@@ -693,6 +775,47 @@ Parse.Cloud.afterSave(Parse.User, function(request) {
   } else {
     console.log('afterSave Parse.User verifiedEmail is true');
   }
-  
 });
- 
+var updateActivityViewsCount = function(activity) {
+  activity.increment('views');
+  return activity.save();
+}
+var updateActivitiesUserAudioViewCount = function(user) {
+  user.increment('audioViews');
+  return user.save();
+}
+var updateUserViewedCount = function(user) {
+  user.increment('viewed');
+  return user.save();
+}
+
+/*
+ * Search
+ */
+Parse.Cloud.define('activityListened', function(request, response) {
+  console.log('activityListened');
+  console.log(request);
+  console.log(request.params);
+  console.log(request.params.activityId);
+  console.log(request.params.userId);
+  Parse.Promise.when([findActivity(request.params.activityId),
+                      findUser({userId: request.params.activityUserId}),
+                      findUser({userId: request.params.userId})])
+    .then(
+      function(activity, activityUser, user) {  
+        return Parse.Promise.when([updateActivityViewsCount(activity),
+                                   updateActivitiesUserAudioViewCount(activityUser),
+                                   updateUserViewedCount(user)]);
+      })
+    .then(
+      function(activity, activitiesUser, user) {
+        console.log('activityListened updated');
+        console.log(activity);
+        console.log(activitiesUser);
+        console.log(user);
+      })
+    .always(
+      function() {
+        response.success();
+      });
+});

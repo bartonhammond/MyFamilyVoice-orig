@@ -15,9 +15,10 @@
           <div class="control-group">
             <div class="controls">
               <div class="input-prepend">
-                <span class='fv-label'>Please enter your question below</span>
+                <span class='fv-label'>Below is your question</span>
                 <br>
           	<textarea
+                   disabled="activity.hasWriteAccess()"
                    ng-model="activity.comment"
                    class="input-xlarge" 
                    id="comment" 
@@ -38,29 +39,32 @@
                         roleForm.submitted">
             A question should be between 10 and 250 characters.
           </div>
-          <div class="control-group">
-            <div class="controls">
-              <div class="input-prepend">
-                <span class='fv-label'>Record your thoughts</span>
-                <br>
-                <input type="button"  
-                       class='btn btn-primary'  
-                       id="call"
-                       value="Begin Recording"
-                       ng-disabled="recording"
-                       ng-click="beginRecording()"/>
-                <br>
-                <input type="button" 
-                       class='btn btn-primary' 
-                       id="hangup"
-                       value="Stop Recording"
-                       ng-disabled="!recording"
-                       ng-click="stopRecording()"/>
-                <br>
+          <!--  Recording buttons ------------------------------->
+          <span ng-show="activity.hasWriteAccess()">
+            <div  class="control-group">
+              <div class="controls">
+                <div class="input-prepend">
+                  <span class='fv-label'>Record your thoughts</span>
+                  <br>
+                  <input type="button"  
+                         class='btn btn-primary'  
+                         id="call"
+                         value="Begin Recording"
+                         ng-disabled="recording"
+                         ng-click="beginRecording()"/>
+                  <br>
+                  <input type="button" 
+                         class='btn btn-primary' 
+                         id="hangup"
+                         value="Stop Recording"
+                         ng-disabled="!recording"
+                         ng-click="stopRecording()"/>
+                  <br>
+                </div>
               </div>
             </div>
-          </div>
-          <div id="status">Offline</div>
+            <div id="status">Offline</div>
+          </span>
           <hr>
            <!-- File ------------------------------------------>
            <span  ng-show="hasFile()">
@@ -78,15 +82,33 @@
            </span>
 
           <!-- Submit ------------------------------------------>
-          <div class="control-group">
-            <div class="controls">
-              <button type="submit" 
-                      ng-click="submit()"
-                      class="btn-main"><i class="fa
-              fa-sign-in"></i>Submit</button>
+          <span ng-show="activity.hasWriteAccess()">
+            <div class="control-group">
+              <div class="controls">
+                <button type="submit" 
+                        ng-click="submit()"
+                        class="btn-main">
+                  <i class="fa fa-sign-in"></i>
+                  Submit
+                </button>
+              </div>
+              <br>
             </div>
-            <br>
-          </div>
+          </span>
+          <span ng-show="!activity.hasWriteAccess()">
+            <div class="control-group">
+              <div class="controls">
+                <button type="submit" 
+                        ng-click="back()"
+                        class="btn-main">
+                  <i class="fa fa-arrow-circle-o-left"></i>
+                  Return
+                </button>
+              </div>
+              <br>
+            </div>
+          </span>
+          
 
         </form>
    

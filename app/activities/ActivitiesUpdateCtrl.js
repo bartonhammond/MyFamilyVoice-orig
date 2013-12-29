@@ -19,6 +19,13 @@ angular.module('fv')
       //this is a new entry, use today's date and create a new
       //activity object
       $scope.activity = new Activity();
+      var acl = new ACL();
+      acl.setPublicReadAccess(true);
+      acl.setWriteAccess(Parse.User.current().id,true);
+      $scope.activity.setACL(acl);
+    }
+    $scope.hasWriteAccess = function() {
+      return activity.getACL().getWriteAccess(Parse.User.current().id);
     }
     $scope.hasFile = function() {
       if (_.isUndefined($scope.activity)) {
@@ -56,6 +63,9 @@ angular.module('fv')
           });
       
     }
+    $scope.back = function() {
+      window.history.back();
+    };
     Twilio.Device.incoming(function(conn) {
       self.connection = conn;
     });

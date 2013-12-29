@@ -1,6 +1,6 @@
 'use strict';
 angular.module('fv').
-  factory('Activity', function($q) {
+  factory('Activity', function($q, User) {
     
     var Activity = Parse.Object.extend('Activity', {
       // Instance methods
@@ -62,19 +62,38 @@ angular.module('fv').
         return defer.promise;
 
       },
-      list : function() {
+      listened: function(id, userId) {
         var defer = $q.defer();
-        
-        var query = new Parse.Query(this);
-        query.find({
-          success : function(activities) {
-            defer.resolve(activities);
+        Parse.Cloud.run('activityListened',
+                        {activityId: id,
+                         activityUserId: userId,
+                         userId: Parse.User.current().id})
+        .then(
+          function() {
+            defer.resolve();
           },
-          error : function(aError) {
-            defer.reject(aError);
-          }
-        });
- 
+          function(error) {
+            defer.reject(error);
+          });
+        return defer.promise;
+      },
+      /**
+       * Constrain list to only activities owned by id
+       */
+      list : function(user) {
+        var defer = $q.defer();
+        var self = this;
+        var query = new Parse.Query(self);
+        query.equalTo('user',user);
+        query.find()
+          .then(
+            function(activities) {
+              defer.resolve(activities);
+            },
+            function(aError) {
+              defer.reject(aError);
+            });
+        
         return defer.promise;
       }
       

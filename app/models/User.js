@@ -52,6 +52,24 @@ angular.module('fv').
         return defer.promise;
       },
       /**
+       * Get user by id
+       */
+      get: function(id) {
+        var defer = $q.defer();
+        var userQuery = new Parse.Query(Parse.User);
+        userQuery
+          .get(id, {
+            success: function(user) {
+              defer.resolve(user);
+            },
+            failure: function(error) {
+              defer.reject(error);
+            }
+          });
+
+        return defer.promise;
+      },
+      /**
        * If image selected, first save file
        * then associate it with the user
        */
