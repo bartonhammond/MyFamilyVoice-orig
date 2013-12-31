@@ -16,7 +16,9 @@ angular.module('fv')
       //The directive resets the model so keep this safe
       $scope.photoFile = element.files[0];
     }
- 
+    $scope.getThumbnail = function() {
+      return Parse.User.current().get('thumbnail')._url;
+    }
     $scope.save = function() {
       if ($scope.signupForm.$valid) {
         requestNotificationChannel.requestStarted();

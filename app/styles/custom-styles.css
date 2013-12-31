@@ -58,3 +58,12 @@
     display: inline;
     vertical-align: super;
 }
+.account-label {
+    margin-right: 30px;
+}
+.account-thumbnail {
+    display: inline-block;
+    margin-right: 78px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}

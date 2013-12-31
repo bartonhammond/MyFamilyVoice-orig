@@ -117,6 +117,21 @@
                          && signupForm.submitted">
             Please choose another image.
           </span>
+          <!---- Current Imaage -------------------------------------------------->          
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+                <span class='fv-label account-label' style="display:none">Current</span>
+          	<span class="add-on" style="display:none">
+                  <i class="fa fa-picture-o">
+                  </i>
+                </span>
+                <div class='account-thumbnail'>
+                  <img ng-src="{{getThumbnail()}}"></img>
+                </div>
+              </div>
+            </div>
+          </div>
           <!---- Submit -------------------------------------------------->          
           <div class="control-group">
             <div class="controls">

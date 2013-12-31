@@ -13,6 +13,7 @@ angular.module('fv').
         this.firstName = user.get('firstName');
         this.lastName = user.get('lastName');
         this.isSocial = user.get('isSocial');
+        this.thumbNail = user.get('thumbnail');
       },
       logIn: function(userid, password) {
         var defer = $q.defer();
