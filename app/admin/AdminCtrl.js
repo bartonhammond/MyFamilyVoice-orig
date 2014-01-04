@@ -5,11 +5,14 @@ angular.module('fv')
     /**
      */
     $scope.init = function() {
-      $scope.currentUser = Parse.User.current().get('primaryEmail');
-      Role.list()
+      (new Role()).list()
         .then(
           function(roles) {
-            $scope.roles = roles;
+            $scope.roles = [];
+            _.each(roles, function(role) {
+              var aRole = new Role(role);
+              $scope.roles.push(aRole);
+            });
           }, function(error) {
             console.log(error);
           });
@@ -20,31 +23,53 @@ angular.module('fv')
     }
     $scope.addCurrentUser = function() {
       console.log('addingCurrentUser');
-      $scope.role.getUsers().add(Parse.User.current());
-    }
-   
-    $scope.createUpdateRole = function() {
-      var roleACL = new Parse.ACL();
-      roleACL.setWriteAccess(Parse.User.current(), true);
-      roleACL.setPublicReadAccess(true);
-      var role = new Parse.Role($scope.role.name, roleACL);
-      if ($scope.roleForm.$valid) {
-        role.save()
-          .then(function (savedRole) {
-            console.log(savedRole);
-            savedRole.getUsers().add(Parse.User.current());
-            return savedRole.save();
-          })
-          .then(function(final) {
-            console.log(final.getUsers().toJSON());
-          }, function(error) {
-            console.log('role save failed');
+      var relation = $scope.role._role.getUsers();
+      relation.add(Parse.User.current());
+      $scope.role._role.save()
+        .then(
+          function(role) {
+            console.log(role);
+            $scope.init();
+            }
+          ,function(error) {
             console.log(error);
           });
+      
+    }
+    var findSocialUsers = function() {
+      var query = new Parse.Query(Parse.User);
+      query.equalTo('isSocial',true);
+      return query.find();
+    }
+    $scope.createUpdateRole = function() {
+      if ($scope.roleForm.$valid) {
+        var roleACL = new Parse.ACL();
+        roleACL.setWriteAccess(Parse.User.current(), true);
+        roleACL.setPublicReadAccess(true);
+        var role = new Parse.Role($scope.role.name, roleACL);
+        roleACL.setRoleWriteAccess(role,true);
+        Parse.Promise.when([role.save(), findSocialUsers()])
+          .then(
+            function (savedRole, socialUsers) {
+              savedRole.getUsers().add(socialUsers[0]);
+              return savedRole.save();
+            })
+          .then(
+            function(role) {
+              return role.getUsers().query().find();
+            })
+          .then(
+            function(foundUsers) {
+              console.log(foundUsers);
+            },
+            function(error) {
+              console.log('role save failed');
+              console.log(error);
+            });
       } else {
         $scope.roleForm.submitted = true;
       }
-
+      
     }
 
   });

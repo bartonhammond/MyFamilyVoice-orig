@@ -20,7 +20,37 @@
             <br>
             Has listened to: {{item.viewed}}
             <br>
-            Has been heard: {{item.audioViews}}            
+            Has been heard: {{item.audioViews}}
+            <br>
+            <div class="btn-group btn-group-sm">
+              <button ng-click="joinFamily($index)"
+                      type="button" 
+                      class="btn btn-default">
+                Join Family
+              </button>
+            </div>
+            <div ng-show="item.familyRequestSent" 
+                 class="alert alert-success alert-dismissable">
+              <button type="button" 
+                      class="close" 
+                      data-dismiss="alert" 
+                      aria-hidden="true">
+                &times;
+              </button>
+              Your family request has been sent.  Once approved you
+              will be able to submit questions.
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Subscribe
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Daily</a></li>
+                <li><a href="#">Weekly</a></li>
+                <li><a href="#">Monthly</a></li>
+              </ul>
+            </div>
           </div>
           <div ng-if="item.type === 'activity'">
             <a ng-href="#/activities/edit/{{item.objectId}}">

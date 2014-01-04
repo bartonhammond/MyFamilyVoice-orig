@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/custom-styles.css">
 
-    <script src="//www.parsecdn.com/js/parse-1.2.15.min.js"></script>
+    <script src="js/parse-1.2.15.js"></script>
     <script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     <script src="js/LoginRadiusSDK.1.0.0.js"></script>
     <script src="//hub.loginradius.com/include/js/LoginRadius.js"
@@ -21,8 +21,8 @@
     ></script>
     <link rel="shortcut icon" href="/favicon.png">
   </head>
-  <body ng-app="fv">
-    <div class="container" ng-controller="NavbarCtrl">
+  <body ng-app="fv" ng-cloak>
+    <div class="container" ng-controller="NavbarCtrl" ng-init="init()">
       <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
           <div class="navbar-header">
@@ -63,8 +63,10 @@
               <li><a href="blog.html">Blog</a></li>
               <li><a href="contact.php">Contact</a></li>
               <li><a href="#/account" ng-show='Parse.User.current().authenticated'>Account</a></li>
-              <li><a ng-click="logout()" ng-show='Parse.User.current().authenticated'>Log Out</a></li>
-              <li><a href="#/login" ng-show='!Parse.User.current().authenticated'>Login</a></li>
+              <li><a ng-click="logout()" ng-show='authenticated'>Log Out</a></li>
+              <li><a href="#/login"
+              ng-hide='authenticated'>Login</a></li>
+              <li><a href="#/familyrequests">Family Requests <span class="badge">{{newFamilyRequests}}</span></a></li>
             </ul>
           </div><!--/.navbar-collapse -->
         </div>
@@ -107,6 +109,8 @@
     <script src="models/Role.js"></script>
     <script src="models/Activity.js"></script>
     <script src="models/Search.js"></script>
+    <script src="models/Relation.js"></script>
+    <script src="models/Family.js"></script>
 
     <!-- original 
     <script src="js/parse-resource.js"></script>

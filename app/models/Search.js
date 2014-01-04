@@ -4,11 +4,9 @@ angular.module('fv').
     
     var Search = {
       search: function(search) {
-        //Trigger email verification if primaryEmail has changed
         
         var defer = $q.defer();
-        //Have to pass in attributes or the
-        //ones not set, are unset
+
         Parse.Cloud.run('search', search.q)
           .then(
             function(response) {

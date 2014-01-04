@@ -24,7 +24,7 @@ var Activity = Parse.Object.extend('Activity');
 var CallSid = Parse.Object.extend('CallSid');
 var RegisterUser = Parse.Object.extend('RegisterUser');
 var ConfirmEmail = Parse.Object.extend('ConfirmEmail');
-
+var Family = Parse.Object.extend('Family');
 /**
  * configure Express
  */
@@ -583,6 +583,7 @@ var findActivities = function(request) {
 Parse.Cloud.define('search', function(request, response) {
   console.log('search request');
   console.log(request);
+  console.log('user: ' + request.user.id);
   Parse.Promise.when([findUsers(request), findActivities(request)]).then(
     function(users, activities) {
       console.log('search found users');
@@ -819,3 +820,67 @@ Parse.Cloud.define('activityListened', function(request, response) {
         response.success();
       });
 });
+/**
+ * Create family record
+ */
+var createFamily = function(loggedOnUser, familyUser) {
+  console.log('createFamily:');
+  console.log('loggedOnUserId:' + loggedOnUser.id);
+  console.log('familyUserId:' + familyUser.id);
+
+  var link = guid() + guid();
+  link = link.replace(/-/g,"");
+  var family = new Family()
+
+  return family.save({
+    family: familyUser,
+    kin: loggedOnUser,
+    link: link,
+    approved: false});
+};
+/**
+ * Join Family - the logged in user is joining the params.userId family
+ */
+Parse.Cloud.define('addToFamily', function(request, response) {
+  console.log('joinFamily');
+
+  console.log('user joining: ' + request.user.id);
+  console.log(request.params);
+  console.log('family userId: ' + request.params.userId);
+  Parse.Promise.when([findUser({userId: request.user.id}),
+                      findUser({userId: request.params.userId})])
+    .then(
+      function(loggedOnUser, familyUser) {
+        return createFamily(loggedOnUser, familyUser);
+      })
+    .then(
+      function() {
+        response.success();
+      },
+      function(error) {
+        response.error(error);
+      });
+});
+/**
+* Return count of outstanding requests
+*/
+Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
+  findUser({userId: request.user.id})
+    .then(
+      function(user) {
+        var query = new Parse.Query(Family);
+        query.equalTo('family', user);
+        query.equalTo('approved', false);
+        return query.count();
+      })
+    .then(
+      function(count) {
+        console.log('unapprovedFamilyRequestCount: ' + count);
+        console.log(count);
+        response.success(count);
+      },
+      function(error) {
+        console.log('unapprovedFamilyRequestCount error: ' + error.message);
+        response.error(error);
+      });
+})

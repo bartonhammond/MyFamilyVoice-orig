@@ -4,15 +4,15 @@ angular.module('fv')
   .controller('ActivitiesIndexCtrl', function ($scope, $routeParams, $location, Activity, User) {
     $scope.user = "";
     $scope.init = function() {
-      var id;
+
       //id is set when viewing Activities for a specific user
       if ($routeParams.id) {
-        id = $routeParams.id;
+        $scope.userId = $routeParams.id;
       } else {
-        id = Parse.User.current().id;
+        $scope.userId = Parse.User.current().id;
       }
 
-      User.get(id)
+      User.get($scope.userId)
         .then(
           function(user) {
             $scope.user = user;
@@ -25,6 +25,9 @@ angular.module('fv')
           function(error) {
             window.history.back();
           });
+    }
+    $scope.doesUserHaveWriteAccess = function() {
+      return Parse.User.current().id === $scope.userId;
     }
     $scope.hasWriteAccess = function(index) {
       var activity = $scope.activities[index];

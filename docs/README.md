@@ -102,7 +102,7 @@ MyFamilyVoice records the voice of your family for future generations
 *
 # Account 
 *   Upload picture (done)
-*   Resize picture to thumbnail for search results
+*   Resize picture to thumbnail for search results (done)
 *   Support flagging as inappropriate
 *   Show all subscriptions to/from
 *   Show stats: questions asked/answered/viewed

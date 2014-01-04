@@ -19,7 +19,7 @@
       </tr>
     </table>
   </div>
-  <span ng-if="activity.hasWriteAccess()">
+  <span ng-if="doesUserHaveWriteAccess()">
     <div class="pull-right">
       <button class="btn" ng-click="newQuestion()">New Question</button>
     </div>

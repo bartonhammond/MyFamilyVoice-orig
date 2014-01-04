@@ -1,13 +1,16 @@
 'use strict';
 
 angular.module('fv')
-  .controller('SearchCtrl', function ($scope, $location, Search, Activity) {
+  .controller('SearchCtrl', function ($scope, $location, Search, Activity, Family) {
     $scope.init = function() {
       $scope.search = {};
       $scope.search.q = '';
       $scope.performSearch();
+      $scope.familyRequestSent = false;
     };
-
+    /**
+     * Search 
+     */
     $scope.performSearch = function() {
       Search.search($scope.search)
         .then(
@@ -18,6 +21,18 @@ angular.module('fv')
             console.log(error);
           });
     };
+    /**
+     * On search, only Users have Join Family
+     */
+    $scope.joinFamily = function(index) {
+      Family.join($scope.search.items[index].objectId)
+        .then(
+          function() {
+            $scope.search.items[index].familyRequestSent = true;
+          },
+          function(error) {
+          });
+    }
     $scope.listened = function(index) {
       Activity.listened($scope.search.items[index].objectId,
                         $scope.search.items[index].userId);

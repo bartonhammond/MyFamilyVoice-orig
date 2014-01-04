@@ -50,66 +50,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         redirectTo: '/'
       });
     
-/**
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-
-      .when('/login', {
-        templateUrl: 'views/login.html',
-        controller: 'LoginCtrl'
-      })
-
-      .when('/search', {
-        templateUrl: 'views/search.html',
-        controller: 'SearchCtrl',
-        auth: true
-      })
-      .when('/account', {
-        templateUrl: 'views/account.html',
-        controller: 'AccountCtrl',
-        auth: true
-      })
-      .when('/confirmEmail/:link', {
-        templateUrl: 'views/confirmEmail.html',
-        controller: 'ConfirmEmailCtrl'
-      })
-      .when('/register', {
-        templateUrl: 'views/register.html',
-        controller: 'RegisterCtrl'
-      })
-       .when('/activities/add', {
-        templateUrl: 'views/activities/update.html',
-        controller: 'ActivitiesUpdateCtrl',
-        auth: true
-      })
-      .when('/activities/edit/:id', {
-        templateUrl: 'views/activities/update.html',
-        controller: 'ActivitiesUpdateCtrl',
-        auth: true
-      })
-      .when('/activities/record/:id', {
-        templateUrl: 'views/activities/record.html',
-        controller: 'ActivitiesRecorderCtrl',
-        auth: true
-      })
-      .when('/activities', {
-        templateUrl: 'views/activities/index.html',
-        controller: 'ActivitiesIndexCtrl',
-        auth: true
-      })
-      .when('/admin', {
-        templateUrl: 'views/admin/index.html',
-        controller: 'AdminCtrl',
-        admin: true
-      })
-
-      .otherwise({
-        redirectTo: '/'
-      });
-*/
-  }).run(function($rootScope, $location) {
+  }).run(function($rootScope, $location, Family) {
     // enumerate routes that don't need authentication
     var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail', '/admin'];
     
@@ -130,5 +71,14 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         // redirect back to login
         $location.path('/login');
       }
+      if (Parse.User.current()) {
+        Family.checkRequests(Parse.User.current().id)
+          .then(
+            function(count) {
+              $rootScope.$broadcast('newfamilyrequests',count);
+            });
+      };
+      
     });
-  });
+})
+    

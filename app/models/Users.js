@@ -1,15 +1,14 @@
 'use strict';
 angular.module('fv').
-  factory('Role', function($q, Relation) {
+  factory('Role', function($q) {
     
     var Role = function(role) {
       if (!_.isUndefined(role)) {
-        this._role = role;
         this.name = role.get('name');
-        this.roles = new Relation(role.get('roles'));
-        this.users = new Relation(role.get('users'));
+        this.roles = role.get('roles');
+        this.users = role.get('users');
       }
-
+      
       this.list = function() {
         var defer = $q.defer();
         

@@ -33,6 +33,7 @@ angular.module('fv')
             })
           .then(
             function(data) {
+              $rootScope.$broadcast('userloggedin');
               console.log(data);
               $location.path('/activities');
             },
@@ -57,6 +58,7 @@ angular.module('fv')
                   })
                 .then(
                   function(){
+                    $rootScope.$broadcast('userloggedin');
                     if ($scope.$$phase || $scope.$root.$$phase) {
                       $scope.$eval($location.path('/account'));
                     } else {
@@ -83,6 +85,7 @@ angular.module('fv')
                    $scope.loginUser.password)
           .then(
             function() {
+              $rootScope.$broadcast('userloggedin');
               $location.path('/activities');
             }, function(response) {
               $scope.error = response.message;
