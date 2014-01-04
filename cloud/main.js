@@ -830,13 +830,35 @@ var createFamily = function(loggedOnUser, familyUser) {
 
   var link = guid() + guid();
   link = link.replace(/-/g,"");
-  var family = new Family()
 
-  return family.save({
-    family: familyUser,
-    kin: loggedOnUser,
-    link: link,
-    approved: false});
+  var promise = new Parse.Promise();
+
+  var query = new Parse.Query(Family);
+  query.equalTo('family',familyUser);
+  query.equalTo('kin', loggedOnUser);
+  query.find()
+    .then(function(results) {
+      if (results.length === 0) {
+        var family = new Family();
+        family.save({
+          family: familyUser,
+          kin: loggedOnUser,
+          link: link,
+          approved: false})
+        .then(
+          function(savedFamily) {
+            promise.resolve('ok');
+          });
+      } else {
+        console.log('createFamily: results');
+        console.log(results);
+        promise.resolve('ok');
+      }
+    },function(error) {
+      promise.reject(error);
+    });
+
+  return promise;
 };
 /**
  * Join Family - the logged in user is joining the params.userId family
