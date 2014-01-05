@@ -18,7 +18,7 @@
                 <span class='fv-label'>Below is your question</span>
                 <br>
           	<textarea
-                   disabled="activity.hasWriteAccess()"
+                   ng-disabled="!activity.hasWriteAccess() || isRecording()"
                    ng-model="activity.comment"
                    class="input-xlarge" 
                    id="comment" 
@@ -40,7 +40,7 @@
             A question should be between 10 and 250 characters.
           </div>
           <!--  Recording buttons ------------------------------->
-          <span ng-show="activity.hasWriteAccess()">
+          <span ng-show="isRecording()">
             <div  class="control-group">
               <div class="controls">
                 <div class="input-prepend">
@@ -82,7 +82,7 @@
            </span>
 
           <!-- Submit ------------------------------------------>
-          <span ng-show="activity.hasWriteAccess()">
+          <span ng-show="activity.hasWriteAccess()  && !isRecording()">
             <div class="control-group">
               <div class="controls">
                 <button type="submit" 
@@ -95,7 +95,7 @@
               <br>
             </div>
           </span>
-          <span ng-show="!activity.hasWriteAccess()">
+          <span ng-show="!activity.hasWriteAccess()  || isRecording()">
             <div class="control-group">
               <div class="controls">
                 <button type="submit" 

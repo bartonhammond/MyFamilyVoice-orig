@@ -577,6 +577,31 @@ var findActivities = function(request) {
   query.include("user");
   return query.find();
 }
+/**
+ * Find all families approved for logged in user
+ */
+var findFamilies = function(request) {
+  var promise = new Parse.Promise();
+  console.log('findFamilies userId: ' + request.user.id);
+  findUser({userId: request.user.id})
+    .then(
+      function(user) {
+        console.log('findFamilies user: ');
+        console.log(user);
+        var query = new Parse.Query(Family);
+        query.equalTo('kin', user);
+        query.equalTo('approved', true);
+        return query.find();
+      })
+    .then(
+      function(results) {
+        promise.resolve(results);
+      },
+      function(error) {
+        promise.reject(error);
+      });
+  return promise;
+}
 /*
  * Search
  */
@@ -584,18 +609,28 @@ Parse.Cloud.define('search', function(request, response) {
   console.log('search request');
   console.log(request);
   console.log('user: ' + request.user.id);
-  Parse.Promise.when([findUsers(request), findActivities(request)]).then(
-    function(users, activities) {
+  Parse.Promise.when([findUsers(request), findActivities(request), findFamilies(request)]).then(
+    function(users, activities, families) {
+/**
       console.log('search found users');
       console.log(users);
       console.log('search found activities');
       console.log(activities)
+*/
+      console.log('search found families');
+      console.log(families);
+      _.each(families,function(family) {
+        console.log(family.get('family').id);
+      })
       var results = [];
       _.each(users,function(user, index) {
-        console.log(user);
         var obj = {
           type: 'user',
           objectId: users[index].id,
+          isSelf: users[index].id === request.user.id,
+          isInFamily: _.any(families, function(family) {
+            return users[index].id === family.get('family').id;
+          }),
           thumbnail: user.get('thumbnail'),
           description: user.get('firstName') + ' ' + user.get('lastName'),
           active: moment(user.createdAt).fromNow(),

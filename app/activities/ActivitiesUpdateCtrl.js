@@ -4,38 +4,42 @@ angular.module('fv')
   .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, Activity) {
 
     //if this is an edit request, it will have an objectId parameter
-    if($routeParams.action ==='edit' && $routeParams.id) {
-      
+    if($routeParams.action ==='edit' && $routeParams.id
+      ||
+      $routeParams.action ==='record' && $routeParams.id) {
+      $scope.action = $routeParams.action;
       //let's find the activity object from our collection of activities
-      Activity.get($routeParams.id)
+      (new Activity()).get($routeParams.id)
         .then(
           function(activity) {
-            $scope.activity = activity;
+            var _activity = new Activity(activity);
+            $scope.activity = _activity;
           }, function(error) {
             return $location.path('/activities');
           });
       
     } else {
-      //this is a new entry, use today's date and create a new
+      //this is a new entry, create a new
       //activity object
-      $scope.activity = new Activity();
-      var acl = new ACL();
+      var _Activity = Parse.Object.extend('Activity');
+      var _activity = new _Activity();
+      _activity.set('user', Parse.User.current());
+      var acl = new Parse.ACL();
       acl.setPublicReadAccess(true);
       acl.setWriteAccess(Parse.User.current().id,true);
-      $scope.activity.setACL(acl);
+      _activity.setACL(acl);
+
+      var activity = new Activity(_activity);
+      $scope.activity = activity;
     }
-    $scope.hasWriteAccess = function() {
-      return activity.getACL().getWriteAccess(Parse.User.current().id);
+    $scope.isRecording = function() {
+      return $scope.action === 'record';
     }
     $scope.hasFile = function() {
-      if (_.isUndefined($scope.activity)) {
-        return false;
-      } else {
-        return !_.isUndefined($scope.activity.get('file'));
-      }
+      return $scope.activity.file;
     }
     $scope.submit = function() {
-      Activity.save($scope.activity)
+      $scope.activity.save()
       .then(
         function(activity) {
           return $location.path('/activities');

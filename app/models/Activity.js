@@ -2,33 +2,20 @@
 angular.module('fv').
   factory('Activity', function($q, User) {
     
-    var Activity = Parse.Object.extend('Activity', {
-      // Instance methods
-      //Add prototypes for roles & users
-      //
-      initialize: function (attr, options) {
-        console.log('Activity initialize');
-        console.log(attr);
-        console.log(options);
-        console.log('extend Activity');
-        var fields = ['file', 'views','comment', 'date'];
-        _.each(fields, function(field) {
-          // Properties
-          Activity.prototype.__defineGetter__(field, function() {
-            return this.get(field);
-          });
-          Activity.prototype.__defineSetter__(field, function(aValue) {
-            return this.set(field, aValue);
-          });
-        });
+    var Activity = function(activity) {
+      if (!_.isUndefined(activity)) {
+        this.activity = activity;
+        this.id = activity.id;
+        this.comment = activity.get('comment');
+        this.createdAt = activity.createdAt;
+        this.recordedDate = activity.get('recordedDate');
+        this.file = activity.get('file');
+        this.views = activity.get('views');
       }
-    }, {
-      // Class methods
-      get: function (id) {
+      this.get = function (id) {
         var defer = $q.defer();
-        
-        var query = new Parse.Query(this);
-
+        var _Activity = Parse.Object.extend('Activity');
+        var query = new Parse.Query(_Activity);
         query.get(id,{
           success : function(activity) {
             defer.resolve(activity);
@@ -37,20 +24,14 @@ angular.module('fv').
             defer.reject(aError);
           }
         });
- 
         return defer.promise;
-
-      },
-      save: function (activity) {
+      }
+      this.save = function () {
         var defer = $q.defer();
-        if (_.isUndefined(activity.createdAt)) {
-          var roleACL = new Parse.ACL();
-          roleACL.setWriteAccess(Parse.User.current().id, true);
-          roleACL.setPublicReadAccess(true);
-          activity.setACL(roleACL);
-        }
-        
-        activity.save()
+        this.activity.set('comment',this.comment);
+        this.activity.set('recordedDate',new Date());
+
+        this.activity.save()
         .then(
           function(activity) {
             defer.resolve(activity);
@@ -61,8 +42,9 @@ angular.module('fv').
  
         return defer.promise;
 
-      },
-      listened: function(id, userId) {
+      }
+
+      this.listened = function(id, userId) {
         var defer = $q.defer();
         Parse.Cloud.run('activityListened',
                         {activityId: id,
@@ -76,14 +58,21 @@ angular.module('fv').
             defer.reject(error);
           });
         return defer.promise;
-      },
+      }
+      this.isNew = function() {
+        return this.createdAt;
+      }
+      this.hasWriteAccess = function() {
+        return this.activity.getACL().getWriteAccess(Parse.User.current().id);
+      }
       /**
        * Constrain list to only activities owned by id
        */
-      list : function(user) {
+      this.list = function(user) {
         var defer = $q.defer();
         var self = this;
-        var query = new Parse.Query(self);
+        var Activity = Parse.Object.extend('Activity');
+        var query = new Parse.Query(Activity);
         query.equalTo('user',user);
         query.find()
           .then(
@@ -96,8 +85,7 @@ angular.module('fv').
         
         return defer.promise;
       }
-      
-    });
+    };
     
     return Activity;
   });

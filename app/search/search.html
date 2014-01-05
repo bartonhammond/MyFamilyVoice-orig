@@ -14,7 +14,9 @@
         </td>
         <td class="col-md-11">
           <div ng-if="item.type === 'user'">
-            {{item.description}}
+            <a ng-href="#/activities/list/{{item.objectId}}">
+               {{item.description}}
+            </a>
             <br>
             Active since: {{item.active}}
             <br>
@@ -25,8 +27,10 @@
             <div class="btn-group btn-group-sm">
               <button ng-click="joinFamily($index)"
                       type="button" 
+                      ng-disabled="item.isSelf"
                       class="btn btn-default">
-                Join Family
+                <span ng-if="item.isInFamily">In Family</span>
+                <span ng-if="!item.isInFamily">Join Family</span>
               </button>
             </div>
             <div ng-show="item.familyRequestSent" 

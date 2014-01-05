@@ -16,11 +16,15 @@ angular.module('fv')
         .then(
           function(user) {
             $scope.user = user;
-            return Activity.list(user);
+            return (new Activity()).list(user);
           })
         .then(
           function(activities) {
-            $scope.activities = activities;
+            var _activities = [];
+            _.each(activities, function(act) {
+              _activities.push(new Activity(act));
+              });
+            $scope.activities = _activities;
           },
           function(error) {
             window.history.back();
@@ -50,8 +54,10 @@ angular.module('fv')
 
     //delete from parse and remove from the collection
     $scope.delete = function(activity) {
+/*
       activity.$delete().then(function() {
         ActivityCollection.remove(activity);
       });
+*/
     }
   });
