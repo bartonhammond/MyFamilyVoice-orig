@@ -1,0 +1,19 @@
+<!--Content-->
+<section id="signup" ng-init="init()">
+  <div class="container">
+    <div class="row margin-40">
+      
+      <div class="col-sm-6 col-sm-offset-3 text-center signup">
+        <h3>Confirm Family Membership</h3><br />
+        <span ng-if="confirmed">
+          <p>Thanks for confirming {{firstName}} {{lastName}} as a new
+          member in your family.</p>
+          <p>{{firstName}} now has permission to ask you questions.</p>
+        </span>
+        <span ng-if="!confirmed">
+          <p>Confirmation for {{firstName}} {{lastName}} in process...</p>
+        </span>
+      </div>
+    </div><!--End Row-->
+  </div><!--End Container-->
+</section>

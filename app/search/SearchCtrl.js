@@ -25,7 +25,7 @@ angular.module('fv')
      * On search, only Users have Join Family
      */
     $scope.joinFamily = function(index) {
-      Family.join($scope.search.items[index].objectId)
+      (new Family()).join($scope.search.items[index].objectId)
         .then(
           function() {
             $scope.search.items[index].familyRequestSent = true;

@@ -493,7 +493,9 @@ var createConfirmEmail = function(user, response) {
   });
 
 };
-// Use Parse's RPC functionality to make an outbound call
+/**
+ * Use Parse's RPC functionality to make an outbound call
+ */
 Parse.Cloud.define('sendConfirmEmail', function(request, response) {
   console.log('sendConfirmEmail user:');
   console.log(request);
@@ -941,3 +943,135 @@ Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
         response.error(error);
       });
 })
+/**
+ * Find confirmEmai record and return it or error
+ */
+var findConfirmFamily = function(request) {
+  console.log('findConfirmFamily request:');
+  console.log(request);
+  var link = JSON.parse(request.body);
+  console.log('link: ' + link.link);
+  var query = new Parse.Query(Family);   
+  query.equalTo("link", link.link);
+  var promise = new Parse.Promise();
+
+  query.find()
+    .then(function(results) {
+      var link = results[0];
+      console.log('findConfirmFamily link');
+      console.log(link);
+      promise.resolve(link);
+    }, function(error) {
+      promise.reject(error);
+    });
+  return promise;
+};
+/*
+ * Confirm the email 
+ */
+Parse.Cloud.define('confirmFamily', function(request, response) {
+  console.log('confirmFamily request');
+  console.log(request);
+  Parse.Promise.when([findConfirmFamily(request, response)])
+    .then(
+      function(familyLink) {
+        console.log('confirmEmail found familyLink');
+        console.log(familyLink);
+        familyLink.set('approved',true);
+        return familyLink.save();
+      })
+    .then(
+      function(updatedFamilyLink) {
+        console.log('confirmEmail updatedFamilyLink');
+        console.log(updatedFamilyLink);
+        response.success();
+      },
+      function(error) {
+        console.log('confirmEmail findConfirmEmail error');
+        console.log(error);
+        response.error(error);
+      });
+});
+/**
+ * When Family is saved the first time, send email to family
+ * for confirmation
+ */
+Parse.Cloud.afterSave("Family", function(request) {
+  console.log('Family after save');
+
+  var isNew = _.isEqual(request.object.createdAt, request.object.updatedAt);
+  if (!isNew) {
+    return;
+  }
+
+  var family = JSON.parse(JSON.stringify(request.object.get('family')));
+  var kin = JSON.parse(JSON.stringify(request.object.get('kin')));
+  var link = request.object.get('link');
+  
+  Parse.Promise.when([findUser({userId: family.objectId}), 
+                     findUser({userId: kin.objectId})])
+    .then(
+      function(family, kin) {
+        var url = "https://myfamilyvoice.com/master.html#/confirmFamily/"  + link;
+        var params = {
+          "key": mandrillKey,
+          "template_name": "family",
+          "template_content": [
+          ],
+          "message": {
+            "to": [
+              {
+                "email": family.get('primaryEmail'),
+                "name":  family.get('firstName'),
+                "type": "to"
+              }
+            ],
+            "inline_css": "true",
+            "merge_vars": [
+              {
+                "rcpt": family.get('primaryEmail'),
+                "vars": [
+                  {
+                    "name": "CONFIRMFAMILYKIN",
+                    "content": url
+                  },
+                  {
+                    "name": "FIRSTNAME",
+                    "content": kin.get('firstName')
+                  },
+                  {
+                    "name": "LASTNAME",
+                    "content": kin.get('lastName')
+                  }
+                ]
+              }
+            ],
+          },
+          "async": true
+        };
+        console.log(params);
+        Parse.Cloud.httpRequest({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
+          body: params,
+          success: function(data) {
+            console.log(data);
+            console.log('sendConfirmFamily success:');
+            response.success(data);
+          },
+          error: function(error) {
+            console.log('sendConfirmFamily error:');
+            response.error(error);
+          }
+        });
+      },
+      function(error) {
+        console.log('sendConfirmEmail error');
+        console.log(error);
+        response.error(error);
+        
+      });
+});

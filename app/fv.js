@@ -22,6 +22,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         templateUrl: 'confirmEmail/confirmEmail.html',
         controller: 'ConfirmEmailCtrl'
       })
+      .when('/confirmFamily/:link', {
+        templateUrl: 'family/confirmFamily.html',
+        controller: 'ConfirmFamilyCtrl'
+      })
       .when('/account', {
         templateUrl: 'account/account.html',
         controller: 'AccountCtrl'
@@ -56,7 +60,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
     
   }).run(function($rootScope, $location, Family) {
     // enumerate routes that don't need authentication
-    var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail', '/admin'];
+    var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail', '/confirmFamily', '/admin'];
     
     // check if current location matches route  
     var routeClean = function (route) {
