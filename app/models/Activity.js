@@ -70,7 +70,6 @@ angular.module('fv').
        */
       this.list = function(user) {
         var defer = $q.defer();
-        var self = this;
         var Activity = Parse.Object.extend('Activity');
         var query = new Parse.Query(Activity);
         query.equalTo('user',user);

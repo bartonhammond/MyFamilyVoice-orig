@@ -1,0 +1,31 @@
+<div class="table-responsive"
+     ng-init="init()">
+  <table class="table table-condensed table-hover table-bordered">
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Approved</th>
+      <th>Requested Date</th>
+      <th>Last Changed Date</th>
+    </tr>
+    <tr ng-repeat="family in families">
+      <td>
+        {{family.firstName}}
+      </td>
+      <td>
+        {{family.lastName}}
+      </td>
+      <td>
+        <input type="checkbox"
+               ng-model="family.approved"
+               ng-click="toggleApproval($index)">
+      </td>
+      <td>
+        {{family.requestedDate | date:medium}}
+      </td>
+      <td>
+        {{family.lastChangeDate | date:medium}}
+      </td>
+  </table>
+
+</div>

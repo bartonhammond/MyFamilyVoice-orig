@@ -46,6 +46,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         templateUrl: 'search/search.html',
         controller: 'SearchCtrl'
       })
+      .when('/family', {
+        templateUrl: 'family/index.html',
+        controller: 'FamilyIndexCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
@@ -72,7 +76,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         $location.path('/login');
       }
       if (Parse.User.current()) {
-        Family.checkRequests(Parse.User.current().id)
+        (new Family()).checkRequests(Parse.User.current().id)
           .then(
             function(count) {
               $rootScope.$broadcast('newfamilyrequests',count);

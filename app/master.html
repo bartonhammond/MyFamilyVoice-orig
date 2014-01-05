@@ -62,11 +62,13 @@
               </li>
               <li><a href="blog.html">Blog</a></li>
               <li><a href="contact.php">Contact</a></li>
-              <li><a href="#/account" ng-show='Parse.User.current().authenticated'>Account</a></li>
+              <li><a href="#/account"
+              ng-show='Parse.User.current().authenticated'>Account</a></li>
+              <li><a href="#/family">Family <span class="badge">{{newFamilyRequests}}</span></a></li>
               <li><a ng-click="logout()" ng-show='authenticated'>Log Out</a></li>
               <li><a href="#/login"
               ng-hide='authenticated'>Login</a></li>
-              <li><a href="#/familyrequests">Family Requests <span class="badge">{{newFamilyRequests}}</span></a></li>
+
             </ul>
           </div><!--/.navbar-collapse -->
         </div>
@@ -104,6 +106,7 @@
     <script src="activities/ActivitiesIndexCtrl.js"></script>
     <script src="activities/ActivitiesUpdateCtrl.js"></script>
     <script src="search/SearchCtrl.js"></script>
+    <script src="family/FamilyIndexCtrl.js"></script>
 
     <script src="models/User.js"></script>
     <script src="models/Role.js"></script>
