@@ -1000,14 +1000,14 @@ Parse.Cloud.afterSave("Family", function(request) {
   console.log('Family after save');
 
   var isNew = _.isEqual(request.object.createdAt, request.object.updatedAt);
-  if (!isNew) {
-    return;
-  }
-
   var family = JSON.parse(JSON.stringify(request.object.get('family')));
   var kin = JSON.parse(JSON.stringify(request.object.get('kin')));
   var link = request.object.get('link');
-  
+ 
+  if (!isNew) {
+    return;
+  }
+  //Send email for Family member confirmation
   Parse.Promise.when([findUser({userId: family.objectId}), 
                      findUser({userId: kin.objectId})])
     .then(

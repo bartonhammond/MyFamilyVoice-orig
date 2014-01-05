@@ -1,37 +1,56 @@
 'use strict';
 
 angular.module('fv')
-  .controller('ActivitiesIndexCtrl', function ($scope, $routeParams, $location, Activity, User) {
+  .controller('ActivitiesIndexCtrl', function ($scope, $routeParams, $location, Activity, User, Family) {
     $scope.user = "";
-    $scope.init = function() {
-
-      //id is set when viewing Activities for a specific user
-      if ($routeParams.id) {
-        $scope.userId = $routeParams.id;
-      } else {
-        $scope.userId = Parse.User.current().id;
-      }
-
-      User.get($scope.userId)
-        .then(
-          function(user) {
-            $scope.user = user;
-            return (new Activity()).list(user);
-          })
+    $scope.family = '';
+    var getUsersActivities = function(user) {
+      (new Activity()).list(user)      
         .then(
           function(activities) {
             var _activities = [];
             _.each(activities, function(act) {
               _activities.push(new Activity(act));
-              });
+            });
             $scope.activities = _activities;
           },
           function(error) {
+            console.log(error.message);
             window.history.back();
           });
     }
+    $scope.init = function() {
+      //id is set when viewing Activities for a specific user
+      if ($routeParams.id) {
+        User.get($routeParams.id)
+          .then(
+            function(familyUser) {
+              $scope.user = familyUser;
+              return (new Family()).isFamily(familyUser, Parse.User.current())
+            })
+          .then(
+            function(family) {
+              $scope.family = family;
+              getUsersActivities($scope.user);
+            },
+            function(error) {
+              console.log(error.message);
+              window.history.back();
+            });
+      } else {
+        $scope.user = Parse.User.current();
+        getUsersActivities(Parse.User.current());
+      }
+
+    }
     $scope.doesUserHaveWriteAccess = function() {
-      return Parse.User.current().id === $scope.userId;
+      return Parse.User.current().id === $scope.user.id
+        || $scope.family;
+    }
+    $scope.isOwner = function(index) {
+      var activity = $scope.activities[index];
+      var ownerId = activity.activity.get('user').id;
+      return ownerId === Parse.User.current().id;
     }
     $scope.hasWriteAccess = function(index) {
       var activity = $scope.activities[index];
@@ -49,7 +68,11 @@ angular.module('fv')
       $location.path('/activities/record/' + activity.id);
     }
     $scope.newQuestion = function() {
-      $location.path('/activities/add');
+      if ($scope.family) {
+        $location.path('/activities/add/'+ $scope.family.get('family').id);
+      } else {
+        $location.path('/activities/add');
+      }
     }
 
     //delete from parse and remove from the collection

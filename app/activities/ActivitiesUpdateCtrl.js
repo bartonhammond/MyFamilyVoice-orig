@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, Activity) {
+  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, Activity, User, Family) {
 
     //if this is an edit request, it will have an objectId parameter
     if($routeParams.action ==='edit' && $routeParams.id
@@ -19,30 +19,63 @@ angular.module('fv')
           });
       
     } else {
-      //this is a new entry, create a new
-      //activity object
-      var _Activity = Parse.Object.extend('Activity');
-      var _activity = new _Activity();
-      _activity.set('user', Parse.User.current());
-      var acl = new Parse.ACL();
-      acl.setPublicReadAccess(true);
-      acl.setWriteAccess(Parse.User.current().id,true);
-      _activity.setACL(acl);
+      if ($routeParams.action === 'add' && $routeParams.id) {
+        User.get($routeParams.id)
+          .then(
+            function(familyUser) {
+              $scope.user = familyUser;
+              return (new Family()).isFamily(familyUser, Parse.User.current())
+            })
+          .then(
+            function(family) {
+              $scope.family = family;
+              //this is a new entry, create a new
+              //activity object
+              var _Activity = Parse.Object.extend('Activity');
+              var _activity = new _Activity();
+              //Family user is owner
+              _activity.set('user', $scope.user);
+              var acl = new Parse.ACL();
+              acl.setPublicReadAccess(true);
+              acl.setWriteAccess($scope.user.id,true);
+              //Kin has write access
+              acl.setWriteAccess(Parse.User.current().id,true);
+              _activity.setACL(acl);
+              
+              var activity = new Activity(_activity);
+              $scope.activity = activity;
+            },
+            function(error) {
+              console.log(error.message);
+              window.history.back();
+            });
+      } else {
+        //this is a new entry, create a new
+        //activity object
+        var _Activity = Parse.Object.extend('Activity');
+        var _activity = new _Activity();
+        _activity.set('user', Parse.User.current());
+        var acl = new Parse.ACL();
+        acl.setPublicReadAccess(true);
+        acl.setWriteAccess(Parse.User.current().id,true);
+        _activity.setACL(acl);
 
-      var activity = new Activity(_activity);
-      $scope.activity = activity;
+        var activity = new Activity(_activity);
+        $scope.activity = activity;
+      }
     }
     $scope.isRecording = function() {
       return $scope.action === 'record';
     }
     $scope.hasFile = function() {
-      return $scope.activity.file;
+      return ($scope.activity && $scope.activity.file);
     }
     $scope.submit = function() {
       $scope.activity.save()
       .then(
         function(activity) {
-          return $location.path('/activities');
+          //In case user came from viewing someones activites
+          window.history.back();
         },
         function(error) {
           $scope.error = error;

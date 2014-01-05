@@ -29,8 +29,26 @@ angular.module('fv').
  
         return defer.promise;
       }
+      this.isFamily = function(familyUser, currentUser) {
+        var defer = $q.defer();
+        var Family = Parse.Object.extend('Family');
+        var query = new Parse.Query(Family);
+        query.equalTo('family',familyUser);
+        query.equalTo('kin',currentUser);
+        query.equalTo('approved',true);
+        query.first()
+          .then(
+            function(family) {
+              defer.resolve(family);
+            },
+            function(aError) {
+              defer.reject(aError);
+            });
+        
+        return defer.promise;
+      }
       /**
-       * Constrain list to only activities owned by id
+       * Constrain list to only family requests for user
        */
       this.list = function(user) {
         var defer = $q.defer();
