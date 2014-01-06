@@ -30,7 +30,7 @@
         <button ng-if="activity.hasWriteAccess($index)"
                 class="btn" 
                 ng-click="edit(activity)">Edit</button>
-        <button ng-if="activity.isOwner($index)"
+        <button ng-if="isOwner($index)"
                 class="btn" 
                 ng-click="record(activity)">Record</button>
         <button ng-if="activity.hasWriteAccess($index)"

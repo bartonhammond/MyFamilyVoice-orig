@@ -27,7 +27,7 @@
             <div class="btn-group btn-group-sm">
               <button ng-click="joinFamily($index)"
                       type="button" 
-                      ng-disabled="item.isSelf"
+                      ng-disabled="item.isSelf || item.isInFamily"
                       class="btn btn-default">
                 <span ng-if="item.isInFamily">In Family</span>
                 <span ng-if="!item.isInFamily">Join Family</span>
@@ -44,16 +44,24 @@
               Your family request has been sent.  Once approved you
               will be able to submit questions.
             </div>
-            <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                Subscribe
-                <span class="caret"></span>
+            <div class="btn-group btn-group-sm">
+              <button ng-click="subscribe($index)"
+                      ng-disabled="item.isSelf"
+                      type="button" 
+                      class="btn btn-default">
+                <span ng-if="item.isSubscribed">Unsubscribe</span>
+                <span ng-if="!item.isSubscribed">Subscribe</span>
               </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Daily</a></li>
-                <li><a href="#">Weekly</a></li>
-                <li><a href="#">Monthly</a></li>
-              </ul>
+            </div>
+            <div ng-show="item.subscribed" 
+                 class="alert alert-success alert-dismissable">
+              <button type="button" 
+                      class="close" 
+                      data-dismiss="alert" 
+                      aria-hidden="true">
+                &times;
+              </button>
+              You are now subscribed to {{item.description}}.
             </div>
           </div>
           <div ng-if="item.type === 'activity'">

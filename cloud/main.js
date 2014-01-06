@@ -25,6 +25,8 @@ var CallSid = Parse.Object.extend('CallSid');
 var RegisterUser = Parse.Object.extend('RegisterUser');
 var ConfirmEmail = Parse.Object.extend('ConfirmEmail');
 var Family = Parse.Object.extend('Family');
+var Subscription = Parse.Object.extend('Subscription');
+var SubscriptionJob = Parse.Object.extend('SubscriptionJob');
 /**
  * configure Express
  */
@@ -582,6 +584,29 @@ var findActivities = function(request) {
 /**
  * Find all families approved for logged in user
  */
+var findSubscriptions = function(request) {
+  var promise = new Parse.Promise();
+  console.log('findSubscriptions userId: ' + request.user.id);
+  findUser({userId: request.user.id})
+    .then(
+      function(user) {
+        var query = new Parse.Query(Subscription);
+        query.equalTo('subscriber', user);
+        query.equalTo('approved', true);
+        return query.find();
+      })
+    .then(
+      function(results) {
+        promise.resolve(results);
+      },
+      function(error) {
+        promise.reject(error);
+      });
+  return promise;
+}
+/**
+ * Find all families approved for logged in user
+ */
 var findFamilies = function(request) {
   var promise = new Parse.Promise();
   console.log('findFamilies userId: ' + request.user.id);
@@ -611,19 +636,12 @@ Parse.Cloud.define('search', function(request, response) {
   console.log('search request');
   console.log(request);
   console.log('user: ' + request.user.id);
-  Parse.Promise.when([findUsers(request), findActivities(request), findFamilies(request)]).then(
-    function(users, activities, families) {
-/**
-      console.log('search found users');
-      console.log(users);
-      console.log('search found activities');
-      console.log(activities)
-*/
-      console.log('search found families');
-      console.log(families);
-      _.each(families,function(family) {
-        console.log(family.get('family').id);
-      })
+  Parse.Promise.when([findUsers(request), 
+                      findActivities(request), 
+                      findFamilies(request), 
+                      findSubscriptions(request)])
+    .then(
+      function(users, activities, families, subscriptions) {
       var results = [];
       _.each(users,function(user, index) {
         var obj = {
@@ -632,6 +650,9 @@ Parse.Cloud.define('search', function(request, response) {
           isSelf: users[index].id === request.user.id,
           isInFamily: _.any(families, function(family) {
             return users[index].id === family.get('family').id;
+          }),
+          isSubscribed: _.any(subscriptions, function(subscription) {
+            return users[index].id === subscription.get('family').id;
           }),
           thumbnail: user.get('thumbnail'),
           description: user.get('firstName') + ' ' + user.get('lastName'),
@@ -858,6 +879,43 @@ Parse.Cloud.define('activityListened', function(request, response) {
       });
 });
 /**
+ * Create subscription record
+ */
+var createSubscription = function(loggedOnUser, familyUser, status) {
+  console.log('createSubscription:');
+  console.log('loggedOnUserId:' + loggedOnUser.id);
+  console.log('familyUserId:' + familyUser.id);
+
+  var promise = new Parse.Promise();
+
+  var query = new Parse.Query(Subscription);
+  query.equalTo('family',familyUser);
+  query.equalTo('subscriber', loggedOnUser);
+  query.first()
+    .then(
+      function(subscription) {
+        if (!subscription) {
+          var subscription = new Subscription();
+          return subscription.save({
+            family: familyUser,
+            subscriber: loggedOnUser,
+            active: true});
+        } else {
+          return subscription.save({
+            active: status
+          });
+        }
+      })
+    .then(
+      function(savedSubscription) {
+        promise.resolve('ok');
+      },function(error) {
+        promise.reject(error);
+      });
+  
+  return promise;
+};
+/**
  * Create family record
  */
 var createFamily = function(loggedOnUser, familyUser) {
@@ -897,6 +955,26 @@ var createFamily = function(loggedOnUser, familyUser) {
 
   return promise;
 };
+/**
+ * Subscribe to Family - the logged in user is joining the params.userId family
+ */
+Parse.Cloud.define('subscribeToFamily', function(request, response) {
+  Parse.Promise.when([findUser({userId: request.user.id}),
+                      findUser({userId: request.params.userId})])
+    .then(
+      function(loggedOnUser, familyUser) {
+        return createSubscription(loggedOnUser, 
+                                  familyUser, 
+                                  request.params.status);
+      })
+    .then(
+      function() {
+        response.success();
+      },
+      function(error) {
+        response.error(error);
+      });
+});
 /**
  * Join Family - the logged in user is joining the params.userId family
  */
@@ -1073,5 +1151,36 @@ Parse.Cloud.afterSave("Family", function(request) {
         console.log(error);
         response.error(error);
         
+      });
+});
+Parse.Cloud.job("sendSubscriberEmails", function(request, status) {
+  console.log('sendSubscriberEmails input');
+  var query = new Parse.Query(SubscriptionJob);
+  console.log('query');
+  query.first()
+    .then(
+      function(job) {
+        console.log('sendSubscriberEmails job: ');
+        console.log(job);
+        if (!job) {
+          var subJob = new SubscriptionJob();
+          return subJob.save({lastJob: moment().startOf('year'),
+                              thisRun: moment()});
+          
+        } else {
+          return job.save({lastJob: job.thisRun,
+                           thisRun: moment()});
+        }
+      })
+    .then(
+      function(savedJob) {
+        console.log(savedJob);
+        // Set the job's success status
+        status.success("Migration completed successfully.");
+      }, 
+      function(error) {
+        console.log('sendSubscriberEmails error: ' + error.message);
+        // Set the job's error status
+        status.error("Uh oh, something went wrong.");
       });
 });

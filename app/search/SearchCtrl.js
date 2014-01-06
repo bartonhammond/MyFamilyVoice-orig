@@ -33,6 +33,20 @@ angular.module('fv')
           function(error) {
           });
     }
+    /**
+     * On search, only Users have Join Family
+     */
+    $scope.subscribe = function(index) {
+      var userId = $scope.search.items[index].objectId;
+      var status = $scope.search.items[index].subscribed;
+      (new Family()).subscribe(userId, !status)
+        .then(
+          function() {
+            $scope.search.items[index].isSubscribed = !status;
+          },
+          function(error) {
+          });
+    }
     $scope.listened = function(index) {
       Activity.listened($scope.search.items[index].objectId,
                         $scope.search.items[index].userId);

@@ -69,7 +69,9 @@ angular.module('fv').
         
         return defer.promise;
       }
-
+      /**
+       * Add current user to family 
+       */ 
       this.join = function(userId) {
         var defer = $q.defer();
 
@@ -84,6 +86,27 @@ angular.module('fv').
         
         return defer.promise;
       }
+      /**
+       * Add current user to family 
+       */ 
+      this.subscribe = function(userId, status) {
+        var defer = $q.defer();
+
+        Parse.Cloud.run('subscribeToFamily',{userId: userId,
+                                             status: status})
+          .then(
+            function(response) {
+              defer.resolve(response);
+            },
+            function(error) {
+              defer.reject(error);
+            });
+        
+        return defer.promise;
+      }
+      /**
+       * Check if there are any outstanding requests
+       */ 
       this.checkRequests = function(userId) {
         var defer = $q.defer();
 
