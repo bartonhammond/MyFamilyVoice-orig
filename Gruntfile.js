@@ -30,8 +30,14 @@ module.exports = function (grunt) {
       dist: 'public'
     },
     shell: {
-      parse: {
-        command: 'parse deploy',
+      parseDevelop: {
+        command: 'parse deploy FamilyVoice',
+        options: {
+          stdout: true
+        }
+      },
+      parseProduction: {
+        command: 'parse deploy MyFamilyVoice',
         options: {
           stdout: true
         }
@@ -95,39 +101,110 @@ module.exports = function (grunt) {
           ]
         }]
       },
-      harp: {
+      harpDev: {
         options: {
           force: true
         },
         files: [{
           dot: true,
           src: [
-            '<%= harp_public %>/*'
+            '<%= harp_dev %>/*'
+          ]
+        }]
+      },
+      harpProd: {
+        options: {
+          force: true
+        },
+        files: [{
+          dot: true,
+          src: [
+            '<%= harp_prod %>/*'
           ]
         }]
       }
     },
     // Copies remaining files to places other tasks can use
     copy: {
-      harp: {
-        expand: true,
-        flatten: false,
-        src: '*/**',
-        dest: '<%= harp_public %>',
-        cwd: '<%= public_dir %>'
+      configDev: {
+        files: [
+          {
+            src: ['<%= fv.development %>'],
+            dest: '<%= public_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config/config.js';
+            }
+          }
+        ]
       },
-      harpRoot: {
+      configProd: {
+        files: [
+          {
+            src: ['<%= fv.production %>'],
+            dest: '<%= public_dir %>/app',
+            cwd: '.',
+            expand: true,
+            flatten: true
+          }
+        ]
+      },
+      harpRootDev: {
         expand: true,
         flatten: false,
         src: '*.*',
-        dest: '<%= harp_public %>',
+        dest: '<%= harp_dev %>',
         cwd: '<%= public_dir %>'
       },
-      harpJson: {
+      harpRootProd: {
+        expand: true,
+        flatten: false,
+        src: '*.*',
+        dest: '<%= harp_prod %>',
+        cwd: '<%= public_dir %>'
+      },
+      harpDev: {
+        expand: true,
+        flatten: false,
+        src: '*/**',
+        dest: '<%= harp_dev %>',
+        cwd: '<%= public_dir %>'
+      },
+      harpProd: {
+        expand: true,
+        flatten: false,
+        src: '*/**',
+        dest: '<%= harp_prod %>',
+        cwd: '<%= public_dir %>'
+      },
+      harpJsonProd: {
         expand: true,
         src: '*',
-        dest: '<%= harp_public %>',
+        dest: '<%= harp_prod %>',
         cwd: '<%= harp_src %>'
+      },
+      fvProd: {
+        files: [
+          {
+            src: '<%= fv.production %>',
+            dest: '<%= public_dir %>',
+            cwd: '.',
+            expand: true,
+            flatten: false
+          }
+        ]
+      },
+      fvDev: {
+        files: [
+          {
+            src: '<%= fv.development %>',
+            dest: '<%= public_dir %>',
+            cwd: '.',
+            expand: true,
+            flatten: false
+          }
+        ]
       },
       fvHtml: {
         files: [
@@ -238,6 +315,8 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:dist',
       'jshint',
+      'copy:configDev',
+      'copy:fvDev',
       'copy:fvHtml',
       'copy:fvJs',
       'copy:fvCss',
@@ -248,17 +327,28 @@ module.exports = function (grunt) {
       'copy:vendorFonts'
     ]);
   });
-  grunt.registerTask('harp', function () {
+  grunt.registerTask('harpdev', function () {
     grunt.task.run([
       'dist',
-      'clean:harp',
-      'copy:harp',
-      'copy:harpJson',
-      'copy:harpRoot',
-      'shell:parse'
+      'clean:harpDev',
+      'copy:harpRootDev',
+      'copy:harpDev',
+      'copy:configDev',
+      'shell:parseDevelop'
     ]);
   });
 
+  grunt.registerTask('harpprod', function () {
+    grunt.task.run([
+      'dist',
+      'clean:harpProd',
+      'copy:harpRootProd',
+      'copy:harpProd',
+      'copy:harpJsonProd',
+      'copy:configProd',
+      'shell:parseProduction'
+    ]);
+  });
   grunt.registerTask('server', function () {
     grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
     grunt.task.run(['serve']);

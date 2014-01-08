@@ -1,8 +1,4 @@
 'use strict';
-/* global Parse */
-Parse.initialize('6stx2NYQVpHKrlYL28NegU4vYAV76VRPWqMwAvZd',
-                 'Exehq2ao7JVaSrq2LrBwPF1iehv8cYsGIKfBWsqS');
-
 angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
   .config(function ($routeProvider) {
     $routeProvider
@@ -58,7 +54,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         redirectTo: '/'
       });
     
-  }).run(function($rootScope, $location, Family) {
+  }).run(function($rootScope, $location, Family, CONFIG) {
+    Parse.initialize(CONFIG.applicationId,
+                 CONFIG.javascriptKey);
+
     // enumerate routes that don't need authentication
     var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail', '/confirmFamily', '/admin'];
     

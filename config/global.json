@@ -4,6 +4,10 @@
             "applicationId": "6stx2NYQVpHKrlYL28NegU4vYAV76VRPWqMwAvZd", 
             "masterKey": "of3i0d4xd3i4zODdhqFZFDUrEaICqBKLthqK0N40"
         }, 
+        "MyFamilyVoice": {
+            "applicationId": "KXVXmiKlrlc3yUNH7vBEFXuvfbd9piFDBXnMLhJE", 
+            "masterKey": "L7w96u8n7pVfLKOuzuNpT17rGbf0k8vPnnROYfvl"
+        }, 
         "_default": {
             "link": "FamilyVoice"
         }

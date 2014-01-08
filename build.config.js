@@ -4,7 +4,8 @@
 
 module.exports = {
   public_dir: 'public',
-  harp_public: '/home/barton/Dropbox/harp.io/apps/myfamilyvoice.harp.io/',
+  harp_prod: '/home/barton/Dropbox/harp.io/apps/myfamilyvoice.harp.io/',
+  harp_dev: '/home/barton/Dropbox/harp.io/apps/familyvoice.harp.io/',
   harp_src: 'harp.io',
   fv: {
     js: [ 'js/**', '*.js', 'main/**/*.js','navbar/**/*.js', 'login/**/*.js',
@@ -12,6 +13,8 @@ module.exports = {
         'account/**/*.js', 'activities/**/*.js', 'search/**/*.js',
         'directives/**/*.js', 'family/**/*.js'],
     css: ['styles/*.css'],
+    development:'config/development.js',
+    production:'config/production.js',
     images: ['images/*.png', 'images/*.jpg', 'images/*.gif']
   },
 
