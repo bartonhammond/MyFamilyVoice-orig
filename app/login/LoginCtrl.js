@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 angular.module('fv')
-  .controller('LoginCtrl', function ($scope, $rootScope, $location, User) {
+  .controller('LoginCtrl', function (CONFIG, $scope, $rootScope, $location, User) {
     /**
      *  loginRadius
      */
@@ -11,7 +11,7 @@ angular.module('fv')
       LoginRadius_SocialLogin.util.ready(function () { 
         $ui = LoginRadius_SocialLogin.lr_login_settings;
         $ui.interfacesize = "";
-        $ui.apikey = "f36321df-34bc-4c0a-9a0b-aac96ccfa9ac";
+        $ui.apikey = CONFIG.loginRadius.apiKey;
         $ui.callback=""; 
         $ui.lrinterfacecontainer ="interfacecontainerdiv"; 
         LoginRadius_SocialLogin.init(options);  

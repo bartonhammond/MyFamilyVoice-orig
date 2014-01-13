@@ -129,12 +129,30 @@ module.exports = function (grunt) {
       configDev: {
         files: [
           {
-            src: ['<%= fv.development %>'],
+            src: ['<%= fv.prodAngularConfig %>'],
             dest: '<%= public_dir %>',
             cwd: '.',
             expand: true,
             rename: function(dest) {
               return dest + '/config/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.prodCloudConfig %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.prodCloudCode %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/main.js';
             }
           }
         ]
@@ -142,11 +160,31 @@ module.exports = function (grunt) {
       configProd: {
         files: [
           {
-            src: ['<%= fv.production %>'],
-            dest: '<%= public_dir %>/app',
+            src: ['<%= fv.devAngularConfig %>'],
+            dest: '<%= public_dir %>',
             cwd: '.',
             expand: true,
-            flatten: true
+            rename: function(dest) {
+              return dest + '/config/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.devCloudConfig %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.devCloudCode %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/main.js';
+            }
           }
         ]
       },
@@ -183,28 +221,6 @@ module.exports = function (grunt) {
         src: '*',
         dest: '<%= harp_prod %>',
         cwd: '<%= harp_src %>'
-      },
-      fvProd: {
-        files: [
-          {
-            src: '<%= fv.production %>',
-            dest: '<%= public_dir %>',
-            cwd: '.',
-            expand: true,
-            flatten: false
-          }
-        ]
-      },
-      fvDev: {
-        files: [
-          {
-            src: '<%= fv.development %>',
-            dest: '<%= public_dir %>',
-            cwd: '.',
-            expand: true,
-            flatten: false
-          }
-        ]
       },
       fvHtml: {
         files: [
@@ -292,18 +308,13 @@ module.exports = function (grunt) {
             flatten: true
           }
         ]
-      },
-
+      }
     }
   };
 
   grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
-  grunt.registerTask('serve', function (target) {
-    if (target === 'dist') {
-      return grunt.task.run(['build', 'connect:dist:keepalive']);
-    }
-
+  grunt.registerTask('serve', function () {
     grunt.task.run([
       'dist',
       'connect',
@@ -316,7 +327,6 @@ module.exports = function (grunt) {
       'clean:dist',
       'jshint',
       'copy:configDev',
-      'copy:fvDev',
       'copy:fvHtml',
       'copy:fvJs',
       'copy:fvCss',
