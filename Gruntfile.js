@@ -129,37 +129,6 @@ module.exports = function (grunt) {
       configDev: {
         files: [
           {
-            src: ['<%= fv.prodAngularConfig %>'],
-            dest: '<%= public_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/config/config.js';
-            }
-          },
-          {
-            src: ['<%= fv.prodCloudConfig %>'],
-            dest: '<%= parse_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/config.js';
-            }
-          },
-          {
-            src: ['<%= fv.prodCloudCode %>'],
-            dest: '<%= parse_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/main.js';
-            }
-          }
-        ]
-      },
-      configProd: {
-        files: [
-          {
             src: ['<%= fv.devAngularConfig %>'],
             dest: '<%= public_dir %>',
             cwd: '.',
@@ -179,6 +148,37 @@ module.exports = function (grunt) {
           },
           {
             src: ['<%= fv.devCloudCode %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/main.js';
+            }
+          }
+        ]
+      },
+      configProd: {
+        files: [
+          {
+            src: ['<%= fv.prodAngularConfig %>'],
+            dest: '<%= public_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.prodCloudConfig %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.prodCloudCode %>'],
             dest: '<%= parse_dir %>',
             cwd: '.',
             expand: true,

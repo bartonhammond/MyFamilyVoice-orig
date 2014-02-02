@@ -55,8 +55,8 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
       });
     
   }).run(function($rootScope, $location, Family, CONFIG) {
-    Parse.initialize(CONFIG.applicationId,
-                 CONFIG.javascriptKey);
+    Parse.initialize(CONFIG.parse.applicationId,
+                 CONFIG.parse.javascriptKey);
 
     // enumerate routes that don't need authentication
     var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail', '/confirmFamily', '/admin'];

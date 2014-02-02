@@ -34,6 +34,11 @@ MyFamilyVoice records the voice of your family for future generations
 ## MailChimp
 *  Used to create Template that is sent to Mandrill
 
+## Pivitol Labs - Kaban
+   admin@myfamilyvoice.com
+   $7/mo
+
+####################################################
 # Registration
 * Social Login
 *   loginRadius 

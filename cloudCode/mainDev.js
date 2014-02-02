@@ -1,26 +1,27 @@
 // Include Cloud Code module dependencies
 var config = require('cloud/config.js');
+var lr = require('cloud/loginradius.js');
+
 var express = require('express');
 var twilio = require('twilio');
 var url = require('url');
 var _ = require('underscore');
-var lr = require('cloud/loginradius.js');
 
 var Buffer = require('buffer').Buffer;
 var moment = require('moment');
 var Image = require("parse-image");
 
 //Twilio
-var twilioAccountSID =  config.twilio.accountSID;
-var twilioAuthToken = config.twilio.authToken;
-var twilioAppSID = config.twilio.appSID;
+var twilioAccountSID =  config.accounts.twilio.accountSID;
+var twilioAuthToken = config.accounts.twilio.authToken;
+var twilioAppSID = config.accounts.twilio.appSID;
 
 //loginRadius
-var loginRadiusAPIKey = config.loginRadius.apiKey;
-var loginRadiusAPISecret = config.loginRadius.apiSecret;
+var loginRadiusAPIKey = config.accounts.loginRadius.apiKey;
+var loginRadiusAPISecret = config.accounts.loginRadius.apiSecret;
 
 //Mandrill
-var mandrillKey = config.mandrill.key;
+var mandrillKey = config.accounts.mandrill.key;
 
 var Activity = Parse.Object.extend('Activity');
 var CallSid = Parse.Object.extend('CallSid');
@@ -515,7 +516,7 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
       
       var params = {
         "key": mandrillKey,
-        "template_name": config.mandrill.welcome,
+        "template_name": config.accounts.mandrill.welcome,
         "template_content": [
           
         ],
@@ -1095,7 +1096,7 @@ Parse.Cloud.afterSave("Family", function(request) {
         var url = "https://myfamilyvoice.com/master.html#/confirmFamily/"  + link;
         var params = {
           "key": mandrillKey,
-          "template_name": config.mandrill.family,
+          "template_name": config.accounts.mandrill.family,
           "template_content": [
           ],
           "message": {
