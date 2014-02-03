@@ -1,8 +1,6 @@
 // Include Cloud Code module dependencies
 var config = require('cloud/config.js');
 var lr = require('cloud/loginradius.js');
-console.log(config);
-
 
 var express = require('express');
 var twilio = require('twilio');
@@ -17,7 +15,9 @@ var Image = require("parse-image");
 var twilioAccountSID =  config.accounts.twilio.accountSID;
 var twilioAuthToken = config.accounts.twilio.authToken;
 var twilioAppSID = config.accounts.twilio.appSID;
-
+console.log('twilioAccountSID:' + twilioAccountSID);
+console.log('twilioAuthToken:' + twilioAuthToken);
+console.log('twilioAppSID:' + twilioAppSID);
 //loginRadius
 var loginRadiusAPIKey = config.accounts.loginRadius.apiKey;
 var loginRadiusAPISecret = config.accounts.loginRadius.apiSecret;
@@ -403,16 +403,11 @@ Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
  * Find user - expect request to be {userId: id}
  */
 var findUser = function(request) {
-  console.log('findUser request');
-  console.log(request);
   var id = request.userId;
-  console.log('findUser id: ' + id);
   var promise = new Parse.Promise();
   var query = new Parse.Query(Parse.User);
   query.get(id, {
     success: function(user) {
-      console.log('findUser:');
-      console.log(user);
       promise.resolve(user);
     },
     error: function(error) {
@@ -984,11 +979,6 @@ Parse.Cloud.define('subscribeToFamily', function(request, response) {
  * Join Family - the logged in user is joining the params.userId family
  */
 Parse.Cloud.define('addToFamily', function(request, response) {
-  console.log('joinFamily');
-
-  console.log('user joining: ' + request.user.id);
-  console.log(request.params);
-  console.log('family userId: ' + request.params.userId);
   Parse.Promise.when([findUser({userId: request.user.id}),
                       findUser({userId: request.params.userId})])
     .then(
@@ -1017,8 +1007,6 @@ Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
       })
     .then(
       function(count) {
-        console.log('unapprovedFamilyRequestCount: ' + count);
-        console.log(count);
         response.success(count);
       },
       function(error) {

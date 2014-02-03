@@ -18,7 +18,7 @@ angular.module('fv')
     }
     $scope.getThumbnail = function() {
       return Parse.User.current().get('thumbnail') ? 
-        Parse.User.current().get('thumbnail')._url.replace('http','https')
+        Parse.User.current().get('thumbnail')._url
         :
         null;
     }

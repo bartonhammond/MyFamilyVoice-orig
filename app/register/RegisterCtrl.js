@@ -1,6 +1,6 @@
 'use strict';
 angular.module('fv')
-  .controller('RegisterCtrl', function ($rootScope, $scope, User, $location) {
+  .controller('RegisterCtrl', function ($rootScope, $scope, User, $location, requestNotificationChannel) {
       
     $scope.init = function () {
       $scope.confirmPassword='';
@@ -12,7 +12,7 @@ angular.module('fv')
     };
     $scope.register = function () {
       if ($scope.signupForm.$valid && $scope.passwordsMatch()) {
-
+        requestNotificationChannel.requestStarted();
         User.signUp($scope.registerUser.email,
                     $scope.registerUser.password,
                     '',//firstname
@@ -20,16 +20,22 @@ angular.module('fv')
                     $scope.registerUser.email, //primaryEmail
                     false, //isSocial
                     false) //verifiedEmail
-          .then(function(){
-            $rootScope.$broadcast('userloggedin');
-            if ($scope.$$phase || $scope.$root.$$phase) {
-              $scope.$eval($location.path('/account'));
-            } else {
-              $scope.$apply($location.path('/account'));
-            }
-          }, function(response) {
-            $scope.error = response.data.error;
-          });
+          .then(
+            function(){
+              $rootScope.$broadcast('userloggedin');
+              if ($scope.$$phase || $scope.$root.$$phase) {
+                $scope.$eval($location.path('/account'));
+              } else {
+                $scope.$apply($location.path('/account'));
+              }
+            }, 
+            function(response) {
+              $scope.error = response.data.error;
+            })
+          .finally(
+            function() {
+              requestNotificationChannel.requestEnded();
+            });;
       } else {
         $scope.signupForm.submitted = true;
       }

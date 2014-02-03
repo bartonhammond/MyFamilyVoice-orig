@@ -110,7 +110,7 @@ angular.module('fv').
       this.checkRequests = function(userId) {
         var defer = $q.defer();
 
-        Parse.Cloud.run('unapprovedFamilyRequestCount',{userId: userId})
+        Parse.Cloud.run('unapprovedFamilyRequestCount')
           .then(
             function(response) {
               defer.resolve(response);
