@@ -188,31 +188,17 @@ module.exports = function (grunt) {
           }
         ]
       },
-      harpRootDev: {
+      publicToHarpDev: {
         expand: true,
         flatten: false,
-        src: '*.*',
+        src: ['*.*', '*/**'],
         dest: '<%= harp_dev %>',
         cwd: '<%= public_dir %>'
       },
-      harpRootProd: {
+      publicToHarpProd: {
         expand: true,
         flatten: false,
-        src: '*.*',
-        dest: '<%= harp_prod %>',
-        cwd: '<%= public_dir %>'
-      },
-      harpDev: {
-        expand: true,
-        flatten: false,
-        src: '*/**',
-        dest: '<%= harp_dev %>',
-        cwd: '<%= public_dir %>'
-      },
-      harpProd: {
-        expand: true,
-        flatten: false,
-        src: '*/**',
+        src: ['*.*', '*/**'],
         dest: '<%= harp_prod %>',
         cwd: '<%= public_dir %>'
       },
@@ -341,9 +327,8 @@ module.exports = function (grunt) {
     grunt.task.run([
       'dist',
       'clean:harpDev',
-      'copy:harpRootDev',
-      'copy:harpDev',
       'copy:configDev',
+      'copy:publicToHarpDev',
       'shell:parseDevelop'
     ]);
   });
@@ -352,10 +337,9 @@ module.exports = function (grunt) {
     grunt.task.run([
       'dist',
       'clean:harpProd',
-      'copy:harpRootProd',
-      'copy:harpProd',
-      'copy:harpJsonProd',
       'copy:configProd',
+      'copy:publicToHarpProd',
+      'copy:harpJsonProd',
       'shell:parseProduction'
     ]);
   });
