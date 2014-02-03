@@ -45,16 +45,15 @@ angular.module('fv')
                     console.log('SuccessfullyLogin register success');
                     console.log(data);
                     //Register and subsequently login
-                    return Parse.User.signUp(
+                    return User.signUp(
                       data.get('password'),
                       data.get('password'),
-                      {
-                        firstName: data.get('firstName'),
-                        lastName: data.get('lastName'),
-                        primaryEmail: data.get('primaryEmail'),
-                        isSocial: true,
-                        verifiedEmail: false
-                      });
+                      data.get('firstName'),
+                      data.get('lastName'),
+                      data.get('primaryEmail'),
+                      true, //isSocial
+                      false //verifiedEmail
+                    );
                   })
                 .then(
                   function(){

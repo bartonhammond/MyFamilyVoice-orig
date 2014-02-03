@@ -26,6 +26,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         templateUrl: 'account/account.html',
         controller: 'AccountCtrl'
       })
+      .when('/register', {
+        templateUrl: 'register/register.html',
+        controller: 'RegisterCtrl'
+      })
       .when('/activities', {
         templateUrl: 'activities/index.html',
         controller: 'ActivitiesIndexCtrl'
@@ -78,7 +82,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
         // redirect back to login
         $location.path('/login');
       }
-      if (Parse.User.current()) {
+      if (!_.isNull(Parse.User.current()) && Parse.User.current().authenticated()) {
         (new Family()).checkRequests(Parse.User.current().id)
           .then(
             function(count) {

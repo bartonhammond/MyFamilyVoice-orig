@@ -15,6 +15,18 @@ angular.module('fv').
         this.isSocial = user.get('isSocial');
         this.thumbNail = user.get('thumbnail');
       },
+      signUp: function(userId, password, firstName, lastName, primaryEmail, isSocial, verifiedEmail) {
+        return Parse.User.signUp(
+          userId,
+          password,
+          {
+            firstName: firstName,
+            lastName: lastName,
+            primaryEmail: primaryEmail,
+            isSocial: isSocial,
+            verifiedEmail: verifiedEmail
+          });
+      },
       logIn: function(userid, password) {
         var defer = $q.defer();
         
