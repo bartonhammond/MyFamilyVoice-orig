@@ -15,17 +15,17 @@ angular.module('fv')
 
         User.signUp($scope.registerUser.email,
                     $scope.registerUser.password,
-                    $scope.registerUser.firstName,
-                    $scope.registerUser.lastName,
+                    '',//firstname
+                    '',//lastName
                     $scope.registerUser.email, //primaryEmail
                     false, //isSocial
                     false) //verifiedEmail
           .then(function(){
             $rootScope.$broadcast('userloggedin');
             if ($scope.$$phase || $scope.$root.$$phase) {
-              $scope.$eval($location.path('/activities'));
+              $scope.$eval($location.path('/account'));
             } else {
-              $scope.$apply($location.path('/activities'));
+              $scope.$apply($location.path('/account'));
             }
           }, function(response) {
             $scope.error = response.data.error;

@@ -17,7 +17,10 @@ angular.module('fv')
       $scope.photoFile = element.files[0];
     }
     $scope.getThumbnail = function() {
-      return Parse.User.current().get('thumbnail')._url;
+      return Parse.User.current().get('thumbnail') ? 
+        Parse.User.current().get('thumbnail')._url.replace('http','https')
+        :
+        null;
     }
     $scope.save = function() {
       if ($scope.signupForm.$valid) {

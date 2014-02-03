@@ -118,7 +118,7 @@
             Please choose another image.
           </span>
           <!---- Current Imaage -------------------------------------------------->          
-          <div class="control-group">
+          <div ng-if="getThumbnail()" class="control-group">
             <div class="controls">
               <div class="input-prepend">
                 <span class='fv-label account-label' style="display:none">Current</span>
@@ -127,7 +127,7 @@
                   </i>
                 </span>
                 <div class='account-thumbnail'>
-                  <img ng-src="{{getThumbnail()}}"></img>
+                  <img  ng-src="{{getThumbnail()}}"></img>
                 </div>
               </div>
             </div>

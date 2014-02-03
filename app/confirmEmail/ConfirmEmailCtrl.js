@@ -12,7 +12,7 @@ angular.module('fv')
           deferred.resolve(true);
         },
         function(error) {
-          console.log('AccountCtrl sendConfirmEmail error');
+          console.log('ConfirmEmail  error');
           console.log(error);
           deferred.reject();
         }
