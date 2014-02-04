@@ -41,8 +41,21 @@ module.exports = function (grunt) {
         options: {
           stdout: true
         }
+      },
+      harpIODevelop: {
+        command: 'node harp.io/publishHarpIO.js dev',
+        options: {
+          stdout: true
+        }
+      },
+      harpIOProduction: {
+        command: 'node harp.io/publishHarpIO.js prod',
+        options: {
+          stdout: true
+        }
       }
     },
+
     // Watches files for changes and runs tasks based on the changed files
     watch: {
       js: {
@@ -329,7 +342,8 @@ module.exports = function (grunt) {
       'clean:harpDev',
       'copy:configDev',
       'copy:publicToHarpDev',
-      'shell:parseDevelop'
+      'shell:parseDevelop',
+      'shell:harpIODevelop'
     ]);
   });
 
@@ -340,7 +354,8 @@ module.exports = function (grunt) {
       'copy:configProd',
       'copy:publicToHarpProd',
       'copy:harpJsonProd',
-      'shell:parseProduction'
+      'shell:parseProduction',
+      'shell:harpIOProduction'
     ]);
   });
   grunt.registerTask('server', function () {
