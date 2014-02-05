@@ -33,6 +33,7 @@ function logErrors(err, req, res, next) {
 // Create an Express web app (more info: http://expressjs.com/)
 var app = express();
 app.use(logErrors);
+
 app.use(express.bodyParser());
 
 /**
