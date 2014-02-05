@@ -18,6 +18,7 @@ var twilioAuthToken = config.accounts.twilio.authToken;
 var twilioAppSID = config.accounts.twilio.appSID;
 
 var CallSid = Parse.Object.extend('CallSid');
+var Activity = Parse.Object.extend('Activity');
 var RegisterUser = Parse.Object.extend('RegisterUser');
 var ConfirmEmail = Parse.Object.extend('ConfirmEmail');
 var Family = Parse.Object.extend('Family');

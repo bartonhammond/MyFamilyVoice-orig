@@ -23,6 +23,15 @@ module.exports = function (grunt) {
   //Concat files 
   grunt.loadNpmTasks('grunt-contrib-concat');
 
+  //Ngmin
+  grunt.loadNpmTasks('grunt-ngmin');
+
+  //Closure compiler to minimize javascript
+  grunt.loadNpmTasks('grunt-closure-compiler');
+  
+  //Copy only files w/ changed timestamps
+  grunt.loadNpmTasks('grunt-sync');
+
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
@@ -33,7 +42,67 @@ module.exports = function (grunt) {
     project: {
       // configurable paths
       app: require('./bower.json').appPath || 'app',
-      dist: 'public'
+      public: 'public',
+      dist: 'dist'
+    },
+    // Concat all js in public -> dist
+    concat: {
+      dist: {
+        options: {
+          separator: ';',
+        },
+        src:
+        [
+          'public/fv.js',
+          'public/config/config.js',
+          'public/js/loading.js',
+          'public/main/MainCtrl.js',
+          'public/navbar/NavbarCtrl.js',
+          'public/login/LoginCtrl.js',
+          'public/register/RegisterCtrl.js',
+          'public/admin/AdminCtrl.js',
+          'public/confirmEmail/ConfirmEmailCtrl.js',
+          'public/account/AccountCtrl.js',
+          'public/activities/ActivitiesIndexCtrl.js',
+          'public/activities/ActivitiesUpdateCtrl.js',
+          'public/search/SearchCtrl.js',
+          'public/family/FamilyIndexCtrl.js',
+          'public/family/ConfirmFamilyCtrl.js',
+          'public/models/User.js',
+          'public/models/Role.js',
+          'public/models/Activity.js',
+          'public/models/Search.js',
+          'public/models/Relation.js',
+          'public/models/Family.js'
+        ],
+        dest: '<%= project.dist %>/built.js'
+      },
+      html: {
+        src: ['app/master.html','config/includeJavaScript.html'],
+        dest: 'public/master.html'
+      },
+      htmlMin: {
+        src: ['app/master.html','config/includeJavaScriptMin.html'],
+        dest: 'public/master.html'
+      }
+    },
+    ngmin: {
+      file: {
+        src: ['<%= project.dist %>/built.js'],
+        dest: '<%= project.dist %>/builtngmin.js'
+      }
+    },
+    'closure-compiler': {
+      /* jshint camelcase: false */
+      frontend: {
+        js: 'dist/builtngmin.js',
+        jsOutputFile: 'public/frontend.min.js',
+        maxBuffer: 500,
+        options: {
+          compilation_level: 'SIMPLE_OPTIMIZATIONS',
+          language_in: 'ECMASCRIPT5_STRICT'
+        }
+      }
     },
     shell: {
       parseDevelop: {
@@ -61,43 +130,6 @@ module.exports = function (grunt) {
         }
       }
     },
-
-    // Watches files for changes and runs tasks based on the changed files
-    watch: {
-      js: {
-        files: ['<%= fv.js %>', 'app/js/*.js'],
-        tasks: ['newer:jshint:all', 'newer:copy:fvJs'],
-        options: {
-          cwd: 'app'
-        }
-      },
-      views: {
-        files: ['app/**/*.html'],
-        tasks: [ 'newer:copy:fvHtml']
-      },
-      styles: {
-        files: ['app/styles/**/*.css'],
-        tasks: ['newer:copy:fvCss']
-      },
-      gruntfile: {
-        files: ['Gruntfile.js']
-      }
-    },
-
-    // The actual grunt server settings
-    connect: {
-      options: {
-        port: 9000,
-        // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost'
-      },
-      dist: {
-        options: {
-          base: '<%= project.dist %>'
-        }
-      }
-    },
-
     // Make sure code styles are up to par and there are no obvious mistakes
     jshint: {
       options: {
@@ -106,12 +138,21 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
-        'app/scripts/{,*/}*.js'
+        'app/{,*/}*.js',
+        '!app/js/**'
       ]
     },
 
     // Empties folders to start fresh
     clean: {
+      public: {
+        files: [{
+          dot: true,
+          src: [
+            '<%= project.public %>/*'
+          ]
+        }]
+      },
       dist: {
         files: [{
           dot: true,
@@ -143,52 +184,7 @@ module.exports = function (grunt) {
         }]
       }
     },
-    // Copies remaining files to places other tasks can use
-    copy: {
-      configDev: {
-        files: [
-          {
-            src: ['<%= fv.devAngularConfig %>'],
-            dest: '<%= public_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/config/config.js';
-            }
-          },
-          {
-            src: ['<%= fv.devCloudConfig %>'],
-            dest: '<%= parse_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/config.js';
-            }
-          }
-        ]
-      },
-      configProd: {
-        files: [
-          {
-            src: ['<%= fv.prodAngularConfig %>'],
-            dest: '<%= public_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/config/config.js';
-            }
-          },
-          {
-            src: ['<%= fv.prodCloudConfig %>'],
-            dest: '<%= parse_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/config.js';
-            }
-          }
-        ]
-      },
+    sync: {
       publicToHarpDev: {
         expand: true,
         flatten: false,
@@ -203,19 +199,28 @@ module.exports = function (grunt) {
         dest: '<%= harp_prod %>',
         cwd: '<%= public_dir %>'
       },
-      harpJsonProd: {
+      publicToHarpDevMin: {
         expand: true,
-        src: '*',
-        dest: '<%= harp_prod %>',
-        cwd: '<%= harp_src %>'
+        flatten: false,
+        src: ['*.*', '*/**', '!*/**.js', '*.js'],
+        dest: '<%= harp_dev %>',
+        cwd: '<%= public_dir %>'
       },
+      publicToHarpProdMin: {
+        expand: true,
+        flatten: false,
+        src: ['*.*', '*/**', '!*.js', '!*/**.js'],
+        dest: '<%= harp_prod %>',
+        cwd: '<%= public_dir %>'
+      },
+
       fvHtml: {
         files: [
           {
             src: ['**/*.html', '**/*.ico', '**/*.png'],
             dest: '<%= public_dir %>',
             cwd: 'app',
-            expand: true
+            expand: true,
           }
         ]
       },
@@ -295,65 +300,159 @@ module.exports = function (grunt) {
             flatten: true
           }
         ]
+      },
+      harpJsonProd: {
+        expand: true,
+        src: '*.json',
+        dest: '<%= harp_prod %>',
+        cwd: '<%= harp_src %>'
+      }
+    },
+    //Copy 
+    copy: {
+      configDev: {
+        files: [
+          {
+            src: ['<%= fv.devAngularConfig %>'],
+            dest: '<%= public_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.devCloudConfig %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
+          }
+        ]
+      },
+      configProd: {
+        files: [
+          {
+            src: ['<%= fv.prodAngularConfig %>'],
+            dest: '<%= public_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.prodCloudConfig %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
+          }
+        ]
       }
     }
   };
 
   grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
-  grunt.registerTask('serve', function () {
-    grunt.task.run([
-      'dist',
-      'connect',
-      'watch'
-    ]);
-  });
   
   grunt.registerTask('dist', function () {
     grunt.task.run([
       'clean:dist',
       'jshint',
       'copy:configDev',
-      'copy:fvHtml',
-      'copy:fvJs',
-      'copy:fvCss',
-      'copy:fvImages',
-      'copy:vendorCss',
-      'copy:vendorJs',
-      'copy:vendorImg',
-      'copy:vendorFonts'
+      'sync:fvHtml',
+      'sync:fvJs',
+      'sync:fvCss',
+      'sync:fvImages',
+      'sync:vendorCss',
+      'sync:vendorJs',
+      'sync:vendorImg',
+      'sync:vendorFonts'
     ]);
   });
-  grunt.registerTask('dev', function () {
+
+  grunt.registerTask('devPrep', function () {
     grunt.task.run([
       'checkbranch:develop',
-      'dist',
-      'clean:harpDev',
-      'copy:configDev',
-      'copy:publicToHarpDev',
+      'dist'
+    ]);
+  });
+
+  grunt.registerTask('dev', function () {
+    grunt.task.run([
+      'devPrep',
+      'concat:html',
+      'sync:publicToHarpDev',
       'shell:parseDevelop',
       'shell:harpIODevelop'
     ]);
   });
 
-  grunt.registerTask('prod', function () {
+  grunt.registerTask('devMin', function() {
+    grunt.task.run([
+      'devPrep',
+      'concat',
+      'ngmin',
+      'closure-compiler',
+      'concat:htmlMin',
+      'sync:publicToHarpDevMin',
+      'shell:parseDevelop',
+      'shell:harpIODevelop'
+    ]);
+  });
+  
+  grunt.registerTask('devRelease', function() {
+    grunt.task.run([
+      'clean',
+      'devMin'
+    ]);
+  });
+  
+  grunt.registerTask('prodPrep', function () {
     grunt.task.run([
       'checkbranch:master',
       'dist',
-      'clean:harpProd',
       'copy:configProd',
-      'copy:publicToHarpProd',
+    ]);
+  });
+
+  grunt.registerTask('prod', function () {
+    grunt.task.run([
+      'prodPrep',
+      'concat:html',
+      'sync:publicToHarpProd',
       'copy:harpJsonProd',
       'shell:parseProduction',
       'shell:harpIOProduction'
     ]);
   });
-  grunt.registerTask('server', function () {
-    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-    grunt.task.run(['serve']);
+
+  grunt.registerTask('prodMin', function () {
+    grunt.task.run([
+      'prodPrep',
+      'concat',
+      'ngmin',
+      'closure-compiler',
+      'concat:htmlMin',
+      'sync:publicToHarpProd',
+      'copy:harpJsonProd',
+      'shell:parseProduction',
+      'shell:harpIOProduction'
+    ]);
   });
-
-
+  
+  grunt.registerTask('prodRelease', function() {
+    grunt.task.run([
+      'clean',
+      'prodMin'
+    ]);
+  });
+  
   grunt.registerTask('default', [
     'jshint'
   ]);

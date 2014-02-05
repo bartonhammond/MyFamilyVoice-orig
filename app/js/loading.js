@@ -87,14 +87,17 @@ angular.module('fv')
     };
   }])
 // declare the directive that will show and hide the loading widget
-  .directive('loading', function ($rootScope, $injector, requestNotificationChannel) {
+  .directive('loading', ['requestNotificationChannel',  function (requestNotificationChannel) {
     return {
       replace: true,
       restrict: "E",
       // The actual html that will be used
       template: '<div id="loading-container"><div id="loading"><img src="images/spinner.gif"></img><span>Loading..</span>.</div></div>',
+
       link: function ($scope, $element) {
-        $scope.loading.element = $element;
+        if ($scope.loading) {
+          $scope.loading.element = $element;
+        }
 
         var startRequestHandler = function() {
           $scope.start();
@@ -103,14 +106,13 @@ angular.module('fv')
         var endRequestHandler = function() {
           $scope.complete();
         };
-
+        
         requestNotificationChannel.onRequestStarted($scope, startRequestHandler);
-
+        
         requestNotificationChannel.onRequestEnded($scope, endRequestHandler);
-
+        
       },
-      controller: function($scope, $timeout, $location) {
-
+      controller: ['$scope', '$timeout', '$location', function($scope, $timeout, $location) {
         $scope.loading = {
           count: 0
         };
@@ -132,6 +134,6 @@ angular.module('fv')
             $scope.loading.element.children().css('opacity', '1');
           }
         }
-      }
+      }]//controller
     };
-  });
+  }]);

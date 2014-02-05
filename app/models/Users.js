@@ -23,7 +23,7 @@ angular.module('fv').
         });
         
         return defer.promise;
-      }
+      };
     };
       
     return Role;

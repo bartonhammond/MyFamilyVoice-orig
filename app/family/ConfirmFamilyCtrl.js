@@ -25,8 +25,8 @@ angular.module('fv')
     $scope.init = function() {
       var link = $routeParams.link;
       var Family = Parse.Object.extend('Family');
-      var query = new Parse.Query(Family);   
-      query.equalTo("link", link);
+      var query = new Parse.Query(Family);
+      query.equalTo('link', link);
       query.find()
         .then(
           function(results) {
@@ -41,9 +41,11 @@ angular.module('fv')
           })
         .then(
           function(status) {
+            console.log(status);
             $scope.confirmed = true;
           },
           function(error) {
+            console.log(error);
             var nextPromise = $scope.confirm();
             nextPromise.then(function() {
               $scope.confirmed = true;

@@ -1,6 +1,6 @@
 'use strict';
 angular.module('fv').
-  factory('Activity', function($q, User) {
+  factory('Activity', function($q) {
     
     var Activity = function(activity) {
       if (!_.isUndefined(activity)) {
@@ -12,6 +12,7 @@ angular.module('fv').
         this.file = activity.get('file');
         this.views = activity.get('views');
       }
+
       this.get = function (id) {
         var defer = $q.defer();
         var _Activity = Parse.Object.extend('Activity');
@@ -25,7 +26,8 @@ angular.module('fv').
           }
         });
         return defer.promise;
-      }
+      };
+
       this.save = function () {
         var defer = $q.defer();
         this.activity.set('comment',this.comment);
@@ -39,10 +41,8 @@ angular.module('fv').
           function(aError) {
             defer.reject(aError);
           });
- 
         return defer.promise;
-
-      }
+      };
 
       this.listened = function(id, userId) {
         var defer = $q.defer();
@@ -58,13 +58,15 @@ angular.module('fv').
             defer.reject(error);
           });
         return defer.promise;
-      }
+      };
+
       this.isNew = function() {
         return this.createdAt;
-      }
+      };
+
       this.hasWriteAccess = function() {
         return this.activity.getACL().getWriteAccess(Parse.User.current().id);
-      }
+      };
       /**
        * Constrain list to only activities owned by id
        */
@@ -83,7 +85,7 @@ angular.module('fv').
             });
         
         return defer.promise;
-      }
+      };
     };
     
     return Activity;

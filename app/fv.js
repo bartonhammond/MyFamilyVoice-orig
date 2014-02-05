@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * Main module for MyFamilyVoice
+ */
 angular.module('fv', ['ngRoute', 'ngSanitize'])
   .config(function ($routeProvider) {
     $routeProvider
@@ -54,13 +57,14 @@ angular.module('fv', ['ngRoute', 'ngSanitize'])
         templateUrl: 'family/index.html',
         controller: 'FamilyIndexCtrl'
       })
+
       .otherwise({
         redirectTo: '/'
       });
     
   }).run(function($rootScope, $location, Family, CONFIG) {
-    Parse.initialize(CONFIG.parse.applicationId,
-                 CONFIG.parse.javascriptKey);
+    Parse.initialize(CONFIG.defaults.parse.applicationId,
+                 CONFIG.defaults.parse.javascriptKey);
 
     // enumerate routes that don't need authentication
     var routesThatDontRequireAuth = ['/login', '/register', '/confirmEmail', '/confirmFamily', '/admin'];
@@ -88,8 +92,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize'])
             function(count) {
               $rootScope.$broadcast('newfamilyrequests',count);
             });
-      };
+      }
       
     });
-})
-    
+  });

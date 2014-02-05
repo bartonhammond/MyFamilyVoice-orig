@@ -16,11 +16,11 @@ angular.module('fv')
           }, function(error) {
             console.log(error);
           });
-    }
+    };
 
     $scope.setRole = function(index) {
       $scope.role = $scope.roles[index];
-    }
+    };
     $scope.addCurrentUser = function() {
       console.log('addingCurrentUser');
       var relation = $scope.role._role.getUsers();
@@ -30,17 +30,16 @@ angular.module('fv')
           function(role) {
             console.log(role);
             $scope.init();
-            }
-          ,function(error) {
+          },
+          function(error) {
             console.log(error);
           });
-      
-    }
+    };
     var findSocialUsers = function() {
       var query = new Parse.Query(Parse.User);
       query.equalTo('isSocial',true);
       return query.find();
-    }
+    };
     $scope.createUpdateRole = function() {
       if ($scope.roleForm.$valid) {
         var roleACL = new Parse.ACL();
@@ -70,6 +69,6 @@ angular.module('fv')
         $scope.roleForm.submitted = true;
       }
       
-    }
+    };
 
   });
