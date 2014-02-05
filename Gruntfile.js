@@ -17,6 +17,9 @@ module.exports = function (grunt) {
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
 
+  // Ability to check which branch we're on
+  grunt.loadNpmTasks('grunt-checkbranch');
+
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
@@ -338,6 +341,7 @@ module.exports = function (grunt) {
   });
   grunt.registerTask('dev', function () {
     grunt.task.run([
+      "checkbranch:develop",
       'dist',
       'clean:harpDev',
       'copy:configDev',
@@ -349,6 +353,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('prod', function () {
     grunt.task.run([
+      "checkbranch:master",
       'dist',
       'clean:harpProd',
       'copy:configProd',

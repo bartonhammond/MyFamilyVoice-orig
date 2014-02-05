@@ -16,14 +16,6 @@ var twilioAccountSID =  config.accounts.twilio.accountSID;
 var twilioAuthToken = config.accounts.twilio.authToken;
 var twilioAppSID = config.accounts.twilio.appSID;
 
-//loginRadius
-var loginRadiusAPIKey = config.accounts.loginRadius.apiKey;
-var loginRadiusAPISecret = config.accounts.loginRadius.apiSecret;
-
-//Mandrill
-var mandrillKey = config.accounts.mandrill.key;
-
-var Activity = Parse.Object.extend('Activity');
 var CallSid = Parse.Object.extend('CallSid');
 var RegisterUser = Parse.Object.extend('RegisterUser');
 var ConfirmEmail = Parse.Object.extend('ConfirmEmail');
