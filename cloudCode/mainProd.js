@@ -490,16 +490,11 @@ var createConfirmEmail = function(user, response) {
  * Use Parse's RPC functionality to make an outbound call
  */
 Parse.Cloud.define('sendConfirmEmail', function(request, response) {
-  console.log('sendConfirmEmail user:');
-  console.log(request);
   var user = JSON.parse(request.body);
-  console.log(user);
   
   Parse.Promise.when([createConfirmEmail(user, response)]).then(
     function(confirmEmail) {
-      console.log('sendConfirmEmail create');
-      
-      var link = "https://myfamilyvoice.com/master.html#/confirmEmail/" 
+      var link = config.accounts.site + "/master.html#/confirmEmail/" 
       link += confirmEmail.get('link');
       
       var params = {
@@ -1074,7 +1069,7 @@ Parse.Cloud.afterSave("Family", function(request) {
                      findUser({userId: kin.objectId})])
     .then(
       function(family, kin) {
-        var url = "https://myfamilyvoice.com/master.html#/confirmFamily/"  + link;
+        var url = config.accounts.site + "/master.html#/confirmFamily/"  + link;
         var params = {
           "key": mandrillKey,
           "template_name": config.accounts.mandrill.family,
