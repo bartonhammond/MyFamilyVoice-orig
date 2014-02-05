@@ -16,14 +16,6 @@ var twilioAccountSID =  config.accounts.twilio.accountSID;
 var twilioAuthToken = config.accounts.twilio.authToken;
 var twilioAppSID = config.accounts.twilio.appSID;
 
-//loginRadius
-var loginRadiusAPIKey = config.accounts.loginRadius.apiKey;
-var loginRadiusAPISecret = config.accounts.loginRadius.apiSecret;
-
-//Mandrill
-var mandrillKey = config.accounts.mandrill.key;
-
-var Activity = Parse.Object.extend('Activity');
 var CallSid = Parse.Object.extend('CallSid');
 var RegisterUser = Parse.Object.extend('RegisterUser');
 var ConfirmEmail = Parse.Object.extend('ConfirmEmail');
@@ -41,6 +33,7 @@ function logErrors(err, req, res, next) {
 // Create an Express web app (more info: http://expressjs.com/)
 var app = express();
 app.use(logErrors);
+
 app.use(express.bodyParser());
 
 /**
@@ -263,7 +256,6 @@ app.get('/callback', function(request, response) {
  * see https://www.loginradius.com/account/manage
  */
 app.post('/logincallback/', function(request, response) {
-  console.log('logincallback');
   lr.loginradiusauth(request.body.token ,loginRadiusAPISecret,function(isauthenticated,profile) {
     if(isauthenticated){
       response.write(profile);
@@ -401,16 +393,11 @@ Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
  * Find user - expect request to be {userId: id}
  */
 var findUser = function(request) {
-  console.log('findUser request');
-  console.log(request);
   var id = request.userId;
-  console.log('findUser id: ' + id);
   var promise = new Parse.Promise();
   var query = new Parse.Query(Parse.User);
   query.get(id, {
     success: function(user) {
-      console.log('findUser:');
-      console.log(user);
       promise.resolve(user);
     },
     error: function(error) {
@@ -502,16 +489,11 @@ var createConfirmEmail = function(user, response) {
  * Use Parse's RPC functionality to make an outbound call
  */
 Parse.Cloud.define('sendConfirmEmail', function(request, response) {
-  console.log('sendConfirmEmail user:');
-  console.log(request);
   var user = JSON.parse(request.body);
-  console.log(user);
   
   Parse.Promise.when([createConfirmEmail(user, response)]).then(
     function(confirmEmail) {
-      console.log('sendConfirmEmail create');
-      
-      var link = "https://myfamilyvoice.com/master.html#/confirmEmail/" 
+      var link = config.accounts.site + "/master.html#/confirmEmail/" 
       link += confirmEmail.get('link');
       
       var params = {
@@ -982,11 +964,6 @@ Parse.Cloud.define('subscribeToFamily', function(request, response) {
  * Join Family - the logged in user is joining the params.userId family
  */
 Parse.Cloud.define('addToFamily', function(request, response) {
-  console.log('joinFamily');
-
-  console.log('user joining: ' + request.user.id);
-  console.log(request.params);
-  console.log('family userId: ' + request.params.userId);
   Parse.Promise.when([findUser({userId: request.user.id}),
                       findUser({userId: request.params.userId})])
     .then(
@@ -1015,8 +992,6 @@ Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
       })
     .then(
       function(count) {
-        console.log('unapprovedFamilyRequestCount: ' + count);
-        console.log(count);
         response.success(count);
       },
       function(error) {
@@ -1093,7 +1068,7 @@ Parse.Cloud.afterSave("Family", function(request) {
                      findUser({userId: kin.objectId})])
     .then(
       function(family, kin) {
-        var url = "https://myfamilyvoice.com/master.html#/confirmFamily/"  + link;
+        var url = config.accounts.site + "/master.html#/confirmFamily/"  + link;
         var params = {
           "key": mandrillKey,
           "template_name": config.accounts.mandrill.family,

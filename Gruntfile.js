@@ -341,7 +341,7 @@ module.exports = function (grunt) {
   });
   grunt.registerTask('dev', function () {
     grunt.task.run([
-      "checkbranch:develop",
+      'checkbranch:develop',
       'dist',
       'clean:harpDev',
       'copy:configDev',
@@ -353,7 +353,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('prod', function () {
     grunt.task.run([
-      "checkbranch:master",
+      'checkbranch:master',
       'dist',
       'clean:harpProd',
       'copy:configProd',

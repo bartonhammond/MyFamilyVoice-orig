@@ -256,7 +256,6 @@ app.get('/callback', function(request, response) {
  * see https://www.loginradius.com/account/manage
  */
 app.post('/logincallback/', function(request, response) {
-  console.log('logincallback');
   lr.loginradiusauth(request.body.token ,loginRadiusAPISecret,function(isauthenticated,profile) {
     if(isauthenticated){
       response.write(profile);
