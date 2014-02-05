@@ -336,7 +336,7 @@ module.exports = function (grunt) {
       'copy:vendorFonts'
     ]);
   });
-  grunt.registerTask('harpdev', function () {
+  grunt.registerTask('dev', function () {
     grunt.task.run([
       'dist',
       'clean:harpDev',
@@ -347,7 +347,7 @@ module.exports = function (grunt) {
     ]);
   });
 
-  grunt.registerTask('harpprod', function () {
+  grunt.registerTask('prod', function () {
     grunt.task.run([
       'dist',
       'clean:harpProd',

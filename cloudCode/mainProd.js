@@ -15,9 +15,7 @@ var Image = require("parse-image");
 var twilioAccountSID =  config.accounts.twilio.accountSID;
 var twilioAuthToken = config.accounts.twilio.authToken;
 var twilioAppSID = config.accounts.twilio.appSID;
-console.log('twilioAccountSID:' + twilioAccountSID);
-console.log('twilioAuthToken:' + twilioAuthToken);
-console.log('twilioAppSID:' + twilioAppSID);
+
 //loginRadius
 var loginRadiusAPIKey = config.accounts.loginRadius.apiKey;
 var loginRadiusAPISecret = config.accounts.loginRadius.apiSecret;

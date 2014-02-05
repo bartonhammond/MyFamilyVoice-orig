@@ -15,9 +15,7 @@ var Image = require("parse-image");
 var twilioAccountSID =  config.accounts.twilio.accountSID;
 var twilioAuthToken = config.accounts.twilio.authToken;
 var twilioAppSID = config.accounts.twilio.appSID;
-console.log('twilioAccountSID:' + twilioAccountSID);
-console.log('twilioAuthToken:' + twilioAuthToken);
-console.log('twilioAppSID:' + twilioAppSID);
+
 //loginRadius
 var loginRadiusAPIKey = config.accounts.loginRadius.apiKey;
 var loginRadiusAPISecret = config.accounts.loginRadius.apiSecret;
@@ -403,11 +401,16 @@ Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
  * Find user - expect request to be {userId: id}
  */
 var findUser = function(request) {
+  console.log('findUser request');
+  console.log(request);
   var id = request.userId;
+  console.log('findUser id: ' + id);
   var promise = new Parse.Promise();
   var query = new Parse.Query(Parse.User);
   query.get(id, {
     success: function(user) {
+      console.log('findUser:');
+      console.log(user);
       promise.resolve(user);
     },
     error: function(error) {
@@ -1002,11 +1005,9 @@ Parse.Cloud.define('addToFamily', function(request, response) {
 * Return count of outstanding requests
 */
 Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
-  console.log('unapprovedFamilyRequestCount userId: ' + request.user.id);
   findUser({userId: request.user.id})
     .then(
       function(user) {
-        console.log('unapprovedFamilyRequestCount found user');
         var query = new Parse.Query(Family);
         query.equalTo('family', user);
         query.equalTo('approved', false);
