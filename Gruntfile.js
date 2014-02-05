@@ -19,6 +19,9 @@ module.exports = function (grunt) {
 
   // Ability to check which branch we're on
   grunt.loadNpmTasks('grunt-checkbranch');
+  
+  //Concat files 
+  grunt.loadNpmTasks('grunt-contrib-concat');
 
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);

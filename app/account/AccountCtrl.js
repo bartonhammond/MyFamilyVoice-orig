@@ -17,7 +17,7 @@ angular.module('fv')
       $scope.photoFile = element.files[0];
     }
     $scope.getThumbnail = function() {
-      return Parse.User.current().get('thumbnail') ? 
+      return !_.isUndefined(Parse.User.current().get('thumbnail')) ? 
         Parse.User.current().get('thumbnail')._url
         :
         null;

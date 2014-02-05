@@ -1,5 +1,5 @@
 'use strict';
-angular.module('fv', ['ngRoute', 'ngSanitize', 'ngCollection'])
+angular.module('fv', ['ngRoute', 'ngSanitize'])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {

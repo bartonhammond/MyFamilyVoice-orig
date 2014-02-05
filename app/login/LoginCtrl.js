@@ -22,7 +22,6 @@ angular.module('fv')
 
     function Successfullylogin() {
       LoginRadiusSDK.getUserprofile(function (data) {
-        console.log(JSON.stringify(data));
         
         Parse.Cloud.run('loginWithSocialLogin',data)
           .then(
