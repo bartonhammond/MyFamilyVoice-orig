@@ -327,10 +327,7 @@ var createRegisterUser = function(request, response) {
  * find registerUser
  */
 var findRegisteredUser = function(request, response) {
-  console.log('findRegisteredUser: ' );
-  console.log(request.body);
   var user = JSON.parse(request.body);
-  console.log(user);
   var query = new Parse.Query(RegisterUser);   
   query.equalTo("provider", user.Provider);
   query.equalTo("providerId", user.ID);
@@ -338,8 +335,6 @@ var findRegisteredUser = function(request, response) {
 
   query.find()
     .then(function(results) {
-      console.log('findRegisteredUser: results:');
-      console.log(results);
       //Not found check
       if (results.length === 0) {
         promise.reject('register user not found');
@@ -378,12 +373,8 @@ Parse.Cloud.define('registerSocialLogin', function(request, response) {
  * Find the registeredUser or error 
  */
 Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
-  console.log('loginWithSocialLogin request');
-  console.log(request);
   Parse.Promise.when([findRegisteredUser(request, response)]).then(
     function(user) {
-      console.log('loginWithSocialLogin found user');
-      console.log(user);
       response.success(user);
     },
     function(error) {

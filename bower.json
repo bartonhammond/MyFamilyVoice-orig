@@ -1,5 +1,5 @@
 {
-  "name": "FamilyVoice",
+  "name": "MyFamilyVoice",
   "version": "0.0.1",
   "dependencies": {
     "bootstrap" : "~3.0.3",
@@ -10,7 +10,6 @@
     "angular-sanitize": "~1.2.4",
     "angular-route": "~1.2.4",
     "bootstrap-wysihtml5": "git://github.com/jhollingworth/bootstrap-wysihtml5.git",
-    "angular-collection": "git://github.com/bartonhammond/angular-collection.git",
     "underscore": "~1.5.2"
   },
   "resolutions": {
