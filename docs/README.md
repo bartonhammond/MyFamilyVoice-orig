@@ -30,6 +30,9 @@ MyFamilyVoice records the voice of your family for future generations
 
 ## Mandrill
 *  Email sending
+*  The site mandrill references in the link is from  cloucCode/config.accounts.site
+*  The mandrill config is in cloud - update to different template
+*  and when merged to master and pushed it will pick up the new template
 
 ## MailChimp
 *  Used to create Template that is sent to Mandrill

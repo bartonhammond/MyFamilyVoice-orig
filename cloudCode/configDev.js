@@ -8,10 +8,5 @@ exports.accounts = {
   loginRadius: {
     apiKey: 'cf3d185d-0ab6-45f1-9b52-d62cb26157ac',
     apiSecret: '324c8612-7ef3-41ca-8fc1-8b89f182be61'
-  },
-  mandrill: {
-    key: '4BjxT9QwZCAb-vs1IlON-g',
-    welcome: 'welcome',
-    family: 'family'
   }
 }

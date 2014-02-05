@@ -161,15 +161,6 @@ module.exports = function (grunt) {
             rename: function(dest) {
               return dest + '/config.js';
             }
-          },
-          {
-            src: ['<%= fv.devCloudCode %>'],
-            dest: '<%= parse_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/main.js';
-            }
           }
         ]
       },
@@ -191,15 +182,6 @@ module.exports = function (grunt) {
             expand: true,
             rename: function(dest) {
               return dest + '/config.js';
-            }
-          },
-          {
-            src: ['<%= fv.prodCloudCode %>'],
-            dest: '<%= parse_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/main.js';
             }
           }
         ]

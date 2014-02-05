@@ -16,8 +16,6 @@ module.exports = {
     css: ['styles/*.css'],
     devCloudConfig: 'cloudCode/configDev.js',
     prodCloudConfig: 'cloudCode/configProd.js',
-    devCloudCode: 'cloudCode/mainDev.js',
-    prodCloudCode: 'cloudCode/mainProd.js',
     devAngularConfig:'config/devAngularConfig.js',
     prodAngularConfig:'config/prodAngularConfig.js',
     images: ['images/*.png', 'images/*.jpg', 'images/*.gif']

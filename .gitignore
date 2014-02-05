@@ -4,3 +4,4 @@ MyFamilyVoice.iml
 bower_components
 public
 **/*.*~
+cloud/config.js

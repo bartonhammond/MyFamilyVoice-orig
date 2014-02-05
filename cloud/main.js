@@ -1,6 +1,7 @@
 // Include Cloud Code module dependencies
 var config = require('cloud/config.js');
 var lr = require('cloud/loginradius.js');
+var mandrill = require('cloud/mandrill.js');
 
 var express = require('express');
 var twilio = require('twilio');
@@ -497,8 +498,8 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
       link += confirmEmail.get('link');
       
       var params = {
-        "key": mandrillKey,
-        "template_name": config.accounts.mandrill.welcome,
+        "key": mandrill.config.key,
+        "template_name": mandrill.config.welcome,
         "template_content": [
           
         ],
@@ -1070,8 +1071,8 @@ Parse.Cloud.afterSave("Family", function(request) {
       function(family, kin) {
         var url = config.accounts.site + "/master.html#/confirmFamily/"  + link;
         var params = {
-          "key": mandrillKey,
-          "template_name": config.accounts.mandrill.family,
+          "key": mandrill.config.key,
+          "template_name": mandril.config.family,
           "template_content": [
           ],
           "message": {
