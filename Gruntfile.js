@@ -393,6 +393,14 @@ module.exports = function (grunt) {
     ]);
   });
 
+  grunt.registerTask('devQuick', function () {
+    grunt.task.run([
+      'devPrep',
+      'concat:html',
+      'sync:publicToHarpDev'
+    ]);
+  });
+
   grunt.registerTask('devMin', function() {
     grunt.task.run([
       'devPrep',

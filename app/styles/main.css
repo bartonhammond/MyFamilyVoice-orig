@@ -20,7 +20,6 @@ h1 {
   font-weight: 800;
   font-size: 62px;
   line-height: 60px;
-  text-transform: uppercase;
   color: #FFFFFF;
   margin: 0;
   text-shadow: 0 1px 1px rgba(0,0,0,.4);
@@ -56,7 +55,9 @@ p {
 }
 
 p.lead {
-  color: #ff755a;
+  color: #FF755A;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 a {
@@ -357,19 +358,26 @@ a:hover {
 .carousel .item {
   height: 650px;
 }
-
+.carousel-indicators li {
+    background-color: #FF755A;
+}
 .one {
-  background: url(../images/header1.jpg) no-repeat center center;
+  background: url(../images/dad.jpg) no-repeat;// center center;
   background-size: cover;
 }
 
 .two {
-  background: url(../images/header2.jpg) no-repeat center center;
+  background: url(../images/joenerma.jpg) no-repeat center center;
   background-size: cover;
 }
 
 .three {
-  background: url(../images/header3.jpg) no-repeat center center;
+  background: url(../images/me.jpg) no-repeat center center;
+  background-size: cover;
+}
+
+.four {
+  background: url(../images/marilyn.jpg) no-repeat center center;
   background-size: cover;
 }
 
