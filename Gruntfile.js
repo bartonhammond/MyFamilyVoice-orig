@@ -440,6 +440,15 @@ module.exports = function (grunt) {
     ]);
   });
 
+  grunt.registerTask('prodQuick', function () {
+    grunt.task.run([
+      'prodPrep',
+      'concat:html',
+      'sync:publicToHarpProd',
+      'sync:harpJsonProd'
+    ]);
+  });
+
   grunt.registerTask('prodMin', function () {
     grunt.task.run([
       'prodPrep',
