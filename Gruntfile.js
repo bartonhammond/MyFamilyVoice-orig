@@ -426,7 +426,7 @@ module.exports = function (grunt) {
       'prodPrep',
       'concat:html',
       'sync:publicToHarpProd',
-      'copy:harpJsonProd',
+      'sync:harpJsonProd',
       'shell:parseProduction',
       'shell:harpIOProduction'
     ]);
@@ -440,7 +440,7 @@ module.exports = function (grunt) {
       'closure-compiler',
       'concat:htmlMin',
       'sync:publicToHarpProd',
-      'copy:harpJsonProd',
+      'sync:harpJsonProd',
       'shell:parseProduction',
       'shell:harpIOProduction'
     ]);
