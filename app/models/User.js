@@ -1,4 +1,5 @@
 'use strict';
+
 angular.module('fv').
   factory('User', function($q) {
     
@@ -57,7 +58,7 @@ angular.module('fv').
         Parse.User.current().save(Parse.User.current().attributes)
           .then(
             function(user) {
-              defer.resolve();
+              defer.resolve(user);
             }, function(error) {
               defer.reject(error);
             });

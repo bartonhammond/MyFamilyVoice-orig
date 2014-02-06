@@ -16,3 +16,5 @@
 *  job to send email when duration has reached
 *    when recordedDate has arrived
 *
+##
+* copy config.js before concat/ngmin

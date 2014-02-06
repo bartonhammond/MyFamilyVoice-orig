@@ -9,19 +9,22 @@ angular.module('fv')
       //Clone so changes are only made when successfull put
       User.setProperties(Parse.User.current());
       $scope.user = User;
-      $scope.photo = "";
+      $scope.photo = '';
     };
+
     $scope.setFiles = function(element) {
       $scope.photo = element.files[0];
       //The directive resets the model so keep this safe
       $scope.photoFile = element.files[0];
-    }
+    };
+
     $scope.getThumbnail = function() {
-      return !_.isUndefined(Parse.User.current().get('thumbnail')) ? 
+      return !_.isUndefined(Parse.User.current().get('thumbnail')) ?
         Parse.User.current().get('thumbnail')._url
         :
         null;
-    }
+    };
+
     $scope.save = function() {
       if ($scope.signupForm.$valid) {
         requestNotificationChannel.requestStarted();
@@ -59,9 +62,9 @@ angular.module('fv')
             ctrl.$setValidity('validfilesize', false);
             return undefined;
           }
-        })
+        });
       }
-    }
+    };
   }).directive('validfiletype', function() {
     return {
       require: 'ngModel',
@@ -76,7 +79,7 @@ angular.module('fv')
             ctrl.$setValidity('validfiletype', false);
             return undefined;
           }
-        })
+        });
       }
-    }
+    };
   });

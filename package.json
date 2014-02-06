@@ -23,7 +23,7 @@
     "grunt-contrib-watch": "~0.5.2",
     "grunt-google-cdn": "~0.2.0",
     "grunt-newer": "~0.5.4",
-    "grunt-ngmin": "~0.0.2",
+    "grunt-ngmin": "0.0.3",
     "grunt-rev": "~0.1.0",
     "grunt-svgmin": "~0.2.0",
     "grunt-usemin": "~2.0.0",
@@ -44,7 +44,11 @@
     "karma": "~0.10.6",
     "karma-ng-html2js-preprocessor": "~0.1.0",
     "grunt-shell": "~0.6.1",
-    "grunt-checkbranch": "~0.2.2"
+    "grunt-checkbranch": "~0.2.2",
+    "ngmin": "~0.4.0",
+    "grunt-closure-compiler": "~0.0.21",
+    "grunt-copy-to": "0.0.10",
+    "grunt-sync": "0.0.5"
   },
   "engines": {
     "node": ">=0.8.0"

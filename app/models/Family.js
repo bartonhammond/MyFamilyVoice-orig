@@ -13,7 +13,7 @@ angular.module('fv').
       }
       this.toggleApproval = function() {
         this.approved = !this.approved;
-      }
+      };
       this.save = function() {
         var defer = $q.defer();
         this.family.set('approved',this.approved);
@@ -28,7 +28,7 @@ angular.module('fv').
           });
  
         return defer.promise;
-      }
+      };
       this.isFamily = function(familyUser, currentUser) {
         var defer = $q.defer();
         var Family = Parse.Object.extend('Family');
@@ -46,7 +46,7 @@ angular.module('fv').
             });
         
         return defer.promise;
-      }
+      };
       /**
        * Constrain list to only family requests for user
        */
@@ -68,10 +68,10 @@ angular.module('fv').
             });
         
         return defer.promise;
-      }
+      };
       /**
        * Add current user to family 
-       */ 
+       */
       this.join = function(userId) {
         var defer = $q.defer();
 
@@ -85,10 +85,10 @@ angular.module('fv').
             });
         
         return defer.promise;
-      }
+      };
       /**
        * Add current user to family 
-       */ 
+       */
       this.subscribe = function(userId, status) {
         var defer = $q.defer();
 
@@ -103,11 +103,11 @@ angular.module('fv').
             });
         
         return defer.promise;
-      }
+      };
       /**
        * Check if there are any outstanding requests
-       */ 
-      this.checkRequests = function(userId) {
+       */
+      this.checkRequests = function() {
         var defer = $q.defer();
 
         Parse.Cloud.run('unapprovedFamilyRequestCount')
@@ -120,7 +120,7 @@ angular.module('fv').
             });
         
         return defer.promise;
-      }
-    }    
+      };
+    };
     return Family;
   });

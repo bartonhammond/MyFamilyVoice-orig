@@ -31,8 +31,9 @@ angular.module('fv')
             $scope.search.items[index].familyRequestSent = true;
           },
           function(error) {
+            console.log(error);
           });
-    }
+    };
     /**
      * On search, only Users have Join Family
      */
@@ -45,12 +46,13 @@ angular.module('fv')
             $scope.search.items[index].isSubscribed = !status;
           },
           function(error) {
+            console.log(error);
           });
-    }
+    };
     $scope.listened = function(index) {
       Activity.listened($scope.search.items[index].objectId,
                         $scope.search.items[index].userId);
-    }
+    };
     $scope.edit = function(activity) {
       $location.path('/activities/edit/' + activity.objectId);
     };

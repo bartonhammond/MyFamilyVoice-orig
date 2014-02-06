@@ -60,7 +60,7 @@ driver.get(harpIO.config[process.argv[2]].url);
 //Click the Publish button
 driver.findElement(webdriver.By.css('.btn.btn-primary.appmenu-publish-btn.js-build-app.effeckt-button')).click();
 
-driver.sleep(5000);
+driver.sleep(10000);
 
 driver.quit();
 

@@ -1,12 +1,9 @@
 'use strict';
-
 angular.module('fv')
   .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, Activity, User, Family) {
-
+    var self = this;
     //if this is an edit request, it will have an objectId parameter
-    if($routeParams.action ==='edit' && $routeParams.id
-      ||
-      $routeParams.action ==='record' && $routeParams.id) {
+    if($routeParams.action ==='edit' && $routeParams.id || $routeParams.action ==='record' && $routeParams.id) {
       $scope.action = $routeParams.action;
       //let's find the activity object from our collection of activities
       (new Activity()).get($routeParams.id)
@@ -15,6 +12,7 @@ angular.module('fv')
             var _activity = new Activity(activity);
             $scope.activity = _activity;
           }, function(error) {
+            console.log(error);
             return $location.path('/activities');
           });
       
@@ -24,7 +22,7 @@ angular.module('fv')
           .then(
             function(familyUser) {
               $scope.user = familyUser;
-              return (new Family()).isFamily(familyUser, Parse.User.current())
+              return (new Family()).isFamily(familyUser, Parse.User.current());
             })
           .then(
             function(family) {
@@ -66,40 +64,40 @@ angular.module('fv')
     }
     $scope.isRecording = function() {
       return $scope.action === 'record';
-    }
+    };
     $scope.hasFile = function() {
       return ($scope.activity && $scope.activity.file);
-    }
+    };
     $scope.submit = function() {
       $scope.activity.save()
       .then(
-        function(activity) {
+        function() {
           //In case user came from viewing someones activites
           window.history.back();
         },
         function(error) {
           $scope.error = error;
         });
-    }
+    };
     $scope.beginRecording = function() {
       $scope.recording = true;
       Twilio.Device.connect({activity: $scope.activity.id,
                              user: Parse.User.current().id});
-    }
+    };
     $scope.stopRecording = function() {
       $scope.recording = false;
-      self.connection.sendDigits("#");
-    }
+      self.connection.sendDigits('#');
+    };
     $scope.init = function() {
       $scope.recording = false;
       Parse.Cloud.run('getToken')
         .then(
           function(data) {
             console.log(data);
-            Twilio.Device.setup(data,{"debug":true});
+            Twilio.Device.setup(data,{'debug':true});
           });
       
-    }
+    };
     $scope.back = function() {
       window.history.back();
     };
@@ -107,11 +105,11 @@ angular.module('fv')
       self.connection = conn;
     });
  
-    Twilio.Device.ready(function (device) {
+    Twilio.Device.ready(function () {
       $('#status').text('Ready to start recording');
     });
     
-    Twilio.Device.offline(function (device) {
+    Twilio.Device.offline(function () {
       $('#status').text('Offline');
     });
     
@@ -121,7 +119,7 @@ angular.module('fv')
 
     Twilio.Device.connect(function(conn) {
       self.connection = conn;
-      $('#status').text("On Air");
+      $('#status').text('On Air');
       $('#status').css('color', 'red');
     });
     

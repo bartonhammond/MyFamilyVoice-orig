@@ -11,7 +11,7 @@ angular.module('fv')
       LoginRadius_SocialLogin.util.ready(function () { 
         $ui = LoginRadius_SocialLogin.lr_login_settings;
         $ui.interfacesize = "";
-        $ui.apikey = CONFIG.loginRadius.apiKey;
+        $ui.apikey = CONFIG.defaults.loginRadius.apiKey;
         $ui.callback=""; 
         $ui.lrinterfacecontainer ="interfacecontainerdiv"; 
         LoginRadius_SocialLogin.init(options);  

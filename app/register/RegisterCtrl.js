@@ -28,14 +28,14 @@ angular.module('fv')
               } else {
                 $scope.$apply($location.path('/account'));
               }
-            }, 
+            },
             function(response) {
               $scope.error = response.data.error;
             })
           .finally(
             function() {
               requestNotificationChannel.requestEnded();
-            });;
+            });
       } else {
         $scope.signupForm.submitted = true;
       }

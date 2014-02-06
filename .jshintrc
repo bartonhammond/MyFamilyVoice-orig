@@ -20,6 +20,9 @@
     "smarttabs": true,
     "globals": {
       "angular": false,
-    "_":true
+      "Parse": false,
+      "Twilio": false,
+      "$": false,
+       "_":true
     }
   }

@@ -1,6 +1,5 @@
 'use strict';
 
-angular.module('fv')
-  .controller('MainCtrl', function () {
-    
-  });
+angular.module('fv').controller('MainCtrl', function () {
+  
+});
