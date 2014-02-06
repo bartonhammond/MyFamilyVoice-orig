@@ -9,36 +9,48 @@
         <li data-target="#header" data-slide-to="0" class="active"></li>
         <li data-target="#header" data-slide-to="1"></li>
         <li data-target="#header" data-slide-to="2"></li>
+        <li data-target="#header" data-slide-to="3"></li>
       </ol>
       
       <div class="carousel-inner">
         <div class="item one active">
           <div class="container animated fadeInUp">
             <div class="carousel-caption">
-              <h1>Introducing Lava</h1>
-              <p class="lead margin-40"><em>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</em></p>
-              <a class="btn-main" href="about.html"><i class="icon-chevron-right"></i> More</a>
+              <h1>Introducing MyFamilyVoice</h1>
+              <p class="lead margin-40"><em>This is my father - I
+              decided to create MyFamilyVoice so I could listen to him
+              tell his stories.</em></p>
             </div>
           </div>
         </div>
         <div class="item two">
           <div class="container">
             <div class="carousel-caption">
-              <h1>Built With Bootstrap</h1>
-              <p class="lead margin-40"><em>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</em></p>
-              <a class="btn-main" href="services.html"><i class="icon-chevron-right"></i> More</a>
+              <h1>Audio recordings that last</h1>
+              <p class="lead margin-40"><em>This is my sister and her
+              husband - their audio stories  are here for their grand children.</em></p>
             </div>
           </div>
         </div>
         <div class="item three">
           <div class="container">
             <div class="carousel-caption">
-              <h1>100% Responsive</h1>
-              <p class="lead margin-40"><em>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</em></p>
-              <a class="btn-main" href="pricing.html"><i class="icon-chevron-right"></i> More</a>
+              <h1>MyFamilyVoice was created at this table</h1>
+              <p class="lead margin-40"><em>That's me, the author of
+              MyFamilyVoice - created for my family and yours.</em></p>
             </div>
           </div>
         </div>
+        <div class="item four">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>My biggest supporter - my wife</h1>
+              <p class="lead margin-40"><em>Without my wife's support,
+              I would not have been able to create MyFamilyVoice.</em></p>
+            </div>
+          </div>
+        </div>
+
       </div>
       <a class="left carousel-control hidden-xs" href="#header" data-slide="prev"><i class="fa fa-angle-left"></i></a>
       <a class="right carousel-control hidden-xs" href="#header" data-slide="next"><i class="fa fa-angle-right"></i></a>
@@ -55,16 +67,19 @@
             <a href="#">
               <i class="fa fa-mobile-phone fa-4x light-gray"></i>
               <h3>Mobile Responsive</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+              <p>MyFamilyVoice is written to run on the modern smart
+              phones and tablets.  Take MyFamilyVoice with you when
+              you visit your relatives to record their stories.</p>
             </a>
           </div>
           
           <!--Seciton 2-->
           <div class="col-sm-4 service margin-30">
             <a href="#">
-              <i class="fa fa-thumbs-up fa-4x light-gray"></i>
-              <h3>Built With Bootstrap</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+              <i class="fa fa-cloud fa-4x light-gray"></i>
+              <h3>Access audio recordings any time, any where</h3>
+              <p>MyFamilyVoice provides the ability to record and
+              listen to your family's story - any time - any place.</p>
             </a>
 
           </div>
@@ -72,9 +87,10 @@
           <!--Seciton 3-->
           <div class="col-sm-4 service margin-30">
             <a href="#">
-              <i class="fa fa-flag fa-4x light-gray"></i>
-              <h3>Over 249 Icons</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+              <i class="fa fa-search fa-4x light-gray"></i>
+              <h3>Search for family members, questions, and answers</h3>
+              <p>Each audio recording is transcribed so you can search
+              the stories too.</p>
             </a>
 
           </div>
@@ -83,11 +99,11 @@
       </div>
     </section>
     <script>
-      !function ($) {
-         $(function(){
-           $('#header').carousel()
+      $(document).ready(function() {
+         $('.carousel').carousel({
+             interval: 5000
          })
-       }(window.jQuery)
+      });
     </script>
 
 
