@@ -769,13 +769,16 @@ Parse.Cloud.afterSave(Parse.User, function(request) {
 });
 var updateActivityViewsCount = function(activity) {
   activity.increment('views');
+  Parse.Cloud.useMasterKey();
   return activity.save();
 };
 var updateActivitiesUserAudioViewCount = function(user) {
+  Parse.Cloud.useMasterKey();
   user.increment('audioViews');
   return user.save();
 };
 var updateUserViewedCount = function(user) {
+  Parse.Cloud.useMasterKey();
   user.increment('viewed');
   return user.save();
 };
@@ -794,15 +797,13 @@ Parse.Cloud.define('activityListened', function(request, response) {
                                    updateUserViewedCount(user)]);
       })
     .then(
-      function(activity, activitiesUser, user) {
-        console.log('activityListened updated');
-        console.log(activity);
-        console.log(activitiesUser);
-        console.log(user);
-      })
-    .always(
       function() {
         response.success();
+      },
+      function(error) {
+        console.log('activityListened error: ');
+        console.log(error);
+        response.error(error);
       });
 });
 /**
