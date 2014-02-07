@@ -1064,7 +1064,7 @@ Parse.Cloud.afterSave("Family", function(request) {
         var url = config.accounts.site + "/master.html#/confirmFamily/"  + link;
         var params = {
           "key": mandrill.config.key,
-          "template_name": mandril.config.family,
+          "template_name": mandrill.config.family,
           "template_content": [
           ],
           "message": {
@@ -1107,8 +1107,6 @@ Parse.Cloud.afterSave("Family", function(request) {
           url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
           body: params,
           success: function(data) {
-            console.log(data);
-            console.log('sendConfirmFamily success:');
             response.success(data);
           },
           error: function(error) {
@@ -1127,12 +1125,10 @@ Parse.Cloud.afterSave("Family", function(request) {
 Parse.Cloud.job("sendSubscriberEmails", function(request, status) {
   console.log('sendSubscriberEmails input');
   var query = new Parse.Query(SubscriptionJob);
-  console.log('query');
   query.first()
     .then(
       function(job) {
         console.log('sendSubscriberEmails job: ');
-        console.log(job);
         if (!job) {
           var subJob = new SubscriptionJob();
           return subJob.save({lastJob: moment().startOf('year'),
@@ -1145,7 +1141,6 @@ Parse.Cloud.job("sendSubscriberEmails", function(request, status) {
       })
     .then(
       function(savedJob) {
-        console.log(savedJob);
         // Set the job's success status
         status.success("Migration completed successfully.");
       }, 
