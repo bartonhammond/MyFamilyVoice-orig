@@ -50,7 +50,7 @@ angular.module('fv')
           });
     };
     $scope.listened = function(index) {
-      Activity.listened($scope.search.items[index].objectId,
+      (new Activity()).listened($scope.search.items[index].objectId,
                         $scope.search.items[index].userId);
     };
     $scope.edit = function(activity) {

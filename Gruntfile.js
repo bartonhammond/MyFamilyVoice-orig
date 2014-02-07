@@ -1,4 +1,3 @@
-// Generated on 2013-11-30 using generator-angular 0.6.0-rc.2
 'use strict';
 
 // # Globbing
@@ -138,6 +137,7 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
+        'cloud/main.js',
         'app/{,*/}*.js',
         '!app/js/**'
       ]
