@@ -44,27 +44,46 @@
             <div  class="control-group">
               <div class="controls">
                 <div class="input-prepend">
-                  <span class='fv-label'>Record your thoughts</span>
+                  <span ng-show="!recording"
+                        class='fv-label'>
+                    Press the Record button to record your story.<br>
+                    You have 30 seconds of recording time.
+                  </span>
+                  <span ng-show="recording"
+                        class='fv-label'>
+                    Press the Stop button to end  your recording.
+                  </span>
                   <br>
-                  <input type="button"  
-                         class='btn btn-primary'  
-                         id="call"
-                         value="Begin Recording"
-                         ng-disabled="recording"
-                         ng-click="beginRecording()"/>
-                  <br>
-                  <input type="button" 
-                         class='btn btn-primary' 
-                         id="hangup"
-                         value="Stop Recording"
-                         ng-disabled="!recording"
-                         ng-click="stopRecording()"/>
-                  <br>
+                  <!-- recording button -->
+                  <div ng-show="!recording"
+                       ng-click="beginRecording()" 
+                       class='contain-i-e-s'>
+                    <i id='recordIcon'
+                       class="fa fa-play-circle-o "></i>
+                    <div class='text-i-e-s'>
+                     
+                    </div>
+                  </div>
+                  <!-- recording button -->
+                  <div ng-show="recording"
+                       ng-click="stopRecording()" 
+                       class='contain-i-e-s'>
+                    <i id='stopIcon'
+                       class="fa fa-stop "></i>
+                    <div class='text-i-e-s'>
+                      <timer
+                         id='myTimer'
+                         countdown="30" 
+                         autostart="false"
+                         interval="1000">{{countdown}}
+                      </timer>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div id="status">Offline</div>
           </span>
+          <br><br>
           <hr>
            <!-- File ------------------------------------------>
            <span  ng-show="hasFile()">

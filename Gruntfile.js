@@ -55,6 +55,7 @@ module.exports = function (grunt) {
           'public/fv.js',
           'public/config/config.js',
           'public/js/loading.js',
+          'public/directives/timer.js',
           'public/main/MainCtrl.js',
           'public/navbar/NavbarCtrl.js',
           'public/login/LoginCtrl.js',
