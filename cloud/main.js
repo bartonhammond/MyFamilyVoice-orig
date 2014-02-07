@@ -124,6 +124,7 @@ var updateUserRecordingCount = function(user, activity) {
  * Update activity with file of recording
  */
 var updateActivity = function(activity,file) {
+  Parse.Cloud.useMasterKey();
   return activity.save({file: file,
                         recordedDate: new Date()
                        });
@@ -243,7 +244,9 @@ app.get('/callback', function(request, response) {
         response.send('ok');
       },
       function(error){
-        response.error(error);
+        console.log('callback error:');
+        console.log(error);
+        response.send(error);
       });
 });
 /**
@@ -270,6 +273,7 @@ Parse.Cloud.define('getToken', function(request, response) {
 
   //Create a capability token using the TwiML app with sid 
   capability.allowClientOutgoing(twilioAppSID);
+  capability.allowClientIncoming('alice');
 
   var token = capability.generate();
   response.success(token);

@@ -1,7 +1,8 @@
 'use strict';
 angular.module('fv')
-  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $location, Activity, User, Family) {
+  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $timeout, $location, Activity, User, Family) {
     var self = this;
+    $scope.recordingStarts = false;
     //if this is an edit request, it will have an objectId parameter
     if($routeParams.action ==='edit' && $routeParams.id || $routeParams.action ==='record' && $routeParams.id) {
       $scope.action = $routeParams.action;
@@ -86,9 +87,11 @@ angular.module('fv')
     };
     $scope.stopRecording = function() {
       $scope.recording = false;
+      $('#myTimer').hide();
       self.connection.sendDigits('#');
     };
     $scope.init = function() {
+      $('#myTimer').hide();
       $scope.recording = false;
       Parse.Cloud.run('getToken')
         .then(
@@ -101,33 +104,24 @@ angular.module('fv')
     $scope.back = function() {
       window.history.back();
     };
-    Twilio.Device.incoming(function(conn) {
-      self.connection = conn;
-    });
- 
-    Twilio.Device.ready(function () {
-      $('#status').text('Ready to start recording');
-    });
-    
-    Twilio.Device.offline(function () {
-      $('#status').text('Offline');
-    });
+
+    var status = function(message) {
+      console.log(message);
+    };
     
     Twilio.Device.error(function (error) {
-      $('#status').text(error);
+      status('error: ' + error.message);
     });
 
     Twilio.Device.connect(function(conn) {
       self.connection = conn;
-      $('#status').text('On Air');
-      $('#status').css('color', 'red');
+      $timeout(function() {
+        $('#myTimer').show();
+        $scope.$broadcast('timer-start');
+      },8500);
     });
-    
+
     Twilio.Device.disconnect(function (conn) {
       self.connection = conn;
-      console.log('disconnect');
-      console.log(conn);
-      $('#status').html('Recording ended');
-      $('#status').css('color', 'black');
     });
   });
