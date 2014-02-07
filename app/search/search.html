@@ -27,10 +27,11 @@
             <div class="btn-group btn-group-sm">
               <button ng-click="joinFamily($index)"
                       type="button" 
-                      ng-disabled="item.isSelf || item.isInFamily"
+                      ng-disabled="item.isSelf || item.familyStatus"
                       class="btn btn-default">
-                <span ng-if="item.isInFamily">In Family</span>
-                <span ng-if="!item.isInFamily">Join Family</span>
+                <span ng-if="item.familyStatus === 1">Pending</span>
+                <span ng-if="item.familyStatus === 2">In Family</span>
+                <span ng-if="!item.familyStatus">Join Family</span>
               </button>
             </div>
             <div ng-show="item.familyRequestSent" 

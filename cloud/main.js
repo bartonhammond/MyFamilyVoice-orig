@@ -1,3 +1,6 @@
+'use strict';
+/*jshint bitwise: false*/
+
 // Include Cloud Code module dependencies
 var config = require('cloud/config.js');
 var lr = require('cloud/loginradius.js');
@@ -8,9 +11,8 @@ var twilio = require('twilio');
 var url = require('url');
 var _ = require('underscore');
 
-var Buffer = require('buffer').Buffer;
 var moment = require('moment');
-var Image = require("parse-image");
+var ParseImage = require('parse-image');
 
 //Twilio
 var twilioAccountSID =  config.accounts.twilio.accountSID;
@@ -49,7 +51,7 @@ app.get('/record', function(request, response) {
   
   twiml.say('Welcome to My Family Voice!  Please record your thoughts at the beep.',
             {voice:'alice', language:'en-GB'})
-    .record({action:"/thanks",
+    .record({action:'/thanks',
              method:'GET',
              finishOnKey:'#',
              maxLength:'30'})
@@ -65,17 +67,11 @@ app.get('/record', function(request, response) {
  * recording
  */
 var makeSid = function(request, response) {
-  console.log('in makeSid');
   var parseQueryString = true;
   var queryData = url.parse(request.url, parseQueryString).query;
   var refererData = url.parse(request.headers.referer, parseQueryString).query;
 
   //Save the recordSid for reference in callback
-
-  console.log('RecordingSid: ' + queryData.RecordingSid);
-  console.log('refererData.activity: ' + refererData.activity);
-  console.log('refererData.user: ' + refererData.user);
-
   var callSid = new CallSid();
   callSid.save({
     sid: queryData.RecordingSid,
@@ -83,11 +79,10 @@ var makeSid = function(request, response) {
     user: refererData.user
   }, {
     success: function() {
-      console.log('makeSid: callSid saved');
       response.success(queryData);
     },
-    error: function(something, error) {
-      response.error('MakeSid:sid not saved');
+    error: function(error) {
+      response.error('MakeSid:sid not saved' + error.message);
     }
   });
 };
@@ -95,7 +90,6 @@ var makeSid = function(request, response) {
  * Save the recording 
  */
 var saveWave = function(httpResponse) {
-  console.log('saveWave');
   var file = new Parse.File('recording.mp3',{base64: httpResponse.buffer.toString('base64')});
   return file.save();
 };
@@ -103,11 +97,9 @@ var saveWave = function(httpResponse) {
  * Get the wave from Twilio
  */
 var getWave = function(request) {
-  console.log('getWave');
   var parseQueryString = true;
   var refererData = url.parse(request.headers.referer, parseQueryString).query;
-  console.log('getWave: recordingUrl:' + refererData.RecordingUrl);
-  return Parse.Cloud.httpRequest({url: refererData.RecordingUrl + ".mp3"});
+  return Parse.Cloud.httpRequest({url: refererData.RecordingUrl + '.mp3'});
 };
 /**
  * Update user recording count if new recording
@@ -132,7 +124,7 @@ var updateUserRecordingCount = function(user, activity) {
  * Update activity with file of recording
  */
 var updateActivity = function(activity,file) {
-  return activity.save({file: file, 
+  return activity.save({file: file,
                         recordedDate: new Date()
                        });
 };
@@ -140,9 +132,6 @@ var updateActivity = function(activity,file) {
  * Find activity by id and return promise
  */
 var findActivity = function(id) {
-  console.log('findActivity: ' + id);
-  Parse.Cloud.useMasterKey()
-
   var query = new Parse.Query(Activity);
   var promise = new Parse.Promise();
   query.get(id, {
@@ -165,8 +154,8 @@ var findSid = function(request) {
   var parseQueryString = true;
   var refererData = url.parse(request.headers.referer, parseQueryString).query;
   console.log('sid: ' + refererData.RecordingSid);
-  var query = new Parse.Query(CallSid);   
-  query.equalTo("sid", refererData.RecordingSid);
+  var query = new Parse.Query(CallSid);
+  query.equalTo('sid', refererData.RecordingSid);
   var promise = new Parse.Promise();
 
   query.find()
@@ -182,7 +171,23 @@ var findSid = function(request) {
     });
   return promise;
 };
-
+/**
+ * Find user - expect request to be {userId: id}
+ */
+var findUser = function(request) {
+  var id = request.userId;
+  var promise = new Parse.Promise();
+  var query = new Parse.Query(Parse.User);
+  query.get(id, {
+    success: function(user) {
+      promise.resolve(user);
+    },
+    error: function(error) {
+      promise.reject(error);
+    }
+  });
+  return promise;
+};
 /**
  * The thanks recording
  */
@@ -202,7 +207,7 @@ app.get('/thanks', function(request, response) {
       // Render the TwiML XML document
       response.type('text/xml');
       response.send(twiml.toString());
-    }, 
+    },
     error: function(error) {
       response.error(error);
     }
@@ -219,37 +224,25 @@ app.get('/callback', function(request, response) {
   
   Parse.Promise.when([findSid(request),
                       getWave(request)])
-     .then(
-       function(sid, httpResponse) {
-         console.log('callback sid');
-         console.log(sid);
-         console.log('userId: ' + sid.get('user'));
-         return Parse.Promise.when([saveWave(httpResponse),
-                                    findUser({userId: sid.get('user')}),
-                                    findActivity(sid.get('activity'))
-                                   ]);
-       })
     .then(
-     function(file, user, activity) {
-       console.log('callback file, user, activity');
-       console.log(file);
-       console.log(user)
-       console.log(activity);
-       return Parse.Promise.when([
-         updateUserRecordingCount(user, activity),
-         updateActivity(activity, file)
-       ]);
-     })
+      function(sid, httpResponse) {
+        return Parse.Promise.when([saveWave(httpResponse),
+                                   findUser({userId: sid.get('user')}),
+                                   findActivity(sid.get('activity'))
+                                  ]);
+      })
     .then(
-      function(userUpdate, activityUpdate) {
-        console.log('callback: userUpdate and activityUpdate result');
-        console.log(userUpdate);
-        console.log(activityUpdate);
+      function(file, user, activity) {
+        return Parse.Promise.when([
+          updateUserRecordingCount(user, activity),
+          updateActivity(activity, file)
+        ]);
+      })
+    .then(
+      function() {
         response.send('ok');
       },
       function(error){
-        console.log('callback error on updateActivity:');
-        console.log(error);
         response.error(error);
       });
 });
@@ -258,7 +251,7 @@ app.get('/callback', function(request, response) {
  * see https://www.loginradius.com/account/manage
  */
 app.post('/logincallback/', function(request, response) {
-  lr.loginradiusauth(request.body.token ,loginRadiusAPISecret,function(isauthenticated,profile) {
+  lr.loginradiusauth(request.body.token ,config.accounts.loginRadius.apiSecret,function(isauthenticated,profile) {
     if(isauthenticated){
       response.write(profile);
     } else {
@@ -273,12 +266,6 @@ app.listen();
 
 // Use Parse's RPC functionality to make an outbound call
 Parse.Cloud.define('getToken', function(request, response) {
-  // Create a Twilio REST API client - get your account SID and
-  // auth token at https://www.twilio.com/user/account
-  var client = new twilio.RestClient(
-    twilioAccountSID,
-    twilioAuthToken
-  );
   var capability = new twilio.Capability(twilioAccountSID, twilioAuthToken);
 
   //Create a capability token using the TwiML app with sid 
@@ -295,7 +282,7 @@ var guid = function(){
   var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = (d + Math.random()*16)%16 | 0;
     d = Math.floor(d/16);
-    return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+    return (c==='x' ? r : (r&0x7|0x8)).toString(16);
   });
   return uuid;
 };
@@ -303,11 +290,8 @@ var guid = function(){
 /**
  * Create registerUser
  */
-var createRegisterUser = function(request, response) {
-  console.log('createRegisterUser:');
+var createRegisterUser = function(request) {
   var user = JSON.parse(request.body);
-  console.log('user:');
-  console.log(user);
   var email = _.find(user.Email,function(address) {
     return address.Type === 'Primary';
   });
@@ -319,7 +303,7 @@ var createRegisterUser = function(request, response) {
     providerId: user.ID,
     firstName: user.FirstName,
     lastName: user.LastName,
-    primaryEmail: email ? email.Value : "",
+    primaryEmail: email ? email.Value : '',
     password: guid()
   });
 
@@ -327,11 +311,11 @@ var createRegisterUser = function(request, response) {
 /**
  * find registerUser
  */
-var findRegisteredUser = function(request, response) {
+var findRegisteredUser = function(request) {
   var user = JSON.parse(request.body);
-  var query = new Parse.Query(RegisterUser);   
-  query.equalTo("provider", user.Provider);
-  query.equalTo("providerId", user.ID);
+  var query = new Parse.Query(RegisterUser);
+  query.equalTo('provider', user.Provider);
+  query.equalTo('providerId', user.ID);
   var promise = new Parse.Promise();
 
   query.find()
@@ -341,8 +325,6 @@ var findRegisteredUser = function(request, response) {
         promise.reject('register user not found');
       } else {
         var user = results[0];
-        console.log('findRegisteredUser user:');
-        console.log(user);
         promise.resolve(user);
       }
       
@@ -354,17 +336,11 @@ var findRegisteredUser = function(request, response) {
 };
 // Use Parse's RPC functionality to make an outbound call
 Parse.Cloud.define('registerSocialLogin', function(request, response) {
-  console.log(request);
-
   Parse.Promise.when([createRegisterUser(request,response)]).then(
     function(user) {
-      console.log('getUUID createRegisterUser:');
-      console.log(user);
       response.success(user);
-    }, 
+    },
     function(error) {
-      console.log('getUUID createRegisterUser error');
-      console.log(error);
       response.error(error);
     });
 
@@ -378,29 +354,10 @@ Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
     function(user) {
       response.success(user);
     },
-    function(error) {
+    function() {
       response.error('Please register first');
     });
 });
-/**
- * Find user - expect request to be {userId: id}
- */
-var findUser = function(request) {
-  var id = request.userId;
-  var promise = new Parse.Promise();
-  var query = new Parse.Query(Parse.User);
-  query.get(id, {
-    success: function(user) {
-      promise.resolve(user);
-    },
-    error: function(error) {
-      console.log('findUser error');
-      console.log(error);
-      promise.reject(error);
-    }
-  });
-  return promise;
-}
 /**
  * Find confirmEmai record and return it or error
  */
@@ -409,8 +366,8 @@ var findConfirmEmail = function(request) {
   console.log(request);
   var link = JSON.parse(request.body);
   console.log('link: ' + link.link);
-  var query = new Parse.Query(ConfirmEmail);   
-  query.equalTo("link", link.link);
+  var query = new Parse.Query(ConfirmEmail);
+  query.equalTo('link', link.link);
   var promise = new Parse.Promise();
 
   query.find()
@@ -462,12 +419,9 @@ Parse.Cloud.define('confirmEmail', function(request, response) {
 /**
  * Create email for confirmation
  */
-var createConfirmEmail = function(user, response) {
-  console.log('createConfirmEmail:');
-  console.log('user:');
-  console.log(user);
+var createConfirmEmail = function(user) {
   var link = guid() + guid();
-  link = link.replace(/-/g,"");
+  link = link.replace(/-/g,'');
   var confirmEmail = new ConfirmEmail();
   Parse.Cloud.useMasterKey();
   return confirmEmail.save({
@@ -486,37 +440,37 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
   
   Parse.Promise.when([createConfirmEmail(user, response)]).then(
     function(confirmEmail) {
-      var link = config.accounts.site + "/master.html#/confirmEmail/" 
+      var link = config.accounts.site + '/master.html#/confirmEmail/';
       link += confirmEmail.get('link');
       
       var params = {
-        "key": mandrill.config.key,
-        "template_name": mandrill.config.welcome,
-        "template_content": [
+        'key': mandrill.config.key,
+        'template_name': mandrill.config.welcome,
+        'template_content': [
           
         ],
-        "message": {
-          "to": [
+        'message': {
+          'to': [
             {
-              "email": user.primaryEmail,
-              "name":  user.firstName,
-              "type": "to"
+              'email': user.primaryEmail,
+              'name':  user.firstName,
+              'type': 'to'
             }
           ],
-          "inline_css": "true",
-          "merge_vars": [
+          'inline_css': 'true',
+          'merge_vars': [
             {
-              "rcpt": user.primaryEmail,
-              "vars": [
+              'rcpt': user.primaryEmail,
+              'vars': [
                 {
-                  "name": "CONFIRMREGISTRATION",
-                  "content": link
+                  'name': 'CONFIRMREGISTRATION',
+                  'content': link
                 }
               ]
             }
           ],
         },
-        "async": true
+        'async': true
       };
       Parse.Cloud.httpRequest({
         method: 'POST',
@@ -545,20 +499,20 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
 /**
  * Find all users
  */
-var findUsers = function(request) {
+var findUsers = function() {
   var query = new Parse.Query(Parse.User);
   return query.find();
-}
+};
 /**
  * Find all activities with audio
  */
-var findActivities = function(request) {
+var findActivities = function() {
   Parse.Cloud.useMasterKey();
   var query = new Parse.Query(Activity);
-  query.exists("file");
-  query.include("user");
+  query.exists('file');
+  query.include('user');
   return query.find();
-}
+};
 /**
  * Find all families approved for logged in user
  */
@@ -581,21 +535,17 @@ var findSubscriptions = function(request) {
         promise.reject(error);
       });
   return promise;
-}
+};
 /**
- * Find all families approved for logged in user
+ * Find all families of any status for logged in user
  */
 var findFamilies = function(request) {
   var promise = new Parse.Promise();
-  console.log('findFamilies userId: ' + request.user.id);
   findUser({userId: request.user.id})
     .then(
       function(user) {
-        console.log('findFamilies user: ');
-        console.log(user);
         var query = new Parse.Query(Family);
         query.equalTo('kin', user);
-        query.equalTo('approved', true);
         return query.find();
       })
     .then(
@@ -606,29 +556,38 @@ var findFamilies = function(request) {
         promise.reject(error);
       });
   return promise;
-}
+};
 /*
  * Search
  */
 Parse.Cloud.define('search', function(request, response) {
-  console.log('search request');
-  console.log(request);
-  console.log('user: ' + request.user.id);
-  Parse.Promise.when([findUsers(request), 
-                      findActivities(request), 
-                      findFamilies(request), 
+  Parse.Promise.when([findUsers(request),
+                      findActivities(request),
+                      findFamilies(request),
                       findSubscriptions(request)])
     .then(
       function(users, activities, families, subscriptions) {
       var results = [];
       _.each(users,function(user, index) {
+        var family = _.find(families, function(family) {
+          return users[index].id === family.get('family').id;
+        });
+        
+        var familyStatus = 0; //no request pending 
+        if (family) {
+          console.log(family);
+          if (family.get('approved')) {
+            familyStatus = 2;
+          } else {
+            familyStatus = 1; //pending
+          }
+        }
+
         var obj = {
           type: 'user',
           objectId: users[index].id,
           isSelf: users[index].id === request.user.id,
-          isInFamily: _.any(families, function(family) {
-            return users[index].id === family.get('family').id;
-          }),
+          familyStatus: familyStatus,
           isSubscribed: _.any(subscriptions, function(subscription) {
             return users[index].id === subscription.get('family').id;
           }),
@@ -646,15 +605,13 @@ Parse.Cloud.define('search', function(request, response) {
           type: 'activity',
           objectId: activities[index].id,
           userId: activities[index].get('user').id,
-          userName: activities[index].get('user').get('firstName')
-            + ' ' 
-            + activities[index].get('user').get('lastName'),
+          userName: activities[index].get('user').get('firstName') + ' ' + activities[index].get('user').get('lastName'),
           thumbnail: activities[index].get('user').get('thumbnail'),
           description: activity.get('comment'),
           active: moment(activity.get('recordedDate')).fromNow(),
           views: activity.get('views'),
           audio: activity.get('file')
-        }
+        };
         results.push(obj);
       });
 
@@ -671,20 +628,20 @@ Parse.Cloud.define('search', function(request, response) {
 var scaleImage = function(request, response) {
   var user = request.object;
   
-  if (!user.get("photo")) {
+  if (!user.get('photo')) {
     return response.success();
   }
   
-  if (!user.dirty("photo")) {
+  if (!user.dirty('photo')) {
     return response.success();
   }
   
   Parse.Cloud.httpRequest({
-    url: user.get("photo").url()
+    url: user.get('photo').url()
   })
     .then(
     function(response) {
-      var image = new Image();
+      var image = new ParseImage();
       return image.setData(response.buffer);
       
     })
@@ -709,32 +666,32 @@ var scaleImage = function(request, response) {
     .then(
       function(image) {
         // Make sure it's a JPEG to save disk space and bandwidth.
-        return image.setFormat("JPEG");
+        return image.setFormat('JPEG');
       })
     .then(
       function(image) {
-        // Get the image data in a Buffer.
+        // Get the image data in a buffer.
         return image.data();
       })
     .then(
       function(buffer) {
         // Save the image into a new file.
-        var base64 = buffer.toString("base64");
-        var cropped = new Parse.File("thumbnail.jpg", { base64: base64 });
+        var base64 = buffer.toString('base64');
+        var cropped = new Parse.File('thumbnail.jpg', { base64: base64 });
         return cropped.save();
       })
     .then(
       function(cropped) {
         // Attach the image file to the original object.
-        user.set("thumbnail", cropped);
+        user.set('thumbnail', cropped);
       })
     .then(
-      function(result) {
+      function() {
         response.success();
       }, function(error) {
         response.error(error);
-      });  
-}
+      });
+};
 /**
  * Need to control the verifiedEmail
  * If an email confirmation came in, the flag would be set to true
@@ -777,24 +734,21 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
  * send Email Confirmation
 */
 Parse.Cloud.afterSave(Parse.User, function(request) {
-  query = new Parse.Query("Parse.User");
   if (!request.object.get('verifiedEmail')) {
     var user = {objectId : request.object.id,
                 primaryEmail: request.object.get('primaryEmail'),
                 firstName: request.object.get('firstName')};
    
     //Only Send Email if no outstanding request
-    var query = new Parse.Query(ConfirmEmail);   
-    query.equalTo("userId", user.objectId);
-    query.equalTo("primaryEmail", user.primaryEmail);
-    query.equalTo("processed", false);
+    var query = new Parse.Query(ConfirmEmail);
+    query.equalTo('userId', user.objectId);
+    query.equalTo('primaryEmail', user.primaryEmail);
+    query.equalTo('processed', false);
     query.find()
       .then(function(results) {
-        console.log('afterSave - found results of outstanding ConfirmEmail');
-        console.log(results);
         if (results.length === 0) {
           Parse.Cloud.run('sendConfirmEmail', user, {
-            success: function(data) {
+            success: function() {
               console.log('afterSave Parse.User data: success');
             },
             error: function(error) {
@@ -816,30 +770,25 @@ Parse.Cloud.afterSave(Parse.User, function(request) {
 var updateActivityViewsCount = function(activity) {
   activity.increment('views');
   return activity.save();
-}
+};
 var updateActivitiesUserAudioViewCount = function(user) {
   user.increment('audioViews');
   return user.save();
-}
+};
 var updateUserViewedCount = function(user) {
   user.increment('viewed');
   return user.save();
-}
+};
 
 /*
  * Search
  */
 Parse.Cloud.define('activityListened', function(request, response) {
-  console.log('activityListened');
-  console.log(request);
-  console.log(request.params);
-  console.log(request.params.activityId);
-  console.log(request.params.userId);
   Parse.Promise.when([findActivity(request.params.activityId),
                       findUser({userId: request.params.activityUserId}),
                       findUser({userId: request.params.userId})])
     .then(
-      function(activity, activityUser, user) {  
+      function(activity, activityUser, user) {
         return Parse.Promise.when([updateActivityViewsCount(activity),
                                    updateActivitiesUserAudioViewCount(activityUser),
                                    updateUserViewedCount(user)]);
@@ -860,10 +809,6 @@ Parse.Cloud.define('activityListened', function(request, response) {
  * Create subscription record
  */
 var createSubscription = function(loggedOnUser, familyUser, status) {
-  console.log('createSubscription:');
-  console.log('loggedOnUserId:' + loggedOnUser.id);
-  console.log('familyUserId:' + familyUser.id);
-
   var promise = new Parse.Promise();
 
   var query = new Parse.Query(Subscription);
@@ -873,11 +818,12 @@ var createSubscription = function(loggedOnUser, familyUser, status) {
     .then(
       function(subscription) {
         if (!subscription) {
-          var subscription = new Subscription();
-          return subscription.save({
+          var subscripe = new Subscription();
+          return subscripe.save({
             family: familyUser,
             subscriber: loggedOnUser,
-            active: true});
+            active: true
+          });
         } else {
           return subscription.save({
             active: status
@@ -885,7 +831,7 @@ var createSubscription = function(loggedOnUser, familyUser, status) {
         }
       })
     .then(
-      function(savedSubscription) {
+      function() {
         promise.resolve('ok');
       },function(error) {
         promise.reject(error);
@@ -902,7 +848,7 @@ var createFamily = function(loggedOnUser, familyUser) {
   console.log('familyUserId:' + familyUser.id);
 
   var link = guid() + guid();
-  link = link.replace(/-/g,"");
+  link = link.replace(/-/g,'');
 
   var promise = new Parse.Promise();
 
@@ -917,9 +863,10 @@ var createFamily = function(loggedOnUser, familyUser) {
           family: familyUser,
           kin: loggedOnUser,
           link: link,
-          approved: false})
+          approved: false
+        })
         .then(
-          function(savedFamily) {
+          function() {
             promise.resolve('ok');
           });
       } else {
@@ -941,8 +888,8 @@ Parse.Cloud.define('subscribeToFamily', function(request, response) {
                       findUser({userId: request.params.userId})])
     .then(
       function(loggedOnUser, familyUser) {
-        return createSubscription(loggedOnUser, 
-                                  familyUser, 
+        return createSubscription(loggedOnUser,
+                                  familyUser,
                                   request.params.status);
       })
     .then(
@@ -991,7 +938,7 @@ Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
         console.log('unapprovedFamilyRequestCount error: ' + error.message);
         response.error(error);
       });
-})
+});
 /**
  * Find confirmEmai record and return it or error
  */
@@ -1000,8 +947,8 @@ var findConfirmFamily = function(request) {
   console.log(request);
   var link = JSON.parse(request.body);
   console.log('link: ' + link.link);
-  var query = new Parse.Query(Family);   
-  query.equalTo("link", link.link);
+  var query = new Parse.Query(Family);
+  query.equalTo('link', link.link);
   var promise = new Parse.Promise();
 
   query.find()
@@ -1019,25 +966,17 @@ var findConfirmFamily = function(request) {
  * Confirm the email 
  */
 Parse.Cloud.define('confirmFamily', function(request, response) {
-  console.log('confirmFamily request');
-  console.log(request);
   Parse.Promise.when([findConfirmFamily(request, response)])
     .then(
       function(familyLink) {
-        console.log('confirmEmail found familyLink');
-        console.log(familyLink);
         familyLink.set('approved',true);
         return familyLink.save();
       })
     .then(
-      function(updatedFamilyLink) {
-        console.log('confirmEmail updatedFamilyLink');
-        console.log(updatedFamilyLink);
+      function() {
         response.success();
       },
       function(error) {
-        console.log('confirmEmail findConfirmEmail error');
-        console.log(error);
         response.error(error);
       });
 });
@@ -1045,7 +984,7 @@ Parse.Cloud.define('confirmFamily', function(request, response) {
  * When Family is saved the first time, send email to family
  * for confirmation
  */
-Parse.Cloud.afterSave("Family", function(request) {
+Parse.Cloud.afterSave('Family', function(request) {
   console.log('Family after save');
 
   var isNew = _.isEqual(request.object.createdAt, request.object.updatedAt);
@@ -1057,46 +996,46 @@ Parse.Cloud.afterSave("Family", function(request) {
     return;
   }
   //Send email for Family member confirmation
-  Parse.Promise.when([findUser({userId: family.objectId}), 
+  Parse.Promise.when([findUser({userId: family.objectId}),
                      findUser({userId: kin.objectId})])
     .then(
       function(family, kin) {
-        var url = config.accounts.site + "/master.html#/confirmFamily/"  + link;
+        var url = config.accounts.site + '/master.html#/confirmFamily/'  + link;
         var params = {
-          "key": mandrill.config.key,
-          "template_name": mandrill.config.family,
-          "template_content": [
+          'key': mandrill.config.key,
+          'template_name': mandrill.config.family,
+          'template_content': [
           ],
-          "message": {
-            "to": [
+          'message': {
+            'to': [
               {
-                "email": family.get('primaryEmail'),
-                "name":  family.get('firstName'),
-                "type": "to"
+                'email': family.get('primaryEmail'),
+                'name':  family.get('firstName'),
+                'type': 'to'
               }
             ],
-            "inline_css": "true",
-            "merge_vars": [
+            'inline_css': 'true',
+            'merge_vars': [
               {
-                "rcpt": family.get('primaryEmail'),
-                "vars": [
+                'rcpt': family.get('primaryEmail'),
+                'vars': [
                   {
-                    "name": "CONFIRMFAMILYKIN",
-                    "content": url
+                    'name': 'CONFIRMFAMILYKIN',
+                    'content': url
                   },
                   {
-                    "name": "FIRSTNAME",
-                    "content": kin.get('firstName')
+                    'name': 'FIRSTNAME',
+                    'content': kin.get('firstName')
                   },
                   {
-                    "name": "LASTNAME",
-                    "content": kin.get('lastName')
+                    'name': 'LASTNAME',
+                    'content': kin.get('lastName')
                   }
                 ]
               }
             ],
           },
-          "async": true
+          'async': true
         };
         console.log(params);
         Parse.Cloud.httpRequest({
@@ -1106,23 +1045,20 @@ Parse.Cloud.afterSave("Family", function(request) {
           },
           url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
           body: params,
-          success: function(data) {
-            response.success(data);
+          success: function() {
+            //
           },
           error: function(error) {
-            console.log('sendConfirmFamily error:');
-            response.error(error);
+            console.log('sendConfirmFamily error:' + error.message);
           }
         });
       },
       function(error) {
         console.log('sendConfirmEmail error');
         console.log(error);
-        response.error(error);
-        
       });
 });
-Parse.Cloud.job("sendSubscriberEmails", function(request, status) {
+Parse.Cloud.job('sendSubscriberEmails', function(request, status) {
   console.log('sendSubscriberEmails input');
   var query = new Parse.Query(SubscriptionJob);
   query.first()
@@ -1140,13 +1076,13 @@ Parse.Cloud.job("sendSubscriberEmails", function(request, status) {
         }
       })
     .then(
-      function(savedJob) {
+      function() {
         // Set the job's success status
-        status.success("Migration completed successfully.");
-      }, 
+        status.success('Migration completed successfully.');
+      },
       function(error) {
         console.log('sendSubscriberEmails error: ' + error.message);
         // Set the job's error status
-        status.error("Uh oh, something went wrong.");
+        status.error('Uh oh, something went wrong.');
       });
 });
