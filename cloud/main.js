@@ -630,24 +630,23 @@ Parse.Cloud.define('search', function(request, response) {
  * Scale thumbnail image
  */
 var scaleImage = function(request, response) {
-  var user = request.object;
+  var obj = request.object;
   
-  if (!user.get('photo')) {
-    return response.success();
+  if (!obj.get('photo')) {
+    return response ? response.success() : null;
   }
   
-  if (!user.dirty('photo')) {
-    return response.success();
+  if (!obj.dirty('photo')) {
+    return response ? response.success() : null;
   }
   
   Parse.Cloud.httpRequest({
-    url: user.get('photo').url()
+    url: obj.get('photo').url()
   })
     .then(
     function(response) {
       var image = new ParseImage();
       return image.setData(response.buffer);
-      
     })
     .then(function(image) {
       // Crop the image to the smaller of width or height.
@@ -687,13 +686,13 @@ var scaleImage = function(request, response) {
     .then(
       function(cropped) {
         // Attach the image file to the original object.
-        user.set('thumbnail', cropped);
+        obj.set('thumbnail', cropped);
       })
     .then(
       function() {
-        response.success();
+        return response ? response.success() : null;
       }, function(error) {
-        response.error(error);
+        return response ? response.error(error) : null;
       });
 };
 /**
@@ -984,6 +983,12 @@ Parse.Cloud.define('confirmFamily', function(request, response) {
       function(error) {
         response.error(error);
       });
+});
+/**
+ *  Scale image for activity
+ */
+Parse.Cloud.beforeSave('Activity', function(request, response) {
+  return scaleImage(request, response);
 });
 /**
  * When Family is saved the first time, send email to family
