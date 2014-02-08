@@ -1,12 +1,12 @@
 'use strict';
 angular.module('fv')
-  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $timeout, $location, Activity, User, Family) {
+  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $timeout, $location, Activity, User, Family, requestNotificationChannel) {
     var self = this;
     $scope.recordingStarts = false;
     //if this is an edit request, it will have an objectId parameter
     if($routeParams.action ==='edit' && $routeParams.id || $routeParams.action ==='record' && $routeParams.id) {
       $scope.action = $routeParams.action;
-      //let's find the activity object from our collection of activities
+      //find the activity
       (new Activity()).get($routeParams.id)
         .then(
           function(activity) {
@@ -70,27 +70,55 @@ angular.module('fv')
       return ($scope.activity && $scope.activity.file);
     };
     $scope.submit = function() {
-      $scope.activity.save()
-      .then(
-        function() {
-          //In case user came from viewing someones activites
-          window.history.back();
-        },
-        function(error) {
-          $scope.error = error;
-        });
+      if ($scope.roleForm.$valid) {
+        requestNotificationChannel.requestStarted();
+        $('#submitBtn').attr('disabled','disabled');
+        $scope.activity.save($scope.photoFile)
+          .then(
+            function() {
+              //In case user came from viewing someones activites
+              window.history.back();
+            },
+            function(error) {
+              $scope.error = error;
+            })
+        .finally(
+          function() {
+            $('#submitBtn').attr('disabled',false);
+            requestNotificationChannel.requestEnded();
+          });
+      } else {
+        $scope.roleForm.submitted = true;
+      }
     };
+
     $scope.beginRecording = function() {
       $scope.recording = true;
       Twilio.Device.connect({activity: $scope.activity.id,
                              user: Parse.User.current().id});
     };
+
     $scope.stopRecording = function() {
       $scope.recording = false;
       $('#myTimer').hide();
       self.connection.sendDigits('#');
     };
+
+    $scope.setFiles = function(element) {
+      $scope.photo = element.files[0];
+      //The directive resets the model so keep this safe
+      $scope.photoFile = element.files[0];
+    };
+
+    $scope.getThumbnail = function() {
+      return !_.isNull($scope.activity.thumbnail) && !_.isUndefined($scope.activity.thumbnail) ?
+        $scope.activity.thumbnail._url
+        :
+        null;
+    };
+
     $scope.init = function() {
+      $scope.photo = '';
       $('#myTimer').hide();
       $scope.recording = false;
       Parse.Cloud.run('getToken')

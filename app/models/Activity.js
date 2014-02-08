@@ -11,6 +11,8 @@ angular.module('fv').
         this.recordedDate = activity.get('recordedDate');
         this.file = activity.get('file');
         this.views = activity.get('views');
+        this.photo = activity.get('photo');
+        this.thumbnail = activity.get('thumbnail');
       }
 
       this.get = function (id) {
@@ -28,11 +30,13 @@ angular.module('fv').
         return defer.promise;
       };
 
-      this.save = function () {
+      this.saveActivity = function (file) {
         var defer = $q.defer();
         this.activity.set('comment',this.comment);
         this.activity.set('recordedDate',new Date());
-
+        if (file) {
+          this.activity.set('photo', file);
+        }
         this.activity.save()
         .then(
           function(activity) {
@@ -43,6 +47,31 @@ angular.module('fv').
           });
         return defer.promise;
       };
+      /**
+       * If image selected, first save file
+       * then associate it with the activity
+       */
+      this.save = function(file) {
+        var self = this;
+        if (file) {
+          var defer = $q.defer();
+          var parseFile = new Parse.File(file.name, file);
+          parseFile.save()
+            .then(
+              function(savedFile) {
+                return self.saveActivity(savedFile);
+              })
+            .then(
+              function(savedActivity) {
+                defer.resolve(savedActivity);
+              }, function(error) {
+                defer.reject(error);
+              });
+          return defer.promise;
+        } else {
+          return self.saveActivity();
+        }
+      };//save
 
       this.listened = function(id, userId) {
         var defer = $q.defer();

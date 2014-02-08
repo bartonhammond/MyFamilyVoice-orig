@@ -1,12 +1,17 @@
 <div ng-init="init()" class="clearfix" style="margin-bottom: 20px">
-  <div>
-    <table class="table">
-      <tr>
+  <div class="table-responsivie">
+    <table class="table" style="margin-bottom: 0">
+      <tr class="well well-sm">
         <td class="col-md-1">
-   <img ng-src="{{user.get('thumbnail')._url}}"></img>
-   </td>
+          <img ng-src="{{user.get('thumbnail')._url}}"/>
+        </td>
         <td class="col-md-11">
-          <strong>Name:</strong> {{user.get('firstName')}} {{user.get('lastName')}}
+          <strong>Name:</strong> {{user.get('firstName')}}
+          {{user.get('lastName')}}
+          <span class="pull-right" 
+                ng-if="doesUserHaveWriteAccess()">
+            <button class="btn" ng-click="newQuestion()">New Question</button>
+          </span>
           <br>
           <strong>Joined:</strong> {{user.createdAt | date:simple}}
           <br>
@@ -19,41 +24,49 @@
       </tr>
     </table>
   </div>
-  <span ng-if="doesUserHaveWriteAccess()">
-    <div class="pull-right">
-      <button class="btn" ng-click="newQuestion()">New Question</button>
-    </div>
-  </span>
 </div>
-<div ng-repeat="activity in activities" class="well well-sm">
-    <div class="pull-right">
-        <button ng-if="activity.hasWriteAccess($index)"
-                class="btn" 
-                ng-click="edit(activity)">Edit</button>
-        <button ng-if="isOwner($index)"
-                class="btn" 
-                ng-click="record(activity)">Record</button>
-        <button ng-if="activity.hasWriteAccess($index)"
-                class="btn" 
-                ng-click="delete(activity)">Delete</button>
-    </div>
-    <div>
-      Created: {{activity.createdAt | date: simple}}
-    </div>
-    <div ng-show="hasFile($index)">
-      Recorded: {{activity.recordedDate | date: simple}}
-    </div>
-    <div>
-      Question:
-      <span ng-bind-html="activity.comment"></span>
-    </div>
-    <span ng-show="hasFile($index)"> 
-      <a ng-href="{{activity.file._url}}" target=_blank>
-        Listen
-      </a>
-    </span> 
-
-    <div ng-show="activity.views">
-      Listened: {{activity.views}} times
-    </div>
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <tr ng-repeat="activity in activities">
+      <td class="col-md-1">
+        <img ng-show="hasThumbnail($index)"
+             ng-src="{{activity.thumbnail._url}}"/>
+      </td>
+      <td class="col-md-11">
+        <strong>Created:</strong> {{activity.createdAt | date: simple}}
+        <span class="pull-right">
+          <button ng-if="activity.hasWriteAccess($index)"
+                  class="btn" 
+                  ng-click="edit(activity)">Edit</button>
+          <button ng-if="isOwner($index)"
+                  class="btn" 
+                  ng-click="record(activity)">Record</button>
+          <button ng-if="activity.hasWriteAccess($index)"
+                  class="btn" 
+                  ng-click="delete(activity)">Delete</button>
+        </span>          
+        <span class="pull-right" 
+              ng-if="doesUserHaveWriteAccess()">
+          <button class="btn" ng-click="newQuestion()">New Question</button>
+        </span>
+        <span ng-show="hasFile($index)">
+          <br>
+          <strong>Recorded:</strong> {{activity.recordedDate | date: simple}}
+        </span>
+        <br>
+        <strong>Question:</strong>
+        <span ng-bind-html="activity.comment"></span>
+        <span ng-show="hasFile($index)"> 
+          <br>
+          <a ng-href="{{activity.file._url}}" target=_blank>
+            Listen
+          </a>
+        </span> 
+        <span ng-show="activity.views">
+          <br>
+          <strong>Listened:</strong> {{activity.views}} times
+        </span>
+      </td>
+    </tr>
+  </table>
 </div>

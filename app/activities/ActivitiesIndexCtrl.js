@@ -61,7 +61,13 @@ angular.module('fv')
       var activity = $scope.activities[index];
       return activity.getACL().getWriteAccess(Parse.User.current().id);
     };
-
+    
+    //file contains 'http:...' and the : causes problems
+    $scope.hasThumbnail = function(index) {
+      var activity = $scope.activities[index];
+      return !_.isUndefined(activity.thumbnail);
+    };
+    
     //file contains 'http:...' and the : causes problems
     $scope.hasFile = function(index) {
       var activity = $scope.activities[index];
