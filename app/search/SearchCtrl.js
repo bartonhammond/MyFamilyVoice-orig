@@ -1,12 +1,26 @@
 'use strict';
 
 angular.module('fv')
-  .controller('SearchCtrl', function ($scope, $location, Search, Activity, Family) {
+  .controller('SearchCtrl', function ($scope, $location, Search, Activity, Family, $modal) {
     $scope.init = function() {
       $scope.search = {};
       $scope.search.q = '';
       $scope.performSearch();
       $scope.familyRequestSent = false;
+      $scope.modalData = undefined;
+    };
+
+    $scope.showModal = function(index) {
+      /* jshint unused: false*/
+      var modalInstance = $modal.open({
+        templateUrl: 'myModalContent.html',
+        controller: 'ModalInstanceCtrl',
+        resolve: {
+          modalData: function () {
+            return $scope.search.items[index];
+          }
+        }
+      });
     };
     /**
      * Search 
@@ -49,6 +63,9 @@ angular.module('fv')
             console.log(error);
           });
     };
+    /**
+     * Start player and update the count of listened to
+     */
     $scope.listened = function(index) {
       (new Activity()).listened($scope.search.items[index].objectId,
                         $scope.search.items[index].userId);
@@ -63,6 +80,18 @@ angular.module('fv')
 
     $scope.newQuestion = function() {
       $location.path('/activities/add');
+    };
+    
+  }).controller('ModalInstanceCtrl',function ($scope, $modalInstance, modalData, Activity) {
+    
+    $scope.modalData = modalData;
+    $scope.listened = function() {
+      (new Activity()).listened($scope.modalData.objectId,
+                                $scope.modalData.userId);
+    };
+    
+    $scope.ok = function () {
+      $modalInstance.close();
     };
     
   });
