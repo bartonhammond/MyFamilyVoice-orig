@@ -1,7 +1,8 @@
 'use strict';
 angular.module('fv')
-  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $timeout, $location, Activity, User, Family, requestNotificationChannel) {
+  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $timeout, $location, Activity, User, Family, requestNotificationChannel, player) {
     var self = this;
+    $scope.player = player;
     $scope.recordingStarts = false;
     //if this is an edit request, it will have an objectId parameter
     if($routeParams.action ==='edit' && $routeParams.id || $routeParams.action ==='record' && $routeParams.id) {
@@ -91,7 +92,7 @@ angular.module('fv')
         $scope.roleForm.submitted = true;
       }
     };
-
+    
     $scope.beginRecording = function() {
       $scope.recording = true;
       Twilio.Device.connect({activity: $scope.activity.id,
@@ -110,8 +111,19 @@ angular.module('fv')
       $scope.photoFile = element.files[0];
     };
 
+    $scope.showPicture = function() {
+      $('#myModal').modal();
+    };
+
+    $scope.getPhoto = function() {
+      return $scope.activity && !_.isNull($scope.activity.photo) && !_.isUndefined($scope.activity.photo) ?
+        $scope.activity.photo._url
+        :
+        null;
+    };
+
     $scope.getThumbnail = function() {
-      return !_.isNull($scope.activity.thumbnail) && !_.isUndefined($scope.activity.thumbnail) ?
+      return $scope.activity && !_.isNull($scope.activity.thumbnail) && !_.isUndefined($scope.activity.thumbnail) ?
         $scope.activity.thumbnail._url
         :
         null;

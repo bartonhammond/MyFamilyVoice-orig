@@ -2,7 +2,7 @@
 /**
  * Main module for MyFamilyVoice
  */
-angular.module('fv', ['ngRoute', 'ngSanitize'])
+angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
@@ -62,7 +62,20 @@ angular.module('fv', ['ngRoute', 'ngSanitize'])
         redirectTo: '/'
       });
     
-  }).run(function($rootScope, $location, Family, CONFIG) {
+  })
+  .config(function($sceDelegateProvider) {
+    $sceDelegateProvider.resourceUrlWhitelist([
+      // Allow same origin resource loads.
+      'self',
+      // Allow loading from our assets domain.  Notice the difference between * and **.
+      'http://files.parse.com/**'
+    ]);
+    
+    // The blacklist overrides the whitelist so the open redirect here is blocked.
+    $sceDelegateProvider.resourceUrlBlacklist([
+    ]);
+  })
+  .run(function($rootScope, $location, Family, CONFIG) {
     Parse.initialize(CONFIG.defaults.parse.applicationId,
                  CONFIG.defaults.parse.javascriptKey);
 

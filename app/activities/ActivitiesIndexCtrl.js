@@ -1,9 +1,24 @@
 'use strict';
 
 angular.module('fv')
-  .controller('ActivitiesIndexCtrl', function ($scope, $routeParams, $location, Activity, User, Family) {
+  .controller('ActivitiesIndexCtrl', function ($scope, $routeParams, $location, Activity, User, Family, $modal) {
     $scope.user = '';
     $scope.family = '';
+    $scope.modalData = undefined;
+
+    $scope.showModal = function(index) {
+      /* jshint unused: false*/
+      var modalInstance = $modal.open({
+        templateUrl: 'myModalContentActivities.html',
+        controller: 'ModalInstanceActivitiesCtrl',
+        resolve: {
+          modalData: function () {
+            return $scope.activities[index];
+          }
+        }
+      });
+    };
+
     var getUsersActivities = function(user) {
       (new Activity()).list(user)
         .then(
@@ -95,4 +110,16 @@ angular.module('fv')
       console.log(activity);
       console.log('delete not implemented');
     };
+  }).controller('ModalInstanceActivitiesCtrl',function ($scope, $modalInstance, modalData, Activity) {
+    
+    $scope.modalData = modalData;
+    $scope.listened = function() {
+      (new Activity()).listened($scope.modalData.objectId,
+                                $scope.modalData.userId);
+    };
+    
+    $scope.ok = function () {
+      $modalInstance.close();
+    };
+    
   });

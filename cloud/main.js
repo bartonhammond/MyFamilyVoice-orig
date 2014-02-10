@@ -579,7 +579,6 @@ Parse.Cloud.define('search', function(request, response) {
         
         var familyStatus = 0; //no request pending 
         if (family) {
-          console.log(family);
           if (family.get('approved')) {
             familyStatus = 2;
           } else {
@@ -596,6 +595,7 @@ Parse.Cloud.define('search', function(request, response) {
             return users[index].id === subscription.get('family').id;
           }),
           thumbnail: user.get('thumbnail'),
+          photoUrl: user.get('photo')._url,
           description: user.get('firstName') + ' ' + user.get('lastName'),
           active: moment(user.createdAt).fromNow(),
           recordings: user.get('recordings'),
@@ -604,13 +604,26 @@ Parse.Cloud.define('search', function(request, response) {
         };
         results.push(obj);
       });
+
       _.each(activities, function(activity,index) {
+        var thumbnail, photoUrl;
+        if (!_.isNull(activities[index].get('thumbnail')) &&
+            !_.isUndefined(activities[index].get('thumbnail'))) {
+          thumbnail = activities[index].get('thumbnail');
+          photoUrl = activities[index].get('photo')._url;
+        } else if (!_.isNull(activities[index].get('user').get('thumbnail')) &&
+                   !_.isUndefined(activities[index].get('user').get('thumbnail'))) {
+          thumbnail = activities[index].get('user').get('thumbnail');
+          photoUrl = activities[index].get('user').get('photo')._url;
+        }
+            
         var obj = {
           type: 'activity',
           objectId: activities[index].id,
           userId: activities[index].get('user').id,
           userName: activities[index].get('user').get('firstName') + ' ' + activities[index].get('user').get('lastName'),
-          thumbnail: activities[index].get('user').get('thumbnail'),
+          thumbnail: thumbnail,
+          photoUrl: photoUrl,
           description: activity.get('comment'),
           active: moment(activity.get('recordedDate')).fromNow(),
           views: activity.get('views'),
@@ -787,7 +800,8 @@ var updateUserViewedCount = function(user) {
 };
 
 /*
- * Search
+ * Increment counts for listening to audi.
+ * Activity, Activities user, and user who listened
  */
 Parse.Cloud.define('activityListened', function(request, response) {
   Parse.Promise.when([findActivity(request.params.activityId),

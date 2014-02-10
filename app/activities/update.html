@@ -1,6 +1,34 @@
 
 <!--Content-->
 <section id="signup" style="padding-top: 0" ng-init="init()">
+<div id="myModal"
+     class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">{{activity.comment}}</h4>
+      </div>
+      <div class="modal-body">
+        <div>
+          <img class="center"  
+               height="500" 
+               width="500"
+               ng-src="{{getPhoto()}}"></img>
+          <span ng-show="hasFile($index)"> 
+            <br>
+            <strong style="vertical-align: top">Listen:</strong>
+            <audio ng-attr-src="{{activity.file._url}}" controls preload></audio> 
+          </span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
   <div class="container">
     <div class="row margin-40">
       <div class="col-sm-6 col-sm-offset-3 signup">
@@ -84,7 +112,8 @@
                   </i>
                 </span>
                 <div class='account-thumbnail'>
-                  <img  ng-src="{{getThumbnail()}}"></img>
+                  <img ng-click="showPicture()"
+                       ng-src="{{getThumbnail()}}"></img>
                 </div>
               </div>
             </div>
@@ -134,25 +163,24 @@
               </div>
             </div>
           </span>
-          <br><br>
-          <hr>
-           <!-- File ------------------------------------------>
-           <span  ng-show="hasFile()">
+
+          <!-- File ------------------------------------------>
+           <div  ng-show="hasFile()">
              <div class="control-group">
                <div class="controls">
                  <div class="input-prepend">
                    <span class='fv-label'>Audio</span>
-          	   <a ng-href={{activity.file._url}}
-          	      target=_blank>
-                     Listen
-                   </a>
+                   <br>
+                     <br>
+                     <strong style="vertical-align: top">Listen:</strong>
+                     <audio ng-attr-src="{{activity.file._url}}" controls preload></audio> 
                  </div>
                </div>
              </div>
-           </span>
+           </div>
 
           <!-- Submit ------------------------------------------>
-          <span ng-show="activity.hasWriteAccess()  && !isRecording()">
+          <div ng-show="activity.hasWriteAccess()  && !isRecording()">
             <div class="control-group">
               <div class="controls">
                 <button type="submit" 
@@ -162,10 +190,9 @@
                   Submit
                 </button>
               </div>
-              <br>
             </div>
-          </span>
-          <span ng-show="!activity.hasWriteAccess()  || isRecording()">
+          </div>
+          <div ng-show="!activity.hasWriteAccess()  || isRecording()">
             <div class="control-group">
               <div class="controls">
                 <button
@@ -177,9 +204,8 @@
                   Return
                 </button>
               </div>
-              <br>
             </div>
-          </span>
+          </div>
           
 
         </form>

@@ -58,6 +58,8 @@ module.exports = function (grunt) {
           'public/directives/timer.js',
           'public/directives/validFileType.js',
           'public/directives/validFileSize.js',
+          'public/factory/player.js',
+          'public/factory/audio.js',
           'public/main/MainCtrl.js',
           'public/navbar/NavbarCtrl.js',
           'public/login/LoginCtrl.js',
