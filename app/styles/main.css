@@ -504,7 +504,7 @@ a:hover {
 
 /* ==========================================================================
    About Page Styles
-   ========================================================================== */
+   ========================================================================== 
 .progress {
   background-color: #dfe5e8;
   background-image: linear-gradient(to bottom, #dfe5e8, #dfe5e8);
@@ -585,7 +585,7 @@ a:hover {
 
 }
 
-/* Animated Progress Bar onload */
+/* Animated Progress Bar onload `
 .bar-one       { width:100%;  -moz-animation:bar-one 1.0s ease-out;       -webkit-animation:bar-one 1.0s ease-out;        }
 .bar-two        { width:100%;  -moz-animation:bar-two 1.7s ease-out;        -webkit-animation:bar-two 1.7s ease-out;         }
 .bar-three      { width:100%; -moz-animation:bar-three 2.3s ease-out;   -webkit-animation:bar-three 2.3s ease-out;      }
@@ -598,7 +598,7 @@ a:hover {
 @-webkit-keyframes bar-two        { 0%  { width:0px;} 100%{ width:100%;}  }
 @-webkit-keyframes bar-three      { 0%  { width:0px;} 100%{ width:100%;}  }
 
-
+*/
 
 
 /* Animated Fade in for Field Values */
