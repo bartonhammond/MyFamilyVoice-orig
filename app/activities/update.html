@@ -133,32 +133,35 @@
                         class='fv-label'>
                     Press the Stop button to end  your recording.
                   </span>
-                  <br>
-                  <!-- recording button -->
-                  <div ng-show="!recording"
-                       ng-click="beginRecording()" 
-                       class='contain-i-e-s'>
-                    <i id='recordIcon'
-                       class="fa fa-play-circle-o "></i>
-                    <div class='text-i-e-s'>
-                     
-                    </div>
-                  </div>
-                  <!-- recording button -->
-                  <div ng-show="recording"
-                       ng-click="stopRecording()" 
-                       class='contain-i-e-s'>
-                    <i id='stopIcon'
-                       class="fa fa-stop "></i>
-                    <div class='text-i-e-s'>
-                      <timer
-                         id='myTimer'
-                         countdown="30" 
-                         autostart="false"
-                         interval="1000">{{countdown}}
+                  
+                  <div class="buttonContainer">
+                    <strong  style="vertical-align: top">Record:</strong>	
+                    <div class="recordingButtons">
+                      <!-- recording button -->
+                      <span ng-click="beginRecording()"
+                            ng-disabled="recording">
+                        <i id="startRecording" class="fa fa-play fa-lg"></i>
+                      </span>
+                      <!-- recording button -->
+                      <span ng-click="stopRecording()"
+                            ng-disabled="!recording">
+                        <i id="stopRecording" class="fa fa-stop fa-lg"></i>
+                      </span>
+                      <timer interval="1000"
+                             id='myTimer'
+                             countdown="30" 
+                             autostart="false">
+                        <div class="progress">
+                          <div class="progress-bar {{progressBar}}" 
+                               role="progressbar"
+                               style="width: {{((30-seconds)/30)*100}}%;">
+                          </div> 
+                        </div>
+                        <span class="timerSeconds">0:{{30 - seconds | secondsFilter}}</span>
                       </timer>
-                    </div>
-                  </div>
+
+                    </div><!-- recordingButtons -->
+                  </div><!--button container-->
                 </div>
               </div>
             </div>
@@ -169,8 +172,6 @@
              <div class="control-group">
                <div class="controls">
                  <div class="input-prepend">
-                   <span class='fv-label'>Audio</span>
-                   <br>
                      <br>
                      <strong style="vertical-align: top">Listen:</strong>
                      <audio ng-attr-src="{{activity.file._url}}" controls preload></audio> 

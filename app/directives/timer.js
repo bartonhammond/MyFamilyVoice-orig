@@ -91,10 +91,19 @@ angular.module('fv')
         });
 
         function calculateTimeUnits() {
+          
           $scope.seconds = Math.floor(($scope.millis / 1000) % 60);
           $scope.minutes = Math.floor((($scope.millis / (60000)) % 60));
           $scope.hours = Math.floor((($scope.millis / (3600000)) % 24));
           $scope.days = Math.floor((($scope.millis / (3600000)) / 24));
+          var bar = 'progress-bar-';
+          if ($scope.seconds > 10) {
+            $scope.progressBar = bar + 'success';
+          } else if ($scope.seconds <=5) {
+            $scope.progressBar = bar + 'danger';
+          } else if ($scope.seconds <= 10) {
+            $scope.progressBar = bar + 'warning';
+          }
         }
 
         //determine initial values of time units and add AddSeconds functionality
