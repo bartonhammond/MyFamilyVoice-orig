@@ -34,7 +34,7 @@
           ng-repeat="item in search.items">
         <td class="col-md-1">
           <img ng-click="showModal($index)" 
-               style="cursor: pointer"
+               style="cursor: pointer"-
                ng-src="{{item.thumbnail._url}}"/>
         </td>
         <td class="col-md-11">
@@ -100,7 +100,7 @@
             <br>
             <span style="vertical-align: top">Listen:</span>
             <audio ng-click="listened($index)"
-                   ng-attr-src="{{search.items[$index].audio._url}}" controls preload></audio> 
+                   ng-attr-src="{{audioUrl($index)}}" controls preload></audio> 
             <br>
             {{item.active}}
             <br>
