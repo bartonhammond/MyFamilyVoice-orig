@@ -1,8 +1,7 @@
 'use strict';
 angular.module('fv')
-  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $timeout, $location, Activity, User, Family, requestNotificationChannel, player) {
+  .controller('ActivitiesUpdateCtrl', function ($scope, $routeParams, $timeout, $location, Activity, User, Family, requestNotificationChannel) {
     var self = this;
-    $scope.player = player;
     $scope.recordingStarts = false;
     //if this is an edit request, it will have an objectId parameter
     if($routeParams.action ==='edit' && $routeParams.id || $routeParams.action ==='record' && $routeParams.id) {
@@ -64,6 +63,28 @@ angular.module('fv')
         $scope.activity = activity;
       }
     }
+    
+    $('#startRecording').hover(
+      function() {
+        $('#startRecording').css('color','green');
+      },
+      function() {
+        if (!$scope.recording) {
+          $('#startRecording').css('color','white');
+        }
+      });
+
+    
+    $('#stopRecording').hover(
+      function() {
+        if ($scope.recording) {
+          $('#stopRecording').css('color','red');
+        }
+      },
+      function() {
+        $('#stopRecording').css('color','white');
+      });
+
     $scope.isRecording = function() {
       return $scope.action === 'record';
     };
@@ -94,20 +115,21 @@ angular.module('fv')
     };
     
     $scope.beginRecording = function() {
+      $('#startRecording').css('color','green');
       $scope.recording = true;
       Twilio.Device.connect({activity: $scope.activity.id,
                              user: Parse.User.current().id});
     };
 
     $scope.stopRecording = function() {
+      $('#startRecording').css('color','white');
       $scope.recording = false;
-      $('#myTimer').hide();
+      $scope.$broadcast('timer-stop');
       self.connection.sendDigits('#');
     };
 
     $scope.setFiles = function(element) {
       $scope.photo = element.files[0];
-      //The directive resets the model so keep this safe
       $scope.photoFile = element.files[0];
     };
 
@@ -128,10 +150,14 @@ angular.module('fv')
         :
         null;
     };
-
+    
+    $scope.startTimer = function() {
+      $scope.$broadcast('timer-start');
+    };
+      
     $scope.init = function() {
       $scope.photo = '';
-      $('#myTimer').hide();
+      //      $('#myTimer').hide();
       $scope.recording = false;
       Parse.Cloud.run('getToken')
         .then(
