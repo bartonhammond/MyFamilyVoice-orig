@@ -48,6 +48,12 @@ angular.module('fv')
             console.log(error);
           });
     };
+
+    $scope.audioUrl = function(index) {
+      var rtn = $scope.search.items[index].audio._url.replace('http:','');
+      return rtn;
+    };
+
     /**
      * On search, only Users have Join Family
      */
