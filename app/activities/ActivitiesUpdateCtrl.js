@@ -85,6 +85,14 @@ angular.module('fv')
         $('#stopRecording').css('color','white');
       });
 
+    /**
+     * Make url point to server to proxy stream content
+     */
+    $scope.proxyUrl = function(obj) {
+      //http://files.parse.com/3e0d5059-d213-40a3-a224-44351b90a9d1/cb8020bb-6210-440a-b69f-6c62bb9cb1a4-recording.mp3
+      return obj ? obj._url.replace('http://files.parse.com','/parse') : '';
+    };
+    
     $scope.isRecording = function() {
       return $scope.action === 'record';
     };

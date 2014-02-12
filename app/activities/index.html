@@ -8,11 +8,11 @@
         <div ng-show="modalData" >
           <img class="center"  
                width="500"
-               ng-src="{{modalData.photo._url}}"/>
+               ng-src="{{proxyUrl(modalData.photo)}}"/>
           <span ng-show="modalData.file">
             <div style="vertical-align: top">Listen:</div>
             <audio ng-click="listened()"
-                   ng-attr-src="{{modalData.file._url}}"
+                   ng-attr-src="{{proxyUrl(modalData.file)}}"
                    controls preload></audio> 
           </span>
         </div>
@@ -55,7 +55,7 @@
         <img ng-show="hasThumbnail($index)"
              ng-click="showModal($index)"
              style="cursor: pointer"
-             ng-src="{{activity.thumbnail._url}}"/>
+             ng-src="{{proxyUrl(activity.thumbnail)}}"/>
       </td>
       <td class="col-md-11">
         <strong>Created:</strong> {{activity.createdAt | date: simple}}
@@ -80,7 +80,7 @@
         <span ng-show="hasFile($index)"> 
           <br>
           <strong style="vertical-align: top">Listen:</strong>
-          <audio ng-attr-src="{{activity.file._url}}" controls preload></audio> 
+          <audio ng-attr-src="{{proxyUrl(activity.file)}}" controls preload></audio> 
         </span>
         </span> 
         <span ng-show="activity.views">

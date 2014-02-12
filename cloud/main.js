@@ -595,7 +595,7 @@ Parse.Cloud.define('search', function(request, response) {
             return users[index].id === subscription.get('family').id;
           }),
           thumbnail: user.get('thumbnail'),
-          photoUrl: user.get('photo')._url,
+          photo: user.get('photo'),
           description: user.get('firstName') + ' ' + user.get('lastName'),
           active: moment(user.createdAt).fromNow(),
           recordings: user.get('recordings'),
@@ -606,15 +606,15 @@ Parse.Cloud.define('search', function(request, response) {
       });
 
       _.each(activities, function(activity,index) {
-        var thumbnail, photoUrl;
+        var thumbnail, photo;
         if (!_.isNull(activities[index].get('thumbnail')) &&
             !_.isUndefined(activities[index].get('thumbnail'))) {
           thumbnail = activities[index].get('thumbnail');
-          photoUrl = activities[index].get('photo')._url;
+          photo = activities[index].get('photo');
         } else if (!_.isNull(activities[index].get('user').get('thumbnail')) &&
                    !_.isUndefined(activities[index].get('user').get('thumbnail'))) {
           thumbnail = activities[index].get('user').get('thumbnail');
-          photoUrl = activities[index].get('user').get('photo')._url;
+          photo = activities[index].get('user').get('photo');
         }
             
         var obj = {
@@ -623,7 +623,7 @@ Parse.Cloud.define('search', function(request, response) {
           userId: activities[index].get('user').id,
           userName: activities[index].get('user').get('firstName') + ' ' + activities[index].get('user').get('lastName'),
           thumbnail: thumbnail,
-          photoUrl: photoUrl,
+          photo: photo,
           description: activity.get('comment'),
           active: moment(activity.get('recordedDate')).fromNow(),
           views: activity.get('views'),

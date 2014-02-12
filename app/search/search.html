@@ -14,11 +14,11 @@
         <div ng-show="modalData" >
           <img class="center"  
                width="500"
-               ng-src="{{modalData.photoUrl}}"/>
+               ng-src="{{proxyUrl(modalData.photo)}}"/>
           <span ng-show="modalData.audio">
             <div style="vertical-align: top">Listen:</div>
-            <audio ng-click="listened()"
-                   ng-attr-src="{{modalData.audio._url}}"
+            <audio ng-click="listened(modalData)"
+                   ng-attr-src="{{proxyUrl(modalData.audio)}}"
                    controls preload></audio> 
           </span>
         </div>
@@ -35,7 +35,7 @@
         <td class="col-md-1">
           <img ng-click="showModal($index)" 
                style="cursor: pointer"-
-               ng-src="{{thumbnail($index)}}"/>
+               ng-src="{{proxyUrl(item.thumbnail)}}"/>
         </td>
         <td class="col-md-11">
           <div ng-if="item.type === 'user'">
@@ -99,8 +99,8 @@
                    >{{item.userName}}</a>
             <br>
             <span style="vertical-align: top">Listen:</span>
-            <audio ng-click="listened($index)"
-                   ng-attr-src="{{audioUrl($index)}}" 
+            <audio ng-click="listened(item)"
+                   ng-attr-src="{{proxyUrl(item.audio)}}" 
                    preload=false controls></audio> 
             <br>
             {{item.active}}
