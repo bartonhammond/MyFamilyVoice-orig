@@ -35,7 +35,7 @@
         <td class="col-md-1">
           <img ng-click="showModal($index)" 
                style="cursor: pointer"-
-               ng-src="{{item.thumbnail._url}}"/>
+               ng-src="{{thumbnail($index)}}"/>
         </td>
         <td class="col-md-11">
           <div ng-if="item.type === 'user'">
@@ -100,7 +100,8 @@
             <br>
             <span style="vertical-align: top">Listen:</span>
             <audio ng-click="listened($index)"
-                   ng-attr-src="{{audioUrl($index)}}" controls preload></audio> 
+                   ng-attr-src="{{audioUrl($index)}}" 
+                   preload=false controls></audio> 
             <br>
             {{item.active}}
             <br>
