@@ -33,7 +33,6 @@ angular.module('fv')
           .then(
             function(data) {
               $rootScope.$broadcast('userloggedin');
-              console.log(data);
               $location.path('/activities');
             },
             function(error) {

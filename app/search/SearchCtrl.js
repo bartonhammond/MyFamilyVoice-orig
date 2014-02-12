@@ -10,6 +10,16 @@ angular.module('fv')
       $scope.modalData = undefined;
     };
 
+    //LoginCtrl broadcasts 
+    $scope.$on('userloggedin',function() {
+      $scope.authenticated = true;
+    });
+
+    //Navbar broadcasts
+    $scope.$on('userloggedout',function() {
+      $scope.authenticated = false;
+    });
+
     $scope.showModal = function(index) {
       /* jshint unused: false*/
       var modalInstance = $modal.open({

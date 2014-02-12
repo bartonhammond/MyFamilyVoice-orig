@@ -94,7 +94,7 @@ angular.module('fv').
       };
 
       this.hasWriteAccess = function() {
-        return this.activity.getACL().getWriteAccess(Parse.User.current().id);
+        return Parse.User.current() && this.activity.getACL().getWriteAccess(Parse.User.current().id);
       };
       /**
        * Constrain list to only activities owned by id

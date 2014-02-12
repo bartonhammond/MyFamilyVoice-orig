@@ -522,22 +522,26 @@ var findActivities = function() {
  */
 var findSubscriptions = function(request) {
   var promise = new Parse.Promise();
-  console.log('findSubscriptions userId: ' + request.user.id);
-  findUser({userId: request.user.id})
-    .then(
-      function(user) {
-        var query = new Parse.Query(Subscription);
-        query.equalTo('subscriber', user);
-        query.equalTo('approved', true);
-        return query.find();
-      })
-    .then(
-      function(results) {
-        promise.resolve(results);
-      },
-      function(error) {
-        promise.reject(error);
-      });
+  //If user is not logged in
+  if (request.user) {
+    findUser({userId: request.user.id})
+      .then(
+        function(user) {
+          var query = new Parse.Query(Subscription);
+          query.equalTo('subscriber', user);
+          query.equalTo('approved', true);
+          return query.find();
+        })
+      .then(
+        function(results) {
+          promise.resolve(results);
+        },
+        function(error) {
+          promise.reject(error);
+        });
+  } else {
+    promise.resolve([]);
+  }
   return promise;
 };
 /**
@@ -545,20 +549,25 @@ var findSubscriptions = function(request) {
  */
 var findFamilies = function(request) {
   var promise = new Parse.Promise();
-  findUser({userId: request.user.id})
-    .then(
-      function(user) {
-        var query = new Parse.Query(Family);
-        query.equalTo('kin', user);
-        return query.find();
-      })
-    .then(
-      function(results) {
-        promise.resolve(results);
-      },
-      function(error) {
-        promise.reject(error);
-      });
+  //When search is performed w/o logged in user
+  if (request.user) {
+    findUser({userId: request.user.id})
+      .then(
+        function(user) {
+          var query = new Parse.Query(Family);
+          query.equalTo('kin', user);
+          return query.find();
+        })
+      .then(
+        function(results) {
+          promise.resolve(results);
+        },
+        function(error) {
+          promise.reject(error);
+        });
+  } else {
+    promise.resolve([]);
+  }
   return promise;
 };
 /*
@@ -585,11 +594,15 @@ Parse.Cloud.define('search', function(request, response) {
             familyStatus = 1; //pending
           }
         }
-
+        var isSelf = false;
+        //If no logged in user
+        if (request.user && users[index].id === request.user.id) {
+          isSelf = true;
+        }
         var obj = {
           type: 'user',
           objectId: users[index].id,
-          isSelf: users[index].id === request.user.id,
+          isSelf: isSelf,
           familyStatus: familyStatus,
           isSubscribed: _.any(subscriptions, function(subscription) {
             return users[index].id === subscription.get('family').id;

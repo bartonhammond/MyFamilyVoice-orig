@@ -26,7 +26,7 @@
     <table class="table" style="margin-bottom: 0">
       <tr class="well well-sm">
         <td class="col-md-1">
-          <img ng-src="{{user.get('thumbnail')._url}}"/>
+          <img ng-src="{{proxyUrl(user.get('thumbnail'))}}"/>
         </td>
         <td class="col-md-11">
           <strong>Name:</strong> {{user.get('firstName')}}
@@ -36,13 +36,13 @@
             <button class="btn" ng-click="newQuestion()">New Question</button>
           </span>
           <br>
-          <strong>Joined:</strong> {{user.createdAt | date:simple}}
+          Joined: {{user.createdAt | date:simple}}
           <br>
-          <strong>Recordings:</strong> {{user.get('recordings')}}
+          Recordings: {{user.get('recordings')}}
           <br>
-          <strong>Has listened to:</strong> {{user.get('viewed')}}
+          Has listened to: {{user.get('viewed')}}
           <br>
-          <strong>Has been heard:</strong> {{user.get('audioViews')}}
+          Has been heard: {{user.get('audioViews')}}
         </td>
       </tr>
     </table>
@@ -58,7 +58,10 @@
              ng-src="{{proxyUrl(activity.thumbnail)}}"/>
       </td>
       <td class="col-md-11">
-        <strong>Created:</strong> {{activity.createdAt | date: simple}}
+        <a href 
+           ng-click="showModal($index)">
+          {{activity.comment}}
+        </a>
         <span class="pull-right">
           <button ng-if="activity.hasWriteAccess($index)"
                   class="btn" 
@@ -72,20 +75,17 @@
         </span>          
         <span ng-show="hasFile($index)">
           <br>
-          <strong>Recorded:</strong> {{activity.recordedDate | date: simple}}
+          Recorded: {{activity.recordedDate | date: simple}}
         </span>
         <br>
-        <strong>Question:</strong>
-        <span ng-bind-html="activity.comment"></span>
         <span ng-show="hasFile($index)"> 
           <br>
-          <strong style="vertical-align: top">Listen:</strong>
           <audio ng-attr-src="{{proxyUrl(activity.file)}}" controls preload></audio> 
         </span>
         </span> 
         <span ng-show="activity.views">
           <br>
-          <strong>Listened:</strong> {{activity.views}} times
+          Listened: {{activity.views}} times
         </span>
       </td>
     </tr>

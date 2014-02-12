@@ -1,7 +1,7 @@
 angular.module('fv')
   .service('CONFIG', function() {
     this.defaults = {
-      site: 'familyvoice.harp.io/master.html#/',
+      site: 'localhost:8080/master.html#/',
       parse: {
         applicationId:'6stx2NYQVpHKrlYL28NegU4vYAV76VRPWqMwAvZd',
         javascriptKey:'Exehq2ao7JVaSrq2LrBwPF1iehv8cYsGIKfBWsqS'

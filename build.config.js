@@ -18,6 +18,8 @@ module.exports = {
     devCloudConfig: 'cloudCode/configDev.js',
     prodCloudConfig: 'cloudCode/configProd.js',
     devAngularConfig:'config/devAngularConfig.js',
+    devNodeAngularConfig:'config/devNodeAngularConfig.js',
+    devModulusAngularConfig:'config/devModulusAngularConfig.js',
     prodAngularConfig:'config/prodAngularConfig.js',
     javaScriptInclude: 'config/includeJavaScript.html',
     images: ['images/*.png', 'images/*.jpg', 'images/*.gif']
@@ -26,11 +28,16 @@ module.exports = {
   vendor: {
     js: [
       'bower_components/jquery/jquery.min.js',
+      'bower_components/jquery/jquery.min.map',
       'bower_components/angular/angular.min.js',
+      'bower_components/angular/angular.min.js.map',
       'bower_components/bootstrap/dist/js/bootstrap.min.js',
       'bower_components/angular-route/angular-route.min.js',
+      'bower_components/angular-route/angular-route.min.js.map',
       'bower_components/angular-sanitize/angular-sanitize.min.js',
+      'bower_components/angular-sanitize/angular-sanitize.min.js.map',
       'bower_components/underscore/underscore-min.js',
+      'bower_components/underscore/underscore-min.map',
     ],
     css: [
       'bower_components/bootstrap/dist/css/bootstrap.css'

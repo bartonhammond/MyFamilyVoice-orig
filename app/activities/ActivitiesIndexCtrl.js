@@ -66,6 +66,7 @@ angular.module('fv')
       }
 
     };
+
     $scope.doesUserHaveWriteAccess = function() {
       if (Parse.User.current() && $scope.user) {
         return Parse.User.current().id === $scope.user.id || $scope.family;
@@ -73,10 +74,11 @@ angular.module('fv')
         return false;
       }
     };
+
     $scope.isOwner = function(index) {
       var activity = $scope.activities[index];
       var ownerId = activity.activity.get('user').id;
-      return ownerId === Parse.User.current().id;
+      return Parse.User.current() && Parse.User.current().id === ownerId;
     };
 
     $scope.hasWriteAccess = function(index) {
