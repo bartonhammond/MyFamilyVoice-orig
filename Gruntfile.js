@@ -189,6 +189,13 @@ module.exports = function (grunt) {
       }
     },
     sync: {
+      publicToNode: {
+        expand: true,
+        flatten: false,
+        src: ['*.*', '*/**'],
+        dest: 'server/public',
+        cwd: '<%= public_dir %>'
+      },
       publicToHarpDev: {
         expand: true,
         flatten: false,
@@ -402,6 +409,14 @@ module.exports = function (grunt) {
       'devPrep',
       'concat:html',
       'sync:publicToHarpDev'
+    ]);
+  });
+
+  grunt.registerTask('devNode', function () {
+    grunt.task.run([
+      'devPrep',
+      'concat:html',
+      'sync:publicToNode'
     ]);
   });
 

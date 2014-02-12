@@ -48,10 +48,12 @@ angular.module('fv')
             console.log(error);
           });
     };
-
-    $scope.audioUrl = function(index) {
-      var rtn = $scope.search.items[index].audio._url.replace('http:','');
-      return rtn;
+    /**
+     * Make url point to server to proxy stream content
+     */
+    $scope.proxyUrl = function(obj) {
+      //http://files.parse.com/3e0d5059-d213-40a3-a224-44351b90a9d1/cb8020bb-6210-440a-b69f-6c62bb9cb1a4-recording.mp3
+      return obj ? obj._url.replace('http://files.parse.com','/parse') : '';
     };
 
     /**
@@ -72,9 +74,9 @@ angular.module('fv')
     /**
      * Start player and update the count of listened to
      */
-    $scope.listened = function(index) {
-      (new Activity()).listened($scope.search.items[index].objectId,
-                        $scope.search.items[index].userId);
+    $scope.listened = function(obj) {
+      (new Activity()).listened(obj.objectId,
+                                obj.userId);
     };
     $scope.edit = function(activity) {
       $location.path('/activities/edit/' + activity.objectId);
@@ -95,7 +97,14 @@ angular.module('fv')
       (new Activity()).listened($scope.modalData.objectId,
                                 $scope.modalData.userId);
     };
-    
+     /**
+     * Make url point to server to proxy stream content
+     */
+    $scope.proxyUrl = function(obj) {
+      //http://files.parse.com/3e0d5059-d213-40a3-a224-44351b90a9d1/cb8020bb-6210-440a-b69f-6c62bb9cb1a4-recording.mp3
+      return obj ? obj._url.replace('http://files.parse.com','/parse') : '';
+    };
+
     $scope.ok = function () {
       $modalInstance.close();
     };
