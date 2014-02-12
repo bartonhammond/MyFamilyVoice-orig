@@ -1,11 +1,16 @@
 'use strict';
 angular.module('fv')
-  .controller('NavbarCtrl', function ( $scope, $location) {
+  .controller('NavbarCtrl', function ( $scope, $location, $window, CONFIG) {
     //Is there a current user?
     $scope.init = function() {
       $scope.authenticated = !_.isNull(Parse.User.current() &&
                                             Parse.User.current().authenticated());
     };
+    
+    $scope.checkProtocol = function(link) {
+      return $location.protocol() + '://' + CONFIG.defaults.site + link;
+    };
+
     //LoginCtrl broadcasts 
     $scope.$on('userloggedin',function() {
       $scope.authenticated = true;
@@ -22,8 +27,9 @@ angular.module('fv')
     //Logout user
     $scope.logout = function() {
       Parse.User.logOut();
+      $scope.$broadcast('userloggedout');
       $scope.authenticated = false;
-      return $location.path('/');
+      $location.path(CONFIG.defaults.site);
     };
 
   });

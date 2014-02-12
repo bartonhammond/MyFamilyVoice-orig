@@ -60,12 +60,12 @@
                   <li><a href="icons.html">Icons</a></li>
                 </ul>
               </li>
-              <li><a ng-show='authenticated' href="#/search">Search</a></li>
+              <li><a href="{{checkProtocol('search')}}">Search</a></li>
               <li><a ng-show='authenticated' href="#/account">Account</a></li>
-              <li><a ng-show='authenticated' href="#/activities">Activities</a></li>
+              <li><a ng-show='authenticated' href="#activities">Activities</a></li>
               <li><a ng-show='authenticated' href="#/family">Family <span class="badge">{{newFamilyRequests}}</span></a></li>
               <li><a ng-show='authenticated' ng-click="logout()" >Log Out</a></li>
-              <li><a ng-hide='authenticated' href="#/login" >Login</a></li>
+              <li><a ng-hide='authenticated' href="#/login">Login</a></li>
             </ul>
           </div><!--/.navbar-collapse -->
         </div>

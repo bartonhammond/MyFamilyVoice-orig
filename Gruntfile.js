@@ -343,6 +343,32 @@ module.exports = function (grunt) {
           }
         ]
       },
+      configNode: {
+        files: [
+          {
+            src: ['<%= fv.devNodeAngularConfig %>'],
+            dest: '<%= public_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config/config.js';
+            }
+          }
+        ]
+      },
+      configDevModulus: {
+        files: [
+          {
+            src: ['<%= fv.devModulusAngularConfig %>'],
+            dest: '<%= public_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config/config.js';
+            }
+          }
+        ]
+      },
       configProd: {
         files: [
           {
@@ -415,6 +441,16 @@ module.exports = function (grunt) {
   grunt.registerTask('devNode', function () {
     grunt.task.run([
       'devPrep',
+      'copy:configNode',
+      'concat:html',
+      'sync:publicToNode'
+    ]);
+  });
+
+  grunt.registerTask('devModulus', function () {
+    grunt.task.run([
+      'devPrep',
+      'copy:configDevModulus',
       'concat:html',
       'sync:publicToNode'
     ]);

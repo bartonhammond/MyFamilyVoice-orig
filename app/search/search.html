@@ -49,7 +49,8 @@
             <br>
             Has been heard: {{item.audioViews}}
             <br>
-            <div class="btn-group btn-group-sm">
+            <div ng-show="authenticated"
+                 class="btn-group btn-group-sm">
               <button ng-click="joinFamily($index)"
                       type="button" 
                       ng-disabled="item.isSelf || item.familyStatus"
@@ -70,7 +71,8 @@
               Your family request has been sent.  Once approved you
               will be able to submit questions.
             </div>
-            <div class="btn-group btn-group-sm">
+            <div ng-show="authenticated"
+                 class="btn-group btn-group-sm">
               <button ng-click="subscribe($index)"
                       ng-disabled="item.isSelf"
                       type="button" 
@@ -91,21 +93,20 @@
             </div>
           </div>
           <div ng-if="item.type === 'activity'">
-            <a ng-href="#/activities/edit/{{item.objectId}}">
+            <a href ng-click="showModal($index)">
                {{item.description}}
             </a>
             <br>
             By: <a ng-href="#/activities/list/{{item.userId}}"
                    >{{item.userName}}</a>
             <br>
-            <span style="vertical-align: top">Listen:</span>
             <audio ng-click="listened(item)"
                    ng-attr-src="{{proxyUrl(item.audio)}}" 
                    preload=false controls></audio> 
             <br>
-            {{item.active}}
+            Recorded: {{item.active}}
             <br>
-            {{item.views}} listened 
+            Listened: {{item.views}} times
           </div>
         </td>
       </tr>
