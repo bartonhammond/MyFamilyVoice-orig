@@ -27,7 +27,7 @@ angular.module('fv')
           .then(
             function(registeredUser) {
               console.log('loginCtrl user was registered');
-              return User.logIn(registeredUser.get('password'),
+              return (new User()).logIn(registeredUser.get('password'),
                                 registeredUser.get('password'));
             })
           .then(
@@ -43,7 +43,7 @@ angular.module('fv')
                     console.log('SuccessfullyLogin register success');
                     console.log(data);
                     //Register and subsequently login
-                    return User.signUp(
+                    return (new User()).signUp(
                       data.get('password'),
                       data.get('password'),
                       data.get('firstName'),
@@ -78,7 +78,7 @@ angular.module('fv')
 
     $scope.logIn = function() {
       if ($scope.signupForm.$valid) {
-        User.logIn($scope.loginUser.username,
+        (new User()).logIn($scope.loginUser.username,
                    $scope.loginUser.password)
           .then(
             function() {

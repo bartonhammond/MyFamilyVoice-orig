@@ -3,20 +3,16 @@
 angular.module('fv').
   factory('User', function($q) {
     
-    var User = {
-      primaryEmail : '',
-      firstName : '',
-      lastName : '',
-      isSocial : '',
-
-      setProperties: function(user) {
+    var User = function(user) {
+      if (!_.isUndefined(user)) {
+        this.id = user.id;
         this.primaryEmail = user.get('primaryEmail');
         this.firstName = user.get('firstName');
         this.lastName = user.get('lastName');
         this.isSocial = user.get('isSocial');
         this.thumbNail = user.get('thumbnail');
-      },
-      signUp: function(userId, password, firstName, lastName, primaryEmail, isSocial, verifiedEmail) {
+      }
+      this.signUp = function(userId, password, firstName, lastName, primaryEmail, isSocial, verifiedEmail) {
         return Parse.User.signUp(
           userId,
           password,
@@ -27,8 +23,9 @@ angular.module('fv').
             isSocial: isSocial,
             verifiedEmail: verifiedEmail
           });
-      },
-      logIn: function(userid, password) {
+      };
+
+      this.logIn = function(userid, password) {
         var defer = $q.defer();
         
         Parse.User.logIn(userid, password)
@@ -40,12 +37,12 @@ angular.module('fv').
             defer.reject(error);
           });
         return defer.promise;
-      },
+      };
       /**
        * This User has the attributes to save
        * Optional param: file
        */
-      saveUser: function(file) {
+      this.saveUser = function(file) {
         Parse.User.current().set('firstName', this.firstName);
         Parse.User.current().set('lastName', this.lastName);
         Parse.User.current().set('primaryEmail',this.primaryEmail);
@@ -64,11 +61,11 @@ angular.module('fv').
             });
         
         return defer.promise;
-      },
+      };
       /**
        * Get user by id
        */
-      get: function(id) {
+      this.get = function(id) {
         var defer = $q.defer();
         var userQuery = new Parse.Query(Parse.User);
         userQuery
@@ -82,12 +79,12 @@ angular.module('fv').
           });
 
         return defer.promise;
-      },
+      };
       /**
        * If image selected, first save file
        * then associate it with the user
        */
-      save: function(file) {
+      this.save = function(file) {
         var self = this;
         if (file) {
           var defer = $q.defer();
@@ -107,7 +104,7 @@ angular.module('fv').
         } else {
           return self.saveUser();
         }
-      }//save
+      };//save
     };//user
       
     return User;

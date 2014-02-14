@@ -45,7 +45,7 @@ angular.module('fv')
     $scope.init = function() {
       //id is set when viewing Activities for a specific user
       if ($routeParams.id) {
-        User.get($routeParams.id)
+        (new User()).get($routeParams.id)
           .then(
             function(familyUser) {
               $scope.user = familyUser;

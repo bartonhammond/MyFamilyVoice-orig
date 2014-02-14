@@ -7,8 +7,7 @@ angular.module('fv')
      */
     $scope.init = function() {
       //Clone so changes are only made when successfull put
-      User.setProperties(Parse.User.current());
-      $scope.user = User;
+      $scope.user = new User(Parse.User.current());
       $scope.photo = '';
     };
 

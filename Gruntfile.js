@@ -58,6 +58,7 @@ module.exports = function (grunt) {
           'public/directives/timer.js',
           'public/directives/validFileType.js',
           'public/directives/validFileSize.js',
+          'public/directives/qtip.js',
           'public/filters/seconds.js',
           'public/main/MainCtrl.js',
           'public/navbar/NavbarCtrl.js',

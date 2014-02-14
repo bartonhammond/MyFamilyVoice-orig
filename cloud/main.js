@@ -178,15 +178,19 @@ var findSid = function(request) {
 var findUser = function(request) {
   var id = request.userId;
   var promise = new Parse.Promise();
-  var query = new Parse.Query(Parse.User);
-  query.get(id, {
-    success: function(user) {
-      promise.resolve(user);
-    },
-    error: function(error) {
-      promise.reject(error);
-    }
-  });
+  if (!id) {
+    promise.resolve(null);
+  } else {
+    var query = new Parse.Query(Parse.User);
+    query.get(id, {
+      success: function(user) {
+        promise.resolve(user);
+      },
+      error: function(error) {
+        promise.reject(error);
+      }
+    });
+  }
   return promise;
 };
 /**
@@ -516,6 +520,34 @@ var findActivities = function() {
   query.exists('file');
   query.include('user');
   return query.find();
+/*
+    .then(
+      function(activities) {
+        // Create a trivial resolved promise as a base case.
+        var promise = Parse.Promise.as();
+        _.each(activities, function(activity) {
+          // For each item, extend the promise with a function to delete it.
+          promise = promise.then(function() {
+            // Return a promise that will be resolved 
+            var relation = activity.relation('likes');
+            var prom = new Parse.Promise();
+            relation.query().find()
+              .then(
+                function(likes) {
+                  console.log('likes: ' + likes);
+                  activity._likes = likes;
+                  prom.resolve();
+                });
+            return prom;
+          });
+        });
+        return promise;
+ 
+      })
+    .then(function() {
+      return activities;
+    });
+*/
 };
 /**
  * Find all families approved for logged in user
@@ -632,6 +664,7 @@ Parse.Cloud.define('search', function(request, response) {
             
         var obj = {
           type: 'activity',
+          activity: activity,
           objectId: activities[index].id,
           userId: activities[index].get('user').id,
           userName: activities[index].get('user').get('firstName') + ' ' + activities[index].get('user').get('lastName'),
@@ -640,7 +673,10 @@ Parse.Cloud.define('search', function(request, response) {
           description: activity.get('comment'),
           active: moment(activity.get('recordedDate')).fromNow(),
           views: activity.get('views'),
-          audio: activity.get('file')
+          audio: activity.get('file'),
+          liked: activity.get('liked'),
+          isLikeCollapsed: true
+
         };
         results.push(obj);
       });
@@ -729,7 +765,6 @@ var scaleImage = function(request, response) {
  * is verified, reset to verified.
  */
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
-
   findUser({userId: request.object.id})
   .then(
     function(user) {
@@ -807,9 +842,13 @@ var updateActivitiesUserAudioViewCount = function(user) {
   return user.save();
 };
 var updateUserViewedCount = function(user) {
-  Parse.Cloud.useMasterKey();
-  user.increment('viewed');
-  return user.save();
+  if (user) {
+    Parse.Cloud.useMasterKey();
+    user.increment('viewed');
+    return user.save();
+  } else {
+    return Parse.Promise.as('ok');
+  }
 };
 
 /*
@@ -874,10 +913,6 @@ var createSubscription = function(loggedOnUser, familyUser, status) {
  * Create family record
  */
 var createFamily = function(loggedOnUser, familyUser) {
-  console.log('createFamily:');
-  console.log('loggedOnUserId:' + loggedOnUser.id);
-  console.log('familyUserId:' + familyUser.id);
-
   var link = guid() + guid();
   link = link.replace(/-/g,'');
 
@@ -940,6 +975,39 @@ Parse.Cloud.define('addToFamily', function(request, response) {
     .then(
       function(loggedOnUser, familyUser) {
         return createFamily(loggedOnUser, familyUser);
+      })
+    .then(
+      function() {
+        response.success();
+      },
+      function(error) {
+        response.error(error);
+      });
+});
+/**
+ * Create family record
+ */
+var createLikesRelation = function(user, activity, likes) {
+  var likeRelation = activity.relation('likes');
+  if (likes) {
+    likeRelation.add(user);
+    activity.increment('liked');
+  } else {
+    likeRelation.remove(user);
+    activity.increment('liked',-1);
+  }
+  return activity.save();
+};
+
+/**
+ * error or unlike an activity
+ */
+Parse.Cloud.define('activityLike', function(request, response) {
+  Parse.Promise.when([findUser({userId: request.user.id}),
+                      findActivity(request.params.activityId)])
+    .then(
+      function(user, activity) {
+        return createLikesRelation(user, activity, request.params.like);
       })
     .then(
       function() {
