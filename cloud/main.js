@@ -178,15 +178,19 @@ var findSid = function(request) {
 var findUser = function(request) {
   var id = request.userId;
   var promise = new Parse.Promise();
-  var query = new Parse.Query(Parse.User);
-  query.get(id, {
-    success: function(user) {
-      promise.resolve(user);
-    },
-    error: function(error) {
-      promise.reject(error);
-    }
-  });
+  if (!id) {
+    promise.resolve(null);
+  } else {
+    var query = new Parse.Query(Parse.User);
+    query.get(id, {
+      success: function(user) {
+        promise.resolve(user);
+      },
+      error: function(error) {
+        promise.reject(error);
+      }
+    });
+  }
   return promise;
 };
 /**
@@ -509,6 +513,7 @@ var findUsers = function() {
 };
 /**
  * Find all activities with audio
+ * client code will retrieve likes
  */
 var findActivities = function() {
   Parse.Cloud.useMasterKey();
@@ -632,6 +637,7 @@ Parse.Cloud.define('search', function(request, response) {
             
         var obj = {
           type: 'activity',
+          activity: activity,
           objectId: activities[index].id,
           userId: activities[index].get('user').id,
           userName: activities[index].get('user').get('firstName') + ' ' + activities[index].get('user').get('lastName'),
@@ -640,7 +646,10 @@ Parse.Cloud.define('search', function(request, response) {
           description: activity.get('comment'),
           active: moment(activity.get('recordedDate')).fromNow(),
           views: activity.get('views'),
-          audio: activity.get('file')
+          audio: activity.get('file'),
+          liked: activity.get('liked'),
+          isLikeCollapsed: true
+
         };
         results.push(obj);
       });
@@ -656,16 +665,20 @@ Parse.Cloud.define('search', function(request, response) {
  * Scale thumbnail image
  */
 var scaleImage = function(request, response) {
+  console.log('scaleImage');
   var obj = request.object;
   
   if (!obj.get('photo')) {
+    console.log('scaleImage: no photo');
     return response ? response.success() : null;
   }
   
   if (!obj.dirty('photo')) {
+    console.log('scaleImage: photo not dirty');
     return response ? response.success() : null;
   }
   
+  console.log('scaleImage: getting photo');
   Parse.Cloud.httpRequest({
     url: obj.get('photo').url()
   })
@@ -675,6 +688,7 @@ var scaleImage = function(request, response) {
       return image.setData(response.buffer);
     })
     .then(function(image) {
+      console.log('scaleImage: got image');
       // Crop the image to the smaller of width or height.
       var size = Math.min(image.width(), image.height());
       return image.crop({
@@ -712,6 +726,7 @@ var scaleImage = function(request, response) {
     .then(
       function(cropped) {
         // Attach the image file to the original object.
+        Parse.Cloud.useMasterKey();
         obj.set('thumbnail', cropped);
       })
     .then(
@@ -729,7 +744,6 @@ var scaleImage = function(request, response) {
  * is verified, reset to verified.
  */
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
-
   findUser({userId: request.object.id})
   .then(
     function(user) {
@@ -817,24 +831,46 @@ var updateUserViewedCount = function(user) {
  * Activity, Activities user, and user who listened
  */
 Parse.Cloud.define('activityListened', function(request, response) {
-  Parse.Promise.when([findActivity(request.params.activityId),
-                      findUser({userId: request.params.activityUserId}),
-                      findUser({userId: request.params.userId})])
-    .then(
-      function(activity, activityUser, user) {
-        return Parse.Promise.when([updateActivityViewsCount(activity),
-                                   updateActivitiesUserAudioViewCount(activityUser),
-                                   updateUserViewedCount(user)]);
-      })
-    .then(
-      function() {
-        response.success();
-      },
+  console.log('activityListened userId: ' + request.params.userId);
+  if (request.params.userId) {
+    console.log('got userid');
+    Parse.Promise.when([findActivity(request.params.activityId),
+                        findUser({userId: request.params.activityUserId}),
+                        findUser({userId: request.params.userId})])
+      .then(
+        function(activity, activityUser, user) {
+          return Parse.Promise.when([updateActivityViewsCount(activity),
+                                     updateActivitiesUserAudioViewCount(activityUser),
+                                     updateUserViewedCount(user)]);
+        })
+      .then(
+        function(activity) {
+          response.success(activity);
+        },
       function(error) {
         console.log('activityListened error: ');
         console.log(error);
         response.error(error);
       });
+  } else {
+    console.log('did not get userid');
+    Parse.Promise.when([findActivity(request.params.activityId),
+                        findUser({userId: request.params.activityUserId})])
+      .then(
+        function(activity, activityUser) {
+          return Parse.Promise.when([updateActivityViewsCount(activity),
+                                     updateActivitiesUserAudioViewCount(activityUser)]);
+        })
+      .then(
+        function(activity) {
+          response.success(activity);
+        },
+        function(error) {
+          console.log('activityListened error: ');
+          console.log(error);
+          response.error(error);
+        });
+  }
 });
 /**
  * Create subscription record
@@ -874,10 +910,6 @@ var createSubscription = function(loggedOnUser, familyUser, status) {
  * Create family record
  */
 var createFamily = function(loggedOnUser, familyUser) {
-  console.log('createFamily:');
-  console.log('loggedOnUserId:' + loggedOnUser.id);
-  console.log('familyUserId:' + familyUser.id);
-
   var link = guid() + guid();
   link = link.replace(/-/g,'');
 
@@ -946,6 +978,43 @@ Parse.Cloud.define('addToFamily', function(request, response) {
         response.success();
       },
       function(error) {
+        response.error(error);
+      });
+});
+/**
+ * Create family record
+ */
+var createLikesRelation = function(user, activity, likes) {
+  Parse.Cloud.useMasterKey();
+  var likeRelation = activity.relation('likes');
+  if (likes) {
+    likeRelation.add(user);
+    activity.increment('liked');
+  } else {
+    likeRelation.remove(user);
+    activity.increment('liked',-1);
+  }
+  return activity.save();
+};
+
+/**
+ * error or unlike an activity
+ */
+Parse.Cloud.define('activityLike', function(request, response) {
+  Parse.Promise.when([findUser({userId: request.user.id}),
+                      findActivity(request.params.activityId)])
+    .then(
+      function(user, activity) {
+        return createLikesRelation(user, activity, request.params.like);
+      })
+    .then(
+      function(activity) {
+        console.log('activityLike: success');
+        response.success(activity);
+      },
+      function(error) {
+        console.log('activityLike: error');
+        console.log(error);
         response.error(error);
       });
 });

@@ -13,7 +13,7 @@ angular.module('fv')
     $scope.register = function () {
       if ($scope.signupForm.$valid && $scope.passwordsMatch()) {
         requestNotificationChannel.requestStarted();
-        User.signUp($scope.registerUser.email,
+        (new User()).signUp($scope.registerUser.email,
                     $scope.registerUser.password,
                     '',//firstname
                     '',//lastName

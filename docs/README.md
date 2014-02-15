@@ -41,6 +41,10 @@ MyFamilyVoice records the voice of your family for future generations
    admin@myfamilyvoice.com
    $7/mo
 
+## Modulus - sign in w/ GitHub
+
+## AngularUI Bootstrap 
+   create build: Tooltip, Collapse, Modal
 ####################################################
 # Registration
 * Social Login

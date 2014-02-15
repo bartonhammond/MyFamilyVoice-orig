@@ -13,6 +13,7 @@ angular.module('fv').
         this.views = activity.get('views');
         this.photo = activity.get('photo');
         this.thumbnail = activity.get('thumbnail');
+        this.liked = activity.get('liked');
       }
 
       this.get = function (id) {
@@ -73,22 +74,38 @@ angular.module('fv').
         }
       };//save
 
-      this.listened = function(id, userId) {
+      this.like = function(id, action) {
         var defer = $q.defer();
-        Parse.Cloud.run('activityListened',
+        Parse.Cloud.run('activityLike',
                         {activityId: id,
-                         activityUserId: userId,
-                         userId: Parse.User.current().id})
-        .then(
-          function() {
-            defer.resolve();
-          },
-          function(error) {
-            defer.reject(error);
-          });
+                         like: action})
+          .then(
+            function(activity) {
+              defer.resolve(activity);
+            },
+            function(error) {
+              defer.reject(error);
+            });
         return defer.promise;
       };
 
+      this.listened = function(id, userId) {
+        var defer = $q.defer();
+        
+        Parse.Cloud.run('activityListened',
+                        {activityId: id,
+                         activityUserId: userId,
+                         userId: Parse.User.current() && Parse.User.current().authenticated ? Parse.User.current().id : null})
+          .then(
+            function(activity) {
+              defer.resolve(activity);
+            },
+            function(error) {
+              defer.reject(error);
+            });
+        return defer.promise;
+      };
+      
       this.isNew = function() {
         return this.createdAt;
       };

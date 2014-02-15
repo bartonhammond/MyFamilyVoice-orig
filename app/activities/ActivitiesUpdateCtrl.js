@@ -34,6 +34,7 @@ angular.module('fv')
               var _activity = new _Activity();
               //Family user is owner
               _activity.set('user', $scope.user);
+              _activity.set('liked',0);
               var acl = new Parse.ACL();
               acl.setPublicReadAccess(true);
               acl.setWriteAccess($scope.user.id,true);

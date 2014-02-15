@@ -58,6 +58,7 @@ module.exports = function (grunt) {
           'public/directives/timer.js',
           'public/directives/validFileType.js',
           'public/directives/validFileSize.js',
+          'public/directives/qtip.js',
           'public/filters/seconds.js',
           'public/main/MainCtrl.js',
           'public/navbar/NavbarCtrl.js',
@@ -352,6 +353,15 @@ module.exports = function (grunt) {
             expand: true,
             rename: function(dest) {
               return dest + '/config/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.devModulusConfig %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
             }
           }
         ]

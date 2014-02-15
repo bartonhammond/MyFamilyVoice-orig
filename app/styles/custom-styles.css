@@ -111,3 +111,18 @@ img.center {
     font-size: small;
     margin-left: 10px;
 }
+.likes-container {
+    width: 300px;
+}
+.fa-thumbs-o-up {
+    margin-left: 15px;
+}
+.fa-comment-o {
+    margin-left: 10px;
+}
+.commentsContainer {
+    margin-top: 5px;
+}
+.commentWell {
+    padding: 6px;
+}

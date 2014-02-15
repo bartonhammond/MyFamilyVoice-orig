@@ -31,7 +31,7 @@ angular.module('fv')
         .then(
           function(results) {
             var link = results[0];
-            return User.get(link.get('kin').id);
+            return (new User()).get(link.get('kin').id);
           })
         .then(
           function(kin) {

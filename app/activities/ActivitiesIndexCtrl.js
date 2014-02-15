@@ -25,14 +25,40 @@ angular.module('fv')
       //http://files.parse.com/3e0d5059-d213-40a3-a224-44351b90a9d1/cb8020bb-6210-440a-b69f-6c62bb9cb1a4-recording.mp3
       return obj ? obj._url.replace('http://files.parse.com','/parse') : '';
     };
-    
+    $scope.authenticated = function() {
+      return Parse.User.current() && Parse.User.current().authenticated();
+    };
+
+    var getRelations = function(item) {
+      item.activity.relation('likes').query().find()
+        .then(
+          function(likes) {
+            item.likes = [];
+            item.iLikeThis = false;
+            _.each(likes, function(user) {
+              item.likes.push(new User(user));
+              if (Parse.User.current() && Parse.User.current().authenticated() && user.id === Parse.User.current().id) {
+                item.iLikeThis = true;
+                if(!$scope.$$phase) {
+                  $scope.$digest();
+                }
+              }
+            });
+          },
+          function(error) {
+            console.log(error);
+          });
+    };
     var getUsersActivities = function(user) {
       (new Activity()).list(user)
         .then(
           function(activities) {
             var _activities = [];
             _.each(activities, function(act) {
-              _activities.push(new Activity(act));
+              var activity = new Activity(act);
+              activity.isLikeCollapsed = true;
+              getRelations(activity);
+              _activities.push(activity);
             });
             $scope.activities = _activities;
           },
@@ -41,11 +67,37 @@ angular.module('fv')
             window.history.back();
           });
     };
+    $scope.showLikes = function(activity) {
+      activity.isLikeCollapsed = !activity.isLikeCollapsed;
+    };
+    /**
+     * action = true to like
+     *          false to unlike
+     */
+    $scope.like = function(activity, action) {
+      activity.isLikeCollapsed = true;
+      if (!action) {
+        activity.iLikeThis = false;
+      }
+      (new Activity()).like(activity.objectId, action)
+      .then(
+        function(updatedActivity) {
+          activity.liked = updatedActivity.get('liked');
+          activity.activity = updatedActivity;
+          getRelations(activity);
+          if(!$scope.$$phase) {
+            $scope.$digest();
+          }
+        },
+        function(error) {
+          console.log(error);
+        });
+    };
 
     $scope.init = function() {
       //id is set when viewing Activities for a specific user
       if ($routeParams.id) {
-        User.get($routeParams.id)
+        (new User()).get($routeParams.id)
           .then(
             function(familyUser) {
               $scope.user = familyUser;
@@ -113,7 +165,21 @@ angular.module('fv')
         $location.path('/activities/add');
       }
     };
-
+    /**
+     * update the count of listened to
+     */
+    $scope.listened = function(obj, event) {
+      if (event.currentTarget && event.currentTarget.paused) {
+        (new Activity()).listened(obj.id,
+                                  obj.activity.get('user').id)
+          .then(function (activity) {
+            obj.views = activity.get('views');
+          }, function(error) {
+            console.log(error);
+          });
+      }
+    };
+    
     //delete from parse and remove from the collection
     $scope.delete = function(activity) {
       console.log(activity);
