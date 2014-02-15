@@ -354,6 +354,15 @@ module.exports = function (grunt) {
             rename: function(dest) {
               return dest + '/config/config.js';
             }
+          },
+          {
+            src: ['<%= fv.devModulusConfig %>'],
+            dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
           }
         ]
       },

@@ -17,7 +17,7 @@
                ng-src="{{proxyUrl(modalData.photo)}}"/>
           <span ng-show="modalData.audio">
             <div style="vertical-align: top">Listen:</div>
-            <audio ng-click="listened(modalData)"
+            <audio ng-click="listened(modalData, $event)"
                    ng-attr-src="{{proxyUrl(modalData.audio)}}"
                    controls preload></audio> 
           </span>
@@ -100,7 +100,7 @@
             By: <a ng-href="#/activities/list/{{item.userId}}"
                    >{{item.userName}}</a>
             <br>
-            <audio ng-click="listened(item)"
+            <audio ng-click="listened(item, $event)"
                    ng-attr-src="{{proxyUrl(item.audio)}}" 
                    preload=false controls></audio> 
             <br>
@@ -111,23 +111,16 @@
             <div class="likes-container">
               <span  ng-show="authenticated()">
                 <a href>
-                  <span ng-show="likes(item)"
+                  <span ng-show="item.iLikeThis"
                         ng-click="like(item, false)"
                         fv-tooltip="Click if you want to unlike">
-                    You like!
+                    Unlike
                   </span>
-                  <span ng-show="!likes(item)"
+                  <span ng-show="!item.iLikeThis"
                         ng-click="like(item, true)"
                         fv-tooltip="Click if you want to like this audio">
                     Like
                   </span>
-                </a> 
-                .
-
-                <a href 
-                   ng-click="isCommentCollapsed = !isCommentCollapsed"
-                   fv-tooltip="Click to add a comment">
-                  Comment
                 </a> 
               </span>
               <span style="float: right" >
@@ -136,10 +129,6 @@
                      style="cursur: pointer"
                      ng-click="showLikes(item)"></i>
                   {{item.liked}}
-                </span>
-                <span fv-tooltip="Click to see all the comments" >
-                  <i class="fa fa-comment-o fa-lg"></i>
-                  15
                 </span>
               </span>
 	      <div collapse="item.isLikeCollapsed">
@@ -151,19 +140,6 @@
                       <span ng-if="!$last">, </span>
                     </a>
                   </span>
-                </div> 
-	      </div>
-	      <div collapse="isCommentCollapsed">
-	        <div class="well well-lg commentWell">
-                  <div class="commentsContainer">
-                    <img width="30"
-                         ng-src="{{userThumbnail()}}"/>
-                    <textarea
-                       style="width:250px; vertical-align: top"
-                       rows="1"
-                       cols="50">
-                    </textarea>
-                  </div>
                 </div> 
 	      </div>
             </div>

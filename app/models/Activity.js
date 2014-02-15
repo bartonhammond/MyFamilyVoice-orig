@@ -80,8 +80,8 @@ angular.module('fv').
                         {activityId: id,
                          like: action})
           .then(
-            function() {
-              defer.resolve();
+            function(activity) {
+              defer.resolve(activity);
             },
             function(error) {
               defer.reject(error);
@@ -97,8 +97,8 @@ angular.module('fv').
                          activityUserId: userId,
                          userId: Parse.User.current() && Parse.User.current().authenticated ? Parse.User.current().id : null})
           .then(
-            function() {
-              defer.resolve();
+            function(activity) {
+              defer.resolve(activity);
             },
             function(error) {
               defer.reject(error);

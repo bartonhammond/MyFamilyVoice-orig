@@ -8,8 +8,6 @@ angular.module('fv')
       $scope.performSearch();
       $scope.familyRequestSent = false;
       $scope.modalData = undefined;
-      $scope.isLikeCollapsed = true;
-      $scope.isCommentCollapsed = true;
     };
 
     $scope.authenticated = function() {
@@ -31,6 +29,26 @@ angular.module('fv')
     $scope.showLikes = function(activity) {
       activity.isLikeCollapsed = !activity.isLikeCollapsed;
     };
+    var getRelations = function(item) {
+      item.activity.relation('likes').query().find()
+        .then(
+          function(likes) {
+            item.likes = [];
+            item.iLikeThis = false;
+            _.each(likes, function(user) {
+              item.likes.push(new User(user));
+              if (Parse.User.current() && Parse.User.current().authenticated() && user.id === Parse.User.current().id) {
+                item.iLikeThis = true;
+                if(!$scope.$$phase) {
+                  $scope.$digest();
+                }
+              }
+            });
+          },
+          function(error) {
+            console.log(error);
+          });
+    };
     /**
      * Search 
      */
@@ -41,33 +59,33 @@ angular.module('fv')
             $scope.search.items = response;
             _.each($scope.search.items, function(item) {
               if (item.type === 'activity') {
-                item.activity.relation('likes').query().find()
-                  .then(
-                    function(likes) {
-                      item.likes = [];
-                      _.each(likes, function(user) {
-                        item.likes.push(new User(user));
-                      });
-                    },
-                    function(error) {
-                      console.log(error);
-                    });
+                getRelations(item);
               }//if
             });
           });
-    };
-    /**
-     * Does the current user like this?
-     */
-    $scope.likes = function() {
-      return false;
     };
     /**
      * action = true to like
      *          false to unlike
      */
     $scope.like = function(activity, action) {
-      (new Activity()).like(activity.objectId, action);
+      activity.isLikeCollapsed = true;
+      if (!action) {
+        activity.iLikeThis = false;
+      }
+      (new Activity()).like(activity.objectId, action)
+      .then(
+        function(updatedActivity) {
+          activity.liked = updatedActivity.get('liked');
+          activity.activity = updatedActivity;
+          getRelations(activity);
+          if(!$scope.$$phase) {
+            $scope.$digest();
+          }
+        },
+        function(error) {
+          console.log(error);
+        });
     };
     /**
      * On search, only Users have Join Family
@@ -113,11 +131,18 @@ angular.module('fv')
           });
     };
     /**
-     * Start player and update the count of listened to
+     *  update the count of listened to
      */
-    $scope.listened = function(obj) {
-      (new Activity()).listened(obj.objectId,
-                                obj.userId);
+    $scope.listened = function(obj, event) {
+      if (event.currentTarget.paused) {
+        (new Activity()).listened(obj.objectId,
+                                  obj.userId)
+          .then(function (activity) {
+            obj.views = activity.get('views');
+          }, function(error) {
+            console.log(error);
+          });
+      }
     };
     $scope.edit = function(activity) {
       $location.path('/activities/edit/' + activity.objectId);
@@ -134,9 +159,11 @@ angular.module('fv')
   }).controller('ModalInstanceCtrl',function ($scope, $modalInstance, modalData, Activity) {
     
     $scope.modalData = modalData;
-    $scope.listened = function() {
-      (new Activity()).listened($scope.modalData.objectId,
-                                $scope.modalData.userId);
+    $scope.listened = function(event) {
+      if (event.currentTarget.paused) {
+        (new Activity()).listened($scope.modalData.objectId,
+                                  $scope.modalData.userId);
+      }
     };
      /**
      * Make url point to server to proxy stream content

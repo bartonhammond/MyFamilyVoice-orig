@@ -38,6 +38,44 @@
                         roleForm.submitted">
             A question should be between 10 and 250 characters.
           </div>
+
+ <!---- Imaage -------------------------------------------------->          
+          <div class="control-group">
+            <div class="controls">
+              <div class="input-prepend">
+                <span class='fv-label' style="margin-right: 43px">Photo</span>
+          	<span class="add-on">
+                  <i class="fa fa-picture-o">
+                  </i>
+                </span>
+                <input type="file" 
+                       id="fileToUpload"
+                       name="fileToUpload"
+                       ng-model="photo"
+                       validfilesize
+                       validfiletype
+                       onchange="angular.element(this).scope().setFiles(this)">
+              </div>
+            </div>
+          </div>
+         <span class='fv-warning'
+                ng-show="roleForm.fileToUpload.$error.validfiletype">
+           Image must be of jpg, gif or png type.
+           <br>
+          </span>
+
+          <span class='fv-warning'
+                ng-show="roleForm.fileToUpload.$error.validfilesize">
+            Image size must be less the 2M!
+            <br>
+          </span>
+
+          <span class='fv-warning'
+                ng-show="roleForm.fileToUpload.$error.validfilesize
+                         && signupForm.submitted">
+            Please choose another image.
+          </span>
+         
           <!---- Current Imaage -------------------------------------------------->          
           <div ng-if="getThumbnail()" class="control-group">
             <div class="controls">
