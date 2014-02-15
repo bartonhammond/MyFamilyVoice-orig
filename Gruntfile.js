@@ -505,6 +505,15 @@ module.exports = function (grunt) {
     ]);
   });
 
+  grunt.registerTask('prodModulus', function () {
+    grunt.task.run([
+      'prodPrep',
+      'concat:html',
+      'shell:parseProduction',
+      'sync:publicToNode'
+    ]);
+  });
+
   grunt.registerTask('prodQuick', function () {
     grunt.task.run([
       'prodPrep',
