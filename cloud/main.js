@@ -19,11 +19,12 @@ var twilioAccountSID =  config.accounts.twilio.accountSID;
 var twilioAuthToken = config.accounts.twilio.authToken;
 var twilioAppSID = config.accounts.twilio.appSID;
 
-var CallSid = Parse.Object.extend('CallSid');
 var Activity = Parse.Object.extend('Activity');
-var RegisterUser = Parse.Object.extend('RegisterUser');
+var CallSid = Parse.Object.extend('CallSid');
 var ConfirmEmail = Parse.Object.extend('ConfirmEmail');
 var Family = Parse.Object.extend('Family');
+var Referral = Parse.Object.extend('Referral');
+var RegisterUser = Parse.Object.extend('RegisterUser');
 var Subscription = Parse.Object.extend('Subscription');
 var SubscriptionJob = Parse.Object.extend('SubscriptionJob');
 /**
@@ -660,7 +661,25 @@ Parse.Cloud.define('search', function(request, response) {
       response.error(error);
     });
 });
-
+/**
+ * Create 
+ */
+var createReferredUser = function(email, firstName, lastName) {
+  var link = guid();
+  var user = new Parse.User();
+  return user.save({
+    primaryEmail: email,
+    username: email,
+    verifiedEmail: false,
+    firstName: firstName,
+    lastName: lastName,
+    password: link,
+    audioViews: 0,
+    viewed: 0,
+    referral: true
+  });
+    
+};
 /**
  * Scale thumbnail image
  */
@@ -744,23 +763,25 @@ var scaleImage = function(request, response) {
  * is verified, reset to verified.
  */
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
+  //if run before inttial save of user, user will not be found
   findUser({userId: request.object.id})
   .then(
     function(user) {
-
-      if (_.isEqual(user.get('primaryEmail'), request.object.get('primaryEmail'))) {
-        //Email confirmation 
-        if (!request.object.get('verifiedEmail')) {
-          //Some other update is overwriting like the Account process
-          //This happens when the email confirmation happens and the
-          //user is logged in and therefore out of sync
-          if (user.get('verifiedEmail')) {
-            request.object.set('verifiedEmail',true);
+      if (!_.isNull(user)) {
+        if (_.isEqual(user.get('primaryEmail'), request.object.get('primaryEmail'))) {
+          //Email confirmation 
+          if (!request.object.get('verifiedEmail')) {
+            //Some other update is overwriting like the Account process
+            //This happens when the email confirmation happens and the
+            //user is logged in and therefore out of sync
+            if (user.get('verifiedEmail')) {
+              request.object.set('verifiedEmail',true);
+            }
           }
+          //If different, set verifiedEmail to false
+        } else {
+          request.object.set('verifiedEmail',false);
         }
-        //If different, set verifiedEmail to false
-      } else {
-        request.object.set('verifiedEmail',false);
       }
     },
     function(error) {
@@ -777,7 +798,7 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
  * send Email Confirmation
 */
 Parse.Cloud.afterSave(Parse.User, function(request) {
-  if (!request.object.get('verifiedEmail')) {
+  if (!request.object.get('referral') && !request.object.get('verifiedEmail')) {
     var user = {objectId : request.object.id,
                 primaryEmail: request.object.get('primaryEmail'),
                 firstName: request.object.get('firstName')};
@@ -806,8 +827,6 @@ Parse.Cloud.afterSave(Parse.User, function(request) {
         console.log('afterSave - error finding ConfirmEmail');
         console.log(error);
       });
-  } else {
-    console.log('afterSave Parse.User verifiedEmail is true');
   }
 });
 var updateActivityViewsCount = function(activity) {
@@ -929,8 +948,8 @@ var createFamily = function(loggedOnUser, familyUser) {
           approved: false
         })
         .then(
-          function() {
-            promise.resolve('ok');
+          function(family) {
+            promise.resolve(family);
           });
       } else {
         console.log('createFamily: results');
@@ -964,6 +983,82 @@ Parse.Cloud.define('subscribeToFamily', function(request, response) {
       });
 });
 /**
+ * When Family is saved the first time, send email to family
+ * for confirmation
+ */
+var emailFamilyRequest  =  function(family,response) {
+  console.log('emailFamilyRequest');
+
+  var _family = family.get('family');
+  var _kin = family.get('kin');
+  var link = family.get('link');
+ 
+  console.log('_family.id: ' + _family.id + ' _kin.id: ' + _kin.id);
+
+  //Send email for Family member confirmation
+  Parse.Promise.when([findUser({userId: _family.id}),
+                     findUser({userId: _kin.id})])
+    .then(
+      function(family, kin) {
+        var url = config.accounts.site + '/master.html#/confirmFamily/'  + link;
+        var params = {
+          'key': mandrill.config.key,
+          'template_name': mandrill.config.family,
+          'template_content': [
+          ],
+          'message': {
+            'to': [
+              {
+                'email': family.get('primaryEmail'),
+                'name':  family.get('firstName'),
+                'type': 'to'
+              }
+            ],
+            'inline_css': 'true',
+            'merge_vars': [
+              {
+                'rcpt': family.get('primaryEmail'),
+                'vars': [
+                  {
+                    'name': 'CONFIRMFAMILYKIN',
+                    'content': url
+                  },
+                  {
+                    'name': 'FIRSTNAME',
+                    'content': kin.get('firstName')
+                  },
+                  {
+                    'name': 'LASTNAME',
+                    'content': kin.get('lastName')
+                  }
+                ]
+              }
+            ],
+          },
+          'async': true
+        };
+        console.log(params);
+        Parse.Cloud.httpRequest({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
+          body: params,
+          success: function() {
+            return response.success();
+          },
+          error: function(error) {
+            return response.error(error);
+          }
+        });
+      },
+      function(error) {
+        console.log('sendConfirmEmail error');
+        console.log(error);
+      });
+};
+/**
  * Join Family - the logged in user is joining the params.userId family
  */
 Parse.Cloud.define('addToFamily', function(request, response) {
@@ -974,8 +1069,8 @@ Parse.Cloud.define('addToFamily', function(request, response) {
         return createFamily(loggedOnUser, familyUser);
       })
     .then(
-      function() {
-        response.success();
+      function(family) {
+        return emailFamilyRequest(family, response);
       },
       function(error) {
         response.error(error);
@@ -1086,84 +1181,6 @@ Parse.Cloud.define('confirmFamily', function(request, response) {
 Parse.Cloud.beforeSave('Activity', function(request, response) {
   return scaleImage(request, response);
 });
-/**
- * When Family is saved the first time, send email to family
- * for confirmation
- */
-Parse.Cloud.afterSave('Family', function(request) {
-  console.log('Family after save');
-
-  var isNew = _.isEqual(request.object.createdAt, request.object.updatedAt);
-  var family = JSON.parse(JSON.stringify(request.object.get('family')));
-  var kin = JSON.parse(JSON.stringify(request.object.get('kin')));
-  var link = request.object.get('link');
- 
-  if (!isNew) {
-    return;
-  }
-  //Send email for Family member confirmation
-  Parse.Promise.when([findUser({userId: family.objectId}),
-                     findUser({userId: kin.objectId})])
-    .then(
-      function(family, kin) {
-        var url = config.accounts.site + '/master.html#/confirmFamily/'  + link;
-        var params = {
-          'key': mandrill.config.key,
-          'template_name': mandrill.config.family,
-          'template_content': [
-          ],
-          'message': {
-            'to': [
-              {
-                'email': family.get('primaryEmail'),
-                'name':  family.get('firstName'),
-                'type': 'to'
-              }
-            ],
-            'inline_css': 'true',
-            'merge_vars': [
-              {
-                'rcpt': family.get('primaryEmail'),
-                'vars': [
-                  {
-                    'name': 'CONFIRMFAMILYKIN',
-                    'content': url
-                  },
-                  {
-                    'name': 'FIRSTNAME',
-                    'content': kin.get('firstName')
-                  },
-                  {
-                    'name': 'LASTNAME',
-                    'content': kin.get('lastName')
-                  }
-                ]
-              }
-            ],
-          },
-          'async': true
-        };
-        console.log(params);
-        Parse.Cloud.httpRequest({
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
-          body: params,
-          success: function() {
-            //
-          },
-          error: function(error) {
-            console.log('sendConfirmFamily error:' + error.message);
-          }
-        });
-      },
-      function(error) {
-        console.log('sendConfirmEmail error');
-        console.log(error);
-      });
-});
 Parse.Cloud.job('sendSubscriberEmails', function(request, status) {
   console.log('sendSubscriberEmails input');
   var query = new Parse.Query(SubscriptionJob);
@@ -1190,5 +1207,58 @@ Parse.Cloud.job('sendSubscriberEmails', function(request, status) {
         console.log('sendSubscriberEmails error: ' + error.message);
         // Set the job's error status
         status.error('Uh oh, something went wrong.');
+      });
+});
+/*
+ * Create referral
+ * find the logged in user,
+ * create a temp user,
+ * create a referral
+ * create a family
+ */
+Parse.Cloud.define('createReferral', function(request, response) {
+  console.log('createReferral');
+  console.log('email: ' + request.params.email);
+  console.log('firstName: ' + request.params.firstName);
+  console.log('lastName: ' + request.params.lastName);
+  console.log('userId: ' + request.user.id);
+  var _user, _referredUser;
+  Parse.Promise.when([findUser({userId: request.user.id})])
+    .then(
+      function(user) {
+        _user = user;
+        return createReferredUser(request.params.email,
+                                  request.params.firstName,
+                                  request.params.lastName);
+      })
+    .then(
+      function(referredUser) {
+        _referredUser = referredUser;
+        return createFamily(_user, referredUser);
+      })
+    .then(
+      function(family) {
+        return family.save({
+          approved: true
+        });
+      })
+    .then(
+      function() { //approvedFamily not needed
+        var referral = new Referral();
+        return referral.save({
+          firstName: request.params.firstName,
+          lastName: request.params.lastName,
+          email: request.params.email,
+          link: guid() + guid(),
+          user: _user,
+          referredUser: _referredUser
+        });
+      })
+    .then(
+      function(referral) {
+        response.success(referral);
+      },
+      function(error) {
+        response.error(error);
       });
 });

@@ -13,7 +13,7 @@ module.exports = {
           'admin/**/*.js', 'models/**/*.js', 'confirmEmail/**/*.js',
         'account/**/*.js', 'activities/**/*.js', 'search/**/*.js',
         'directives/**/*.js', 'family/**/*.js', 'register/**/*.js',
-        'factory/**/*.js', 'filters/**/*.js'],
+        'factory/**/*.js', 'filters/**/*.js', 'referral/**/*.js'],
     css: ['styles/*.css'],
     devCloudConfig: 'cloudCode/configDev.js',
     prodCloudConfig: 'cloudCode/configProd.js',

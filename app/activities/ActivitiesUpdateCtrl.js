@@ -19,7 +19,7 @@ angular.module('fv')
       
     } else {
       if ($routeParams.action === 'add' && $routeParams.id) {
-        User.get($routeParams.id)
+        (new User()).get($routeParams.id)
           .then(
             function(familyUser) {
               $scope.user = familyUser;

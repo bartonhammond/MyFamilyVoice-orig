@@ -57,7 +57,14 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
         templateUrl: 'family/index.html',
         controller: 'FamilyIndexCtrl'
       })
-
+      .when('/referral', {
+        templateUrl: 'referral/index.html',
+        controller: 'ReferralIndexCtrl'
+      })
+      .when('/referral/add', {
+        templateUrl: 'referral/create.html',
+        controller: 'ReferralCreateCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
