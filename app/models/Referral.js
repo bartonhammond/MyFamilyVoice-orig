@@ -29,6 +29,19 @@ angular.module('fv').
               defer.resolve(referral);
             },
             function(error) {
+              defer.rejecot(error);
+            });
+        return defer.promise;
+      };
+      this.sendReferralEmail = function() {
+        var defer = $q.defer();
+        Parse.Cloud.run('sendReferralEmail',
+                        {id: this.referral.id})
+          .then(
+            function(referral) {
+              defer.resolve(referral);
+            },
+            function(error) {
               defer.reject(error);
             });
         return defer.promise;

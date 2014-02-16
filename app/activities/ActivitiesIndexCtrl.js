@@ -79,7 +79,7 @@ angular.module('fv')
       if (!action) {
         activity.iLikeThis = false;
       }
-      (new Activity()).like(activity.objectId, action)
+      (new Activity()).like(activity.id, action)
       .then(
         function(updatedActivity) {
           activity.liked = updatedActivity.get('liked');

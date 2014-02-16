@@ -506,6 +506,101 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
     });
 });
 /**
+ * Find the referral record by id
+*/
+var getReferral = function(id) {
+  Parse.Cloud.useMasterKey();
+  var promise = new Parse.Promise();
+  var query = new Parse.Query(Referral);
+  query.include('user');
+
+  query.get(id,
+            function(referral) {
+              promise.resolve(referral);
+            },
+            function(error) {
+              promise.reject(error);
+            });
+
+  return promise;
+};
+/**
+ * Send referral email
+ */
+Parse.Cloud.define('sendReferralEmail', function(request, response) {
+  var referralId = request.params.id;
+  Parse.Promise.when([getReferral(referralId)])
+    .then(
+      function(referral) {
+        var link = config.accounts.site + '/master.html#/login/';
+        link += referral.get('link');
+        
+        var params = {
+          'key': mandrill.config.key,
+          'template_name': mandrill.config.referral,
+          'template_content': [
+          ],
+          'message': {
+            'to': [
+              {
+                'email': referral.get('email'),
+                'name':  referral.get('firstName'),
+                'type': 'to'
+              }
+            ],
+            'inline_css': 'true',
+            'merge_vars': [
+              {
+                'rcpt': referral.get('email'),
+                'vars': [
+                  {
+                    'name': 'REFERRALLINK',
+                    'content': link
+                  },
+                  {
+                    'name': 'REFERRALFIRSTNAME',
+                    'content': referral.get('firstName')
+                  },
+                  {
+                    'name': 'FIRSTNAME',
+                    'content': referral.get('user').get('firstName')
+                  },
+                  {
+                    'name': 'LASTNAME',
+                    'content': referral.get('user').get('lastName')
+                  }
+                ]
+              }
+            ],
+          },
+          'async': true
+        };
+        Parse.Cloud.httpRequest({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
+          body: params,
+          success: function(data) {
+            console.log('sendReferralEmail success:');
+            response.success(data);
+          },
+          error: function(error) {
+            console.log('sendReferralEmail error:');
+            response.error(error);
+          }
+        });
+      },
+      function(error) {
+        console.log('sendReferralEmail error');
+        console.log(error);
+        response.error(error);
+        
+      });
+});
+
+/**
  * Find all users
  */
 var findUsers = function() {

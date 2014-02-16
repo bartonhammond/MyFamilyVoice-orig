@@ -1,5 +1,6 @@
 exports.config = {
-    key: '4BjxT9QwZCAb-vs1IlON-g', //over all access
-    welcome: 'welcome',
-    family: 'family'
-  }
+  key: '4BjxT9QwZCAb-vs1IlON-g', //over all access
+  welcome: 'welcome',
+  family: 'family',
+  referral: 'referral'
+}
