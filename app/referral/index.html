@@ -9,7 +9,21 @@
 </div>
 <div class="table-responsive"
      ng-init="init()">
+
+  <div ng-show="emailSent" 
+       class="alert alert-success alert-dismissable">
+    <button type="button" 
+            class="close" 
+            data-dismiss="alert" 
+            ng-click="emailSent = !emailSent"
+            aria-hidden="true">
+      &times;
+    </button>
+    Your email has been sent.  
+  </div>
+
   <table class="table table-condensed table-hover table-bordered">
+    
     <tr>
       <th>Email</th>
       <th>First Name</th>
@@ -39,8 +53,9 @@
         {{referral.emailSent}}
       </td>
       <td>
-        <button class="btn" ng-click="sendReferralEmail()">Send email</button>
+        <button class="btn" ng-click="sendReferralEmail(referral)">Send email</button>
       </td>
+    </tr>
   </table>
 
 </div>
