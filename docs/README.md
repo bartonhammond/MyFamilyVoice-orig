@@ -42,6 +42,8 @@ MyFamilyVoice records the voice of your family for future generations
    $7/mo
 
 ## Modulus - sign in w/ GitHub
+   cd server
+   modulus deploy - will prompt for project
 
 ## AngularUI Bootstrap 
    create build: Tooltip, Collapse, Modal

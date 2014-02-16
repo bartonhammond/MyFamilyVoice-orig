@@ -1,0 +1,46 @@
+<div class="referralNotes">
+  Click the Referral button to invite someone to <strong>MyFamilyVoice</strong>.  No
+  email will be sent until you want to.  In the mean time, you will be
+  able to create questions for your referral.  When you're ready, you
+  can come here to send the email to your friend.
+  <button class="btn btn-primary" ng-click="newReferral()">
+    New Referral
+  </button>
+</div>
+<div class="table-responsive"
+     ng-init="init()">
+  <table class="table table-condensed table-hover table-bordered">
+    <tr>
+      <th>Email</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Questions</th>
+      <th>Created</th>
+      <th>Email Sent</th>
+      <th>Send Email</th>
+    </tr>
+    <tr ng-repeat="referral in referrals">
+      <td>
+        {{referral.email}}
+      </td>
+      <td>
+        {{referral.firstName}}
+      </td>
+      <td>
+        {{referral.lastName}}
+      </td>
+      <td>
+        <a ng-href="#/activities/list/{{referral.referredUser.id}}">Ask questions</a>
+      </td>
+      <td>
+        {{referral.createdAt | date:medium}}
+      </td>
+      <td>
+        {{referral.emailSent}}
+      </td>
+      <td>
+        <button class="btn" ng-click="sendReferralEmail()">Send email</button>
+      </td>
+  </table>
+
+</div>
