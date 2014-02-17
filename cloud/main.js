@@ -313,7 +313,8 @@ var createRegisterUser = function(request) {
     firstName: user.FirstName,
     lastName: user.LastName,
     primaryEmail: email ? email.Value : '',
-    password: guid()
+    password: guid(),
+    username: guid()
   });
 
 };
@@ -552,6 +553,12 @@ Parse.Cloud.define('sendReferralEmail', function(request, response) {
   var referralId = request.params.id;
   Parse.Promise.when([getReferral(referralId)])
     .then(
+      function(origReferral) {
+        return origReferral.save({
+          emailSent: new Date()
+        });
+      })
+    .then(
       function(referral) {
         var link = config.accounts.site + 'login/';
         link += referral.get('link');
@@ -603,12 +610,10 @@ Parse.Cloud.define('sendReferralEmail', function(request, response) {
           },
           url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
           body: params,
-          success: function(data) {
-            console.log('sendReferralEmail success:');
-            response.success(data);
+          success: function() {
+            response.success(referral);
           },
           error: function(error) {
-            console.log('sendReferralEmail error:');
             response.error(error);
           }
         });
@@ -757,7 +762,7 @@ Parse.Cloud.define('search', function(request, response) {
           activity: activity,
           objectId: activities[index].id,
           userId: activities[index].get('user').id,
-          userName: activities[index].get('user').get('firstName') + ' ' + activities[index].get('user').get('lastName'),
+          username: activities[index].get('user').get('firstName') + ' ' + activities[index].get('user').get('lastName'),
           thumbnail: thumbnail,
           photo: photo,
           description: activity.get('comment'),
@@ -909,6 +914,9 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
         return scaleImage(request,response);
       });
 });
+
+
+
 /**
  * If user is saved with VerifiedEmail false, 
  * send Email Confirmation
@@ -1301,11 +1309,20 @@ Parse.Cloud.define('updateReferredUser', function(request,response) {
         var user = referral.get('referredUser');
         Parse.Cloud.useMasterKey();
         if (request.params.isSocial) {
+          return user.save({
+            username: request.params.username,
+            password: request.params.password,
+            primaryEmail: request.params.primaryEmail,
+            firstName: request.params.firstName,
+            lastName: request.params.lastName,
+            verifiedEmail: false,
+            isSocial: request.params.isSocial
+          });
         } else {
           return user.save({
-            userName: request.params.email,
+            username: request.params.username,
             password: request.params.password,
-            primaryEmail: request.params.email,
+            primaryEmail: request.params.username,
             verifiedEmail: false,
             isSocial: request.params.isSocial
           });
@@ -1313,7 +1330,17 @@ Parse.Cloud.define('updateReferredUser', function(request,response) {
       })
     .then(
       function(user) {
-        response.success(user);
+        console.log('updateReferredUser objectId: ' + user.id + ' primaryEmail: ' + user.get('primaryEmail') + ' firstName: ' + user.get('firstName'));
+        Parse.Cloud.run('sendConfirmEmail', {objectId: user.id,
+                                             primaryEmail: user.get('primaryEmail'),
+                                             firstName: user.get('firstName')}, {
+          success: function() {
+            response.success(user);
+          },
+          error: function(error) {
+            response.error(error);
+          }
+        });
       },
       function(error) {
         console.log('unapprovedFamilyRequestCount error: ' + error.message);

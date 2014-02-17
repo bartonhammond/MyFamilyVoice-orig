@@ -17,17 +17,18 @@ angular.module('fv')
     var registerOrReferral = function() {
       var defer = $q.defer();
       if (!_.isUndefined($rootScope.loginLink)) {
-        (new Referral()).updateReferredUser($scope.registerUser.email,
+        (new Referral()).updateReferredUser($scope.registerUser.email,//username
                                             $scope.registerUser.password,
                                             false, //isSocial
                                             $rootScope.loginLink)
           .then(
-            function(referredUser) {
-              return (new User()).logIn(referredUser.get('primaryEmail'),
+            function() {
+              return (new User()).logIn($scope.registerUser.email,
                                         $scope.registerUser.password);
             })
           .then(
             function() {
+              $rootScope.loginLink = undefined;
               defer.resolve();
             },
             function(error) {
@@ -67,13 +68,13 @@ angular.module('fv')
                 $scope.$apply($location.path('/account'));
               }
             },
-            function(response) {
-              $scope.error = response.data.error;
+            function(error) {
+              $scope.error = error;
             })
-            .finally(
-              function() {
-                requestNotificationChannel.requestEnded();
-              });
+          .finally(
+            function() {
+              requestNotificationChannel.requestEnded();
+            });
       } else {
         $scope.signupForm.submitted = true;
       }

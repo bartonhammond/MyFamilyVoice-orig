@@ -50,7 +50,7 @@
         {{referral.createdAt | date:medium}}
       </td>
       <td>
-        {{referral.emailSent}}
+        {{referral.emailSent | date:medium}}
       </td>
       <td>
         <button class="btn" ng-click="sendReferralEmail(referral)">Send email</button>

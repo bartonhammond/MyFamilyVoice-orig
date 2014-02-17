@@ -160,7 +160,8 @@ module.exports = function (grunt) {
       all: [
         'Gruntfile.js',
         'cloud/main.js',
-        'app/{,*/}*.js',
+        'app/**/*.js',
+        'app/*.js',
         '!app/js/**'
       ]
     },
