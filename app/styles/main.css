@@ -819,8 +819,8 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 #signup {
   background: url(../images/testimonial-bg.jpg) no-repeat;
   background-size: cover;
-  padding-top: 120px;
-  padding-bottom: 120px;
+  //padding-top: 120px;
+  //padding-bottom: 120px;
 }
 
 #signupForm input {

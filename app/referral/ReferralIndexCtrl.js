@@ -9,8 +9,9 @@ angular.module('fv')
     $scope.sendReferralEmail = function(referral) {
       referral.sendReferralEmail()
       .then(
-        function() {
+        function(ref) {
           $scope.emailSent = true;
+          referral.emailSent = ref.get('emailSent');
           $timeout(function() {
             $scope.emailSent = false;
           }, 4000);

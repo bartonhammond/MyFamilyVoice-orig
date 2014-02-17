@@ -37,17 +37,23 @@ angular.module('fv').
         * the referred user is registering so 
         * update the User record with the correct info
         */
-      this.updateReferredUser = function(email,
+      this.updateReferredUser = function(username,
                                          password,
                                          isSocial,
-                                         referralLink) {
+                                         referralLink,
+                                         firstName,
+                                         lastName,
+                                         primaryEmail) {
 
         var defer = $q.defer();
         Parse.Cloud.run('updateReferredUser',
-                        {email: email,
+                        {username: username,
                          password: password,
                          isSocial:isSocial,
-                         link: referralLink
+                         link: referralLink,
+                         firstName: firstName,
+                         lastName: lastName,
+                         primaryEmail: primaryEmail
                         })
           .then(
             function(referredUser) {

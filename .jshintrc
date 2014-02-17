@@ -19,6 +19,8 @@
     "trailing": true,
     "smarttabs": true,
     "globals": {
+      "LoginRadius_SocialLogin": false,
+      "LoginRadiusSDK":false,
       "angular": false,
       "Parse": false,
       "Twilio": false,
