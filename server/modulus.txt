@@ -1,0 +1,121 @@
+[37m[36m   __    __   ______   _____    __  __   __       __  __   ______   [39m[39m
+[37m[36m  /\ "-./  \ /\  __ \ /\  __-. /\ \/\ \ /\ \     /\ \/\ \ /\  ___\  [39m[39m
+[37m[36m  \ \ \-./\ \\ \ \/\ \\ \ \/\ \\ \ \_\ \\ \ \____\ \ \_\ \\ \___  \ [39m[39m
+[37m[36m   \ \_\ \ \_\\ \_____\\ \____- \ \_____\\ \_____\\ \_____\\/\_____\[39m[39m
+[37m[36m    \/_/  \/_/ \/_____/ \/____/  \/_____/ \/_____/ \/_____/ \/_____/[39m[39m
+[37m[39m
+[37m[36m     Providing all the awesomeness that is Modulus, in a CLI.[39m[39m
+[37m[36m     https://modulus.io/codex/cli/using_the_cli[39m[39m
+[37m[39m
+[37m     Usage: modulus <command> <param1> <param2> ...[39m
+[37m[90m     Help format:[39m[39m
+[37m[90m     <command> (<alias>)[39m[39m
+[37m[90m     <description>[39m[39m
+[37m[39m
+[37m     [4m[36mUser Commands[39m[24m[39m
+[37m     [39m
+[37m       [36msignup[39m[39m
+[37m       [90mRegister as a new Modulus user.[39m[39m
+[37m       [39m
+[37m       [36mlogin[39m[39m
+[37m       [90mLog in to your Modulus account.[39m[39m
+[37m       [90m  options:[39m[39m
+[37m       [90m    --username      The username to log in with.[39m[39m
+[37m       [90m    --password      The password to use when logging in.[39m[39m
+[37m       [90m    -g, --github    Log in using your GitHub credentials.[39m[39m
+[37m       [39m
+[37m       [36mlogout[39m[39m
+[37m       [90mLog out of your current session.[39m[39m
+[37m       [39m
+[37m       [36mresetPassword[39m[39m
+[37m       [90mSends a password reset email.[39m[39m
+[37m       [39m
+[37m       [36mtoken create[39m[39m
+[37m       [90mCreate an API token.[39m[39m
+[37m       [39m
+[37m       [36mtoken list[39m[39m
+[37m       [90mList your API tokens.[39m[39m
+[37m       [39m
+[37m       [36mtoken remove[39m[39m
+[37m       [90mRemoves an API token.[39m[39m
+[37m       [39m
+[37m     [4m[36mProject Commands[39m[24m[39m
+[37m     [39m
+[37m       [36mproject list (list)[39m[39m
+[37m       [90mView all projects you have.[39m[39m
+[37m       [39m
+[37m       [36mproject create[39m[39m
+[37m       [90mCreates a new project.[39m[39m
+[37m       [39m
+[37m       [36mproject restart[39m[39m
+[37m       [90mRestarts a project.[39m[39m
+[37m       [90m  options:[39m[39m
+[37m       [90m    -p, --project-name    Name of the project to restart. Prompts are skipped when specified.[39m[39m
+[37m       [39m
+[37m       [36mproject stop[39m[39m
+[37m       [90mStops a running project[39m[39m
+[37m       [90m  options:[39m[39m
+[37m       [90m    -p, --project-name    Name of the project to stop. Prompts are skipped when specified.[39m[39m
+[37m       [39m
+[37m       [36mproject start[39m[39m
+[37m       [90mStarts a running project[39m[39m
+[37m       [90m  options:[39m[39m
+[37m       [90m    -p, --project-name    Name of the project to start. Prompts are skipped when specified.[39m[39m
+[37m       [39m
+[37m       [36mproject deploy (deploy) [options] <directory>[39m[39m
+[37m       [90mDeploys a directory's contents to the selected project.[39m[39m
+[37m       [90mThe current working directory is used if no directory is specified.[39m[39m
+[37m       [90mBy default a project type will be detected and any additional actions required will be taken.[39m[39m
+[37m       [90m  options:[39m[39m
+[37m       [90m    -p, --project-name    Name of the project to deploy. Prompts are skipped when specified.[39m[39m
+[37m       [90m    -m, --include-modules Flag that indicates whether or not to include the node_modules folder in the bundle.[39m[39m
+[37m       [90m    -n, --node-version    Specifies the node version to use when deploying Meteor projects, if applicable.[39m[39m
+[37m       [90m    -t, --project-type    Specifies type of application you are deploying. Overrides the auto-detection that occurs normally. Acceptable types are listed below.[39m[39m
+[37m       [90m      nodejs   A typical Node.js application.[39m[39m
+[37m       [90m      meteor   A Meteor application.[39m[39m
+[37m       [39m
+[37m       [36mproject logs[39m[39m
+[37m       [90mGets logs for the selected project.[39m[39m
+[37m       [90m  options:[39m[39m
+[37m       [90m    -p, --project-name   Name of the project to retrieve logs from. Prompts are skipped when specified.[39m[39m
+[37m       [90m    -d, --download       Flag that signals to download the logs instead of printing them.[39m[39m
+[37m       [90m    -o, --output         Specifies the file to download to. Must be file type tar.gz[39m[39m
+[37m       [39m
+[37m       [39m
+[37m       [36mproject logs clear[39m[39m
+[37m       [90mCleans logs for the selected project.[39m[39m
+[37m       [39m
+[37m       [36mproject logs tail[39m[39m
+[37m       [90mStreams logs for the selected project.[39m[39m
+[37m       [39m
+[37m       [36mproject scale <servos>[39m[39m
+[37m       [90mScales a project to use the number of servos given.[39m[39m
+[37m       [39m
+[37m     [4m[36mEnvironment Variables Commands[39m[24m[39m
+[37m     [39m
+[37m       [36menv list[39m[39m
+[37m       [90mLists all environment variables for a project.[39m[39m
+[37m       [39m
+[37m       [36menv set <name> <value>[39m[39m
+[37m       [90mSets a environment variable for a project.[39m[39m
+[37m       [39m
+[37m       [36menv get <name>[39m[39m
+[37m       [90mGets an environment variable for a project.[39m[39m
+[37m       [39m
+[37m       [36menv delete <name>[39m[39m
+[37m       [90mRemoves an environment variable for a project.[39m[39m
+[37m       [39m
+[37m     [4m[36mConfiguration Commands[39m[24m[39m
+[37m     [39m
+[37m       [36mconfig get <name>[39m[39m
+[37m       [90mGet a configuration value.[39m[39m
+[37m       [39m
+[37m       [36mconfig set <name> <value>[39m[39m
+[37m       [90mSet a configuration value.[39m[39m
+[37m       [39m
+[37m     [4m[36mMiscellaneous Commands[39m[24m[39m
+[37m     [39m
+[37m       [36mcontact <message>[39m[39m
+[37m       [90mSends a feedback email to the support team.[39m[39m
+[37m       [90mYour message must be enclosed in "s (double quotes).[39m[39m
+[37m       [39m

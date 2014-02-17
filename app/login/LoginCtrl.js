@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 angular.module('fv')
-  .controller('LoginCtrl', function (CONFIG, $scope, $rootScope, $location, User) {
+  .controller('LoginCtrl', function (CONFIG, $scope, $rootScope, $location, $routeParams, User) {
     /**
      *  loginRadius
      */
@@ -74,6 +74,9 @@ angular.module('fv')
      */
     $scope.init = function() {
       LoginRadius_SocialLogin.util.ready(loginRadius);
+      if ($routeParams.link) {
+        $rootScope.loginLink = $routeParams.link;
+      }
     }
 
     $scope.logIn = function() {

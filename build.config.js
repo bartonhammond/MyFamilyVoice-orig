@@ -16,11 +16,10 @@ module.exports = {
         'factory/**/*.js', 'filters/**/*.js', 'referral/**/*.js'],
     css: ['styles/*.css'],
     devCloudConfig: 'cloudCode/configDev.js',
+    nodeCloudConfig: 'cloudCode/configNode.js',
     prodCloudConfig: 'cloudCode/configProd.js',
-    devModulusConfig: 'cloudCode/configModulusDev.js',
     devAngularConfig:'config/devAngularConfig.js',
     devNodeAngularConfig:'config/devNodeAngularConfig.js',
-    devModulusAngularConfig:'config/devModulusAngularConfig.js',
     prodAngularConfig:'config/prodAngularConfig.js',
     javaScriptInclude: 'config/includeJavaScript.html',
     images: ['images/*.png', 'images/*.jpg', 'images/*.gif']

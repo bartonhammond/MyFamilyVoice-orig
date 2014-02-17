@@ -13,6 +13,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
         templateUrl: 'login/login.html',
         controller: 'LoginCtrl'
       })
+      .when('/login/:link', {
+        templateUrl: 'login/login.html',
+        controller: 'LoginCtrl'
+      })
       .when('/admin', {
         templateUrl: 'admin/index.html',
         controller: 'AdminCtrl'
@@ -104,13 +108,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
       // if route requires auth and user is not logged in
       var route = routeClean($location.url());
       if (!route) {
-        $location.protocol('https');
         // redirect back to login
         if (!Parse.User.current()) {
           $location.path('/login');
         }
-      } else {
-        $location.protocol('http');
       }
 
       
