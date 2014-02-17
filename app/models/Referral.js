@@ -33,6 +33,31 @@ angular.module('fv').
             });
         return defer.promise;
       };
+      /**
+        * the referred user is registering so 
+        * update the User record with the correct info
+        */
+      this.updateReferredUser = function(email,
+                                         password,
+                                         isSocial,
+                                         referralLink) {
+
+        var defer = $q.defer();
+        Parse.Cloud.run('updateReferredUser',
+                        {email: email,
+                         password: password,
+                         isSocial:isSocial,
+                         link: referralLink
+                        })
+          .then(
+            function(referredUser) {
+              defer.resolve(referredUser);
+            },
+            function(error) {
+              defer.reject(error);
+            });
+        return defer.promise;
+      };
       this.sendReferralEmail = function() {
         var defer = $q.defer();
         Parse.Cloud.run('sendReferralEmail',

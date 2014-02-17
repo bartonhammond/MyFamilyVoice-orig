@@ -42,7 +42,8 @@ module.exports = function (grunt) {
       // configurable paths
       app: require('./bower.json').appPath || 'app',
       public: 'public',
-      dist: 'dist'
+      dist: 'dist',
+      nodePublic: 'server/public'
     },
     // Concat all js in public -> dist
     concat: {
@@ -112,6 +113,31 @@ module.exports = function (grunt) {
       }
     },
     shell: {
+      modulusDevelop: {
+        command: [
+          'modulus login --username bartonhammond@gmail.com --password Parkl1fe!  --github',
+          'modulus project deploy --project-name FamilyVoice'
+        ].join('&&'),
+        options: {
+          stdout: true,
+          execOptions: {
+            cwd: 'server'
+          }
+        }
+      },
+      modulusProd: {
+        command: [
+          'modulus login --username bartonhammond@gmail.com --password Parkl1fe!  --github',
+          'modulus project deploy --project-name MyFamilyVoice'
+        ].join('&&'),
+        options: {
+          stdout: true,
+          execOptions: {
+            cwd: 'server'
+          }
+        }
+      },
+
       parseDevelop: {
         command: 'parse deploy FamilyVoice',
         options: {
@@ -120,18 +146,6 @@ module.exports = function (grunt) {
       },
       parseProduction: {
         command: 'parse deploy MyFamilyVoice',
-        options: {
-          stdout: true
-        }
-      },
-      harpIODevelop: {
-        command: 'node harp.io/publishHarpIO.js dev',
-        options: {
-          stdout: true
-        }
-      },
-      harpIOProduction: {
-        command: 'node harp.io/publishHarpIO.js prod',
         options: {
           stdout: true
         }
@@ -169,28 +183,15 @@ module.exports = function (grunt) {
           ]
         }]
       },
-      harpDev: {
-        options: {
-          force: true
-        },
+      nodePublic: {
         files: [{
           dot: true,
           src: [
-            '<%= harp_dev %>/*'
-          ]
-        }]
-      },
-      harpProd: {
-        options: {
-          force: true
-        },
-        files: [{
-          dot: true,
-          src: [
-            '<%= harp_prod %>/*'
+            '<%= project.nodePublic %>/*'
           ]
         }]
       }
+
     },
     sync: {
       publicToNode: {
@@ -200,35 +201,6 @@ module.exports = function (grunt) {
         dest: 'server/public',
         cwd: '<%= public_dir %>'
       },
-      publicToHarpDev: {
-        expand: true,
-        flatten: false,
-        src: ['*.*', '*/**'],
-        dest: '<%= harp_dev %>',
-        cwd: '<%= public_dir %>'
-      },
-      publicToHarpProd: {
-        expand: true,
-        flatten: false,
-        src: ['*.*', '*/**'],
-        dest: '<%= harp_prod %>',
-        cwd: '<%= public_dir %>'
-      },
-      publicToHarpDevMin: {
-        expand: true,
-        flatten: false,
-        src: ['*.*', '*/**', '!*/**.js', '*.js'],
-        dest: '<%= harp_dev %>',
-        cwd: '<%= public_dir %>'
-      },
-      publicToHarpProdMin: {
-        expand: true,
-        flatten: false,
-        src: ['*.*', '*/**', '!*.js', '!*/**.js'],
-        dest: '<%= harp_prod %>',
-        cwd: '<%= public_dir %>'
-      },
-
       fvHtml: {
         files: [
           {
@@ -315,12 +287,6 @@ module.exports = function (grunt) {
             flatten: true
           }
         ]
-      },
-      harpJsonProd: {
-        expand: true,
-        src: '*.json',
-        dest: '<%= harp_prod %>',
-        cwd: '<%= harp_src %>'
       }
     },
     //Copy 
@@ -359,25 +325,12 @@ module.exports = function (grunt) {
             }
           },
           {
-            src: ['<%= fv.devModulusConfig %>'],
+            src: ['<%= fv.nodeCloudConfig %>'],
             dest: '<%= parse_dir %>',
             cwd: '.',
             expand: true,
             rename: function(dest) {
               return dest + '/config.js';
-            }
-          }
-        ]
-      },
-      configDevModulus: {
-        files: [
-          {
-            src: ['<%= fv.devModulusAngularConfig %>'],
-            dest: '<%= public_dir %>',
-            cwd: '.',
-            expand: true,
-            rename: function(dest) {
-              return dest + '/config/config.js';
             }
           }
         ]
@@ -437,9 +390,9 @@ module.exports = function (grunt) {
     grunt.task.run([
       'devPrep',
       'concat:html',
-      'sync:publicToHarpDev',
+      'sync:publicToNode',
       'shell:parseDevelop',
-      'shell:harpIODevelop'
+      'shell:modulusDevelop'
     ]);
   });
 
@@ -447,7 +400,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'devPrep',
       'concat:html',
-      'sync:publicToHarpDev'
+      'sync:publicToNode',
     ]);
   });
 
@@ -460,15 +413,6 @@ module.exports = function (grunt) {
     ]);
   });
 
-  grunt.registerTask('devModulus', function () {
-    grunt.task.run([
-      'devPrep',
-      'copy:configDevModulus',
-      'concat:html',
-      'sync:publicToNode'
-    ]);
-  });
-
   grunt.registerTask('devMin', function() {
     grunt.task.run([
       'devPrep',
@@ -476,9 +420,9 @@ module.exports = function (grunt) {
       'ngmin',
       'closure-compiler',
       'concat:htmlMin',
-      'sync:publicToHarpDevMin',
+      'sync:publicToNode',
       'shell:parseDevelop',
-      'shell:harpIODevelop'
+      'shell:modulusDevelop'
     ]);
   });
   
@@ -501,28 +445,18 @@ module.exports = function (grunt) {
     grunt.task.run([
       'prodPrep',
       'concat:html',
-      'sync:publicToHarpProd',
-      'sync:harpJsonProd',
+      'sync:publicToNode',
       'shell:parseProduction',
-      'shell:harpIOProduction'
+      'shell:modulusProd'
     ]);
   });
 
-  grunt.registerTask('prodModulus', function () {
-    grunt.task.run([
-      'prodPrep',
-      'concat:html',
-      'shell:parseProduction',
-      'sync:publicToNode'
-    ]);
-  });
 
   grunt.registerTask('prodQuick', function () {
     grunt.task.run([
       'prodPrep',
       'concat:html',
-      'sync:publicToHarpProd',
-      'sync:harpJsonProd'
+      'sync:publicToNode'
     ]);
   });
 
@@ -533,10 +467,9 @@ module.exports = function (grunt) {
       'ngmin',
       'closure-compiler',
       'concat:htmlMin',
-      'sync:publicToHarpProd',
-      'sync:harpJsonProd',
+      'sync:publicToNode',
       'shell:parseProduction',
-      'shell:harpIOProduction'
+      'shell:modulusProduction'
     ]);
   });
   

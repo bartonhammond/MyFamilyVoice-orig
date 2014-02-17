@@ -1,6 +1,6 @@
 'use strict';
 angular.module('fv')
-  .controller('RegisterCtrl', function ($rootScope, $scope, User, $location, requestNotificationChannel) {
+  .controller('RegisterCtrl', function ($rootScope, $scope, User, $location, $q, Referral, requestNotificationChannel) {
       
     $scope.init = function () {
       $scope.confirmPassword='';
@@ -10,16 +10,54 @@ angular.module('fv')
       return  _.isEqual($scope.signupForm.confirmpasswd.$viewValue,
                         $scope.signupForm.passwd.$viewValue);
     };
+    /**
+     * Return promise from either signing up a new user
+     * or updateing the user created during the referral process
+     */
+    var registerOrReferral = function() {
+      var defer = $q.defer();
+      if (!_.isUndefined($rootScope.loginLink)) {
+        (new Referral()).updateReferredUser($scope.registerUser.email,
+                                            $scope.registerUser.password,
+                                            false, //isSocial
+                                            $rootScope.loginLink)
+          .then(
+            function(referredUser) {
+              return (new User()).logIn(referredUser.get('primaryEmail'),
+                                        $scope.registerUser.password);
+            })
+          .then(
+            function() {
+              defer.resolve();
+            },
+            function(error) {
+              defer.reject(error);
+            });
+      } else {
+        (new User()).signUp($scope.registerUser.email,
+                            $scope.registerUser.password,
+                            '',//firstname
+                            '',//lastName
+                            $scope.registerUser.email, //primaryEmail
+                            false, //isSocial
+                            false) //verifiedEmail
+        .then(
+          function(user) {
+            defer.resolve(user);
+          },
+          function(error) {
+            defer.reject(error);
+          });
+      }
+      return defer.promise;
+    };
+    /**
+     * On form submit, register
+     */
     $scope.register = function () {
       if ($scope.signupForm.$valid && $scope.passwordsMatch()) {
         requestNotificationChannel.requestStarted();
-        (new User()).signUp($scope.registerUser.email,
-                    $scope.registerUser.password,
-                    '',//firstname
-                    '',//lastName
-                    $scope.registerUser.email, //primaryEmail
-                    false, //isSocial
-                    false) //verifiedEmail
+        registerOrReferral()
           .then(
             function(){
               $rootScope.$broadcast('userloggedin');
@@ -32,10 +70,10 @@ angular.module('fv')
             function(response) {
               $scope.error = response.data.error;
             })
-          .finally(
-            function() {
-              requestNotificationChannel.requestEnded();
-            });
+            .finally(
+              function() {
+                requestNotificationChannel.requestEnded();
+              });
       } else {
         $scope.signupForm.submitted = true;
       }

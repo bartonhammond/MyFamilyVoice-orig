@@ -449,7 +449,7 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
   
   Parse.Promise.when([createConfirmEmail(user, response)]).then(
     function(confirmEmail) {
-      var link = config.accounts.site + '/master.html#/confirmEmail/';
+      var link = config.accounts.site + 'confirmEmail/';
       link += confirmEmail.get('link');
       
       var params = {
@@ -525,14 +525,35 @@ var getReferral = function(id) {
   return promise;
 };
 /**
- * Send referral email
+ * Find the referral record by link
+*/
+var getReferralByLink = function(link) {
+  Parse.Cloud.useMasterKey();
+  var promise = new Parse.Promise();
+  var query = new Parse.Query(Referral);
+  query.equalTo('link',link);
+  query.include('referredUser');
+
+  query.first(
+            function(referral) {
+              promise.resolve(referral);
+            },
+            function(error) {
+              promise.reject(error);
+            });
+
+  return promise;
+};
+
+/**
+o * Send referral email
  */
 Parse.Cloud.define('sendReferralEmail', function(request, response) {
   var referralId = request.params.id;
   Parse.Promise.when([getReferral(referralId)])
     .then(
       function(referral) {
-        var link = config.accounts.site + '/master.html#/login/';
+        var link = config.accounts.site + 'login/';
         link += referral.get('link');
         
         var params = {
@@ -1095,7 +1116,7 @@ var emailFamilyRequest  =  function(family,response) {
                      findUser({userId: _kin.id})])
     .then(
       function(family, kin) {
-        var url = config.accounts.site + '/master.html#/confirmFamily/'  + link;
+        var url = config.accounts.site + 'confirmFamily/'  + link;
         var params = {
           'key': mandrill.config.key,
           'template_name': mandrill.config.family,
@@ -1267,6 +1288,35 @@ Parse.Cloud.define('confirmFamily', function(request, response) {
         response.success();
       },
       function(error) {
+        response.error(error);
+      });
+});
+/**
+* Return count of outstanding requests
+*/
+Parse.Cloud.define('updateReferredUser', function(request,response) {
+  getReferralByLink(request.params.link)
+    .then(
+      function(referral) {
+        var user = referral.get('referredUser');
+        Parse.Cloud.useMasterKey();
+        if (request.params.isSocial) {
+        } else {
+          return user.save({
+            userName: request.params.email,
+            password: request.params.password,
+            primaryEmail: request.params.email,
+            verifiedEmail: false,
+            isSocial: request.params.isSocial
+          });
+        }
+      })
+    .then(
+      function(user) {
+        response.success(user);
+      },
+      function(error) {
+        console.log('unapprovedFamilyRequestCount error: ' + error.message);
         response.error(error);
       });
 });
