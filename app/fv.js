@@ -2,7 +2,7 @@
 /**
  * Main module for MyFamilyVoice
  */
-angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
+angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour'])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {

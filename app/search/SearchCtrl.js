@@ -3,11 +3,22 @@
 angular.module('fv')
   .controller('SearchCtrl', function ($scope, $location, User, Search, Activity, Family, $modal) {
     $scope.init = function() {
+      $scope.$on('onTourEnd', function() {
+        $location.path('/login');
+      });
+ 
       $scope.search = {};
       $scope.search.q = '';
       $scope.performSearch();
       $scope.familyRequestSent = false;
       $scope.modalData = undefined;
+    };
+    $scope.showTour = function() {
+      $scope.$broadcast('show');
+    };
+
+    $scope.hideTour = function() {
+      $scope.$broadcast('hide');
     };
 
     $scope.authenticated = function() {

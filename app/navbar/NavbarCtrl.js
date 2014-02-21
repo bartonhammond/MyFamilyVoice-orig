@@ -1,16 +1,32 @@
 'use strict';
 angular.module('fv')
-  .controller('NavbarCtrl', function ( $scope, $location, $window, CONFIG) {
+  .controller('NavbarCtrl', function ($scope, $location, $window, CONFIG) {
+    
     //Is there a current user?
     $scope.init = function() {
+      $scope.$on('onTourEnd', function() {
+        $location.path('/search');
+      });
+      //tourConfig.cookies = false;
       $scope.authenticated = !_.isNull(Parse.User.current() &&
-                                            Parse.User.current().authenticated());
+                                       Parse.User.current().authenticated());
     };
-    
-    $scope.checkProtocol = function(link) {
-      return $location.protocol() + '://' + CONFIG.defaults.site + link;
+    $scope.showTour = function() {
+      $location.path('/');
+      $scope.$broadcast('show');
     };
 
+    $scope.hideTour = function() {
+      $scope.$broadcast('hide');
+    };
+    
+    $scope.onTourStart = function() {
+      console.log('onTourStart');
+    };
+    
+    $scope.onTourEnd = function() {
+      console.log('onTourEnd');
+    };
     //LoginCtrl broadcasts 
     $scope.$on('userloggedin',function() {
       $scope.authenticated = true;

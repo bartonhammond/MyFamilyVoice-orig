@@ -115,6 +115,10 @@ angular.module('fv')
      * Init loginRadius
      */
     $scope.init = function() {
+      $scope.$on('onTourEnd', function() {
+        $location.path('/register');
+      });
+
       /* jshint camelcase: false*/
       LoginRadius_SocialLogin.util.ready(loginRadius);
       if ($routeParams.link) {

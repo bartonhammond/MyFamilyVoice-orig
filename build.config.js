@@ -38,9 +38,10 @@ module.exports = {
       'bower_components/angular-sanitize/angular-sanitize.min.js.map',
       'bower_components/underscore/underscore-min.js',
       'bower_components/underscore/underscore-min.map',
+      'bower_components/jquery-cookie/jquery.cookie.js'
     ],
     css: [
-      'bower_components/bootstrap/dist/css/bootstrap.css'
+      'bower_components/bootstrap/dist/css/bootstrap.min.css'
     ],
     img: [
 
