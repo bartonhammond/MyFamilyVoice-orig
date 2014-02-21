@@ -9,23 +9,25 @@
     <link rel="stylesheet" href="styles/font-awesome.min.css">
     <link rel="stylesheet" href="styles/animate.css">
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato">
-    <link rel="stylesheet" href="vendor/css/bootstrap.css">
+    <link rel="stylesheet" href="vendor/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/custom-styles.css">
     <link rel="stylesheet" href="js/jquery.qtip.css">
+    <link rel="stylesheet" href="styles/angular-tour.css"/>
     <script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     <script src="//hub.loginradius.com/include/js/LoginRadius.js"></script>
     <script src="//static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
     <script src="js/html5media.min.js"></script>
     <script src="js/parse-1.2.15.js"></script>
     <script src="js/LoginRadiusSDK.1.0.0.js"></script>
-
     <script src="vendor/jquery.min.js"></script>
     <script src="vendor/bootstrap.min.js"></script>
     <script src="vendor/angular.min.js"></script>
     <script src="vendor/underscore-min.js"></script>
     <script src="vendor/angular-route.min.js"></script>
     <script src="vendor/angular-sanitize.min.js"></script>
+    <script src="vendor/jquery.cookie.js"></script>
+    <script src="js/angular-tour-tpls.js"></script>
     <script src="js/ui-bootstrap-custom-0.10.0.min.js"></script>
     <script src="js/ui-bootstrap-custom-tpls-0.10.0.min.js"></script>
     <script src="js/jquery.qtip.js"></script>
@@ -33,47 +35,73 @@
   </head>
   <body ng-app="fv" ng-cloak>
     <div class="container" ng-controller="NavbarCtrl" ng-init="init()">
-      <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand img-responsive"
-            href="index.html"><img src="images/logo.gif" alt="logo"></a>
+      <tour>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand img-responsive"
+                 href="index.html"><img src="images/logo.gif" alt="logo"></a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a tourtip="Thanks for looking at
+                                      the MyFamilyVoice tour.  We are
+                                      now at the Home page.  Let's
+                                      look at a few of the options."
+                                      tourtip-next-label="Learn more"
+                                      tourtip-placement="right"
+                                      tourtip-step="0"
+                                      href="master.html">Home</a></li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pages &amp; Features <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="full-width.html">Full Width</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="team.html">Team</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                    <li><a href="blog.html">Blog Loop</a></li>
+                    <li><a href="blog-article.html">Blog Article</a></li>
+                    <li><a href="login.html">Log In</a></li>
+                    <li><a href="signup.html">Sign Up</a></li>
+                    <li><a href="icons.html">Icons</a></li>
+                  </ul>
+                </li>
+                <li><a href="#/search"
+                       tourtip="You can search for family, friends or
+                       anyone and listen to their stories or memories.
+                       We'll look at that next."
+                       tourtip-placement="right"
+                       tourtip-step="2"
+                       >Search</a></li>
+                <li><a ng-show='authenticated' href="#/account">Account</a></li>
+                <li><a ng-show='authenticated'
+                       href="#activities">Activities</a></li>
+                <li><a ng-show='authenticated' href="#/referral">Referral</a></li>
+                <li><a ng-show='authenticated' href="#/family">Family <span class="badge">{{newFamilyRequests}}</span></a></li>
+                <li><a ng-show='authenticated' ng-click="logout()" >Log Out</a></li>
+                <li><a ng-hide='authenticated' 
+                       href="#/login"
+                       tourtip="You can login with an existing account
+                       or sign in with Social Media.  There's also a
+                       link to register for a new account. We'll look
+                       at that in a few moments."
+                       tourtip-placement="bottom"
+                       tourtip-offset="50"
+                       tourtip-step="1">
+                    Login</a></li>
+                <li><a href="" ng-click="showTour()">Show
+                Tour</a></li>
+              </ul>
+            </div><!--/.navbar-collapse -->
           </div>
-          <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-              <li class="active"><a href="master.html">Home</a></li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pages &amp; Features <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="full-width.html">Full Width</a></li>
-                  <li><a href="services.html">Services</a></li>
-                  <li><a href="about.html">About</a></li>
-                  <li><a href="team.html">Team</a></li>
-                  <li><a href="pricing.html">Pricing</a></li>
-                  <li><a href="blog.html">Blog Loop</a></li>
-                  <li><a href="blog-article.html">Blog Article</a></li>
-                  <li><a href="login.html">Log In</a></li>
-                  <li><a href="signup.html">Sign Up</a></li>
-                  <li><a href="icons.html">Icons</a></li>
-                </ul>
-              </li>
-              <li><a href="{{checkProtocol('search')}}">Search</a></li>
-              <li><a ng-show='authenticated' href="#/account">Account</a></li>
-              <li><a ng-show='authenticated'
-              href="#activities">Activities</a></li>
-              <li><a ng-show='authenticated' href="#/referral">Referral</a></li>
-              <li><a ng-show='authenticated' href="#/family">Family <span class="badge">{{newFamilyRequests}}</span></a></li>
-              <li><a ng-show='authenticated' ng-click="logout()" >Log Out</a></li>
-              <li><a ng-hide='authenticated' href="#/login">Login</a></li>
-            </ul>
-          </div><!--/.navbar-collapse -->
         </div>
-      </div>
+      </tour>
     </div>
     <loading></loading>
     <div class='lower' ng-view=""></div>

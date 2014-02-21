@@ -1,107 +1,124 @@
 <!--Content-->
 <section id="signup" ng-init="init()">
-  <div class="container">
-    <div class="row margin-40">
+  <tour>
+    <div class="container">
+      <div class="row margin-40">
 
-      <div class="col-sm-6 col-sm-offset-3 text-center signup">
-        <h3>Register</h3><br />
-        <div class='error' id='error'></div>
+        <div class="col-sm-6 col-sm-offset-3 text-center signup">
+          <h3>Register</h3><br />
+          <div class='error' id='error'></div>
 
-        <form ng-submit="register()" novalidate 
-              id="signupForm" name="signupForm" 
-              class="form-horizontal">
+          <form ng-submit="register()" novalidate 
+                id="signupForm" name="signupForm" 
+                class="form-horizontal">
 
-          <div class="control-group">
-            <div class="controls">
-              <div class="input-prepend">
-                <span class='fv-label' style="margin-right: 45px" >Email</span>
-          	<span class="add-on"><i class="fa fa-user"></i></span>
-          	<input  
-                   ng-focus 
-                   type="email" 
-                   ng-model="registerUser.email"
-                   class="input-xlarge"
-                   required 
-                   id="email" 
-                   name="email" 
-                   placeholder="Email">
+            <div class="control-group">
+              <div class="controls">
+                <div class="input-prepend">
+                  <span class='fv-label' style="margin-right: 45px" >Email</span>
+          	  <span class="add-on"><i class="fa fa-user"></i></span>
+          	  <input  
+                     tourtip="To register without using the social
+                              logins, just enter your email address here."
+                     tourtip-step="0"
+                     tourtip-placement="left"
+                     ng-focus 
+                     type="email" 
+                     ng-model="registerUser.email"
+                     class="input-xlarge"
+                     required 
+                     id="email" 
+                     name="email" 
+                     placeholder="Email">
+                </div>
               </div>
             </div>
-          </div>
-          <div>
-            <span class="fv-warning" 
-                  ng-show="signupForm.email.$invalid 
-                           && signupForm.submitted">
-              Please provide valid email.</span>
-          </div>
-          
-          
-          <div class="control-group">
-            <div class="controls">
-              <div class="input-prepend">
-                <span class='fv-label'  style="margin-right: 15px">Password</span>
-          	<span class="add-on"><i class="fa fa-lock"></i></span>
-          	<input 
-                   type="Password" 
-                   ng-model="registerUser.password"
-                   id="passwd" 
-                   class="input-xlarge"
-                   name="passwd" 
-                   required 
-                   placeholder="Password"
-                   ng-minlength=5 ng-maxlength=10>
+            <div>
+              <span class="fv-warning" 
+                    ng-show="signupForm.email.$invalid 
+                             && signupForm.submitted">
+                Please provide valid email.</span>
+            </div>
+            
+            
+            <div class="control-group">
+              <div class="controls">
+                <div class="input-prepend">
+                  <span class='fv-label'  style="margin-right: 15px">Password</span>
+          	  <span class="add-on"><i class="fa fa-lock"></i></span>
+          	  <input 
+                     tourtip="Then enter your password here and again in
+                              the next box to confirm they are the
+                              same."
+                     tourtip-placement="right"
+                     tourtip-step="1"
+                     type="Password" 
+                     ng-model="registerUser.password"
+                     id="passwd" 
+                     class="input-xlarge"
+                     name="passwd" 
+                     required 
+                     placeholder="Password"
+                     ng-minlength=5 ng-maxlength=10>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="fv-warning" 
-               ng-show="signupForm.passwd.$invalid && 
-                        signupForm.submitted">
-            Password must be between 5 and 10 characters.
-          </div>
-          
-          <div class="control-group">
-            <div class="controls">
-              <div class="input-prepend">
-                <span class='fv-label' style="margin-right: 25px">Confirm</span>
-          	<span class="add-on"><i class="fa fa-lock"></i></span>
-          	<input type="Password" 
-                       ng-model="confirmPassword"
-                       id="confirmpasswd" 
-                       class="input-xlarge"
-                       name="confirmpasswd" 
-                       required 
-                       placeholder="Confirm Password"
-                       ng-minlength=5 ng-maxlength=10>
+            <div class="fv-warning" 
+                 ng-show="signupForm.passwd.$invalid && 
+                          signupForm.submitted">
+              Password must be between 5 and 10 characters.
+            </div>
+            
+            <div class="control-group">
+              <div class="controls">
+                <div class="input-prepend">
+                  <span class='fv-label' style="margin-right: 25px">Confirm</span>
+          	  <span class="add-on"><i class="fa fa-lock"></i></span>
+          	  <input type="Password" 
+                         ng-model="confirmPassword"
+                         id="confirmpasswd" 
+                         class="input-xlarge"
+                         name="confirmpasswd" 
+                         required 
+                         placeholder="Confirm Password"
+                         ng-minlength=5 ng-maxlength=10>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="fv-warning" 
-               ng-show="signupForm.confirmpasswd.$invalid 
-                        && signupForm.submitted">
-            Password must be between 5 and 10 characters.
-          </div>
-           <div class="fv-warning"  
-                ng-show="signupForm.submitted 
-                         && !passwordsMatch()">
-             Passwords don't match
-           </div>
-           <div class="fv-warning" 
-                ng-show="error">
-             {{error}}
-           </div>           
-          <div class="control-group">
-            <div class="controls">
-              <button type="submit" class="btn btn-main">
-                <i class="fa fa-sign-in"></i> Register</button>
+            <div class="fv-warning" 
+                 ng-show="signupForm.confirmpasswd.$invalid 
+                          && signupForm.submitted">
+              Password must be between 5 and 10 characters.
             </div>
-          </div>
-          
-        </form>
-      	
-      </div><!--End Span6-->
-      
-    </div><!--End Row-->
-  </div><!--End Container-->
+            <div class="fv-warning"  
+                 ng-show="signupForm.submitted 
+                          && !passwordsMatch()">
+              Passwords don't match
+            </div>
+            <div class="fv-warning" 
+                 ng-show="error">
+              {{error}}
+            </div>           
+            <div class="control-group">
+              <div class="controls">
+                <button  tourtip="Thanks for taking the tour - I hope this
+                                  helped."
+                         tourtip-placement="bottom"
+                         tourtip-next="Thanks"
+                         tourtip-step="2"
+                         type="submit" 
+                         class="btn btn-main">
+                  <i class="fa fa-sign-in"></i> Register</button>
+              </div>
+            </div>
+            
+          </form>
+      	  
+        </div><!--End Span6-->
+        
+      </div><!--End Row-->
+    </div><!--End Container-->
+  </tour>
 </section>
 
 

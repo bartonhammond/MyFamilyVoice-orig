@@ -397,13 +397,6 @@ module.exports = function (grunt) {
     ]);
   });
 
-  grunt.registerTask('devQuick', function () {
-    grunt.task.run([
-      'devPrep',
-      'concat:html',
-      'sync:publicToNode',
-    ]);
-  });
 
   grunt.registerTask('devNode', function () {
     grunt.task.run([
