@@ -7,26 +7,15 @@ angular.module('fv')
       $scope.$on('onTourEnd', function() {
         $location.path('/search');
       });
-      //tourConfig.cookies = false;
+      
       $scope.authenticated = !_.isNull(Parse.User.current() &&
                                        Parse.User.current().authenticated());
     };
     $scope.showTour = function() {
       $location.path('/');
-      $scope.$broadcast('show');
+      $scope.$broadcast('tourshow');
     };
 
-    $scope.hideTour = function() {
-      $scope.$broadcast('hide');
-    };
-    
-    $scope.onTourStart = function() {
-      console.log('onTourStart');
-    };
-    
-    $scope.onTourEnd = function() {
-      console.log('onTourEnd');
-    };
     //LoginCtrl broadcasts 
     $scope.$on('userloggedin',function() {
       $scope.authenticated = true;
