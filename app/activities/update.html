@@ -40,6 +40,7 @@
           </div>
 
  <!---- Imaage -------------------------------------------------->          
+        <div ng-hide="isRecording()">
           <div class="control-group">
             <div class="controls">
               <div class="input-prepend">
@@ -75,7 +76,7 @@
                          && signupForm.submitted">
             Please choose another image.
           </span>
-         
+          </div>
           <!---- Current Imaage -------------------------------------------------->          
           <div ng-if="getThumbnail()" class="control-group">
             <div class="controls">
@@ -126,15 +127,16 @@
                       </span>
                       <timer interval="1000"
                              id='myTimer'
-                             countdown="30" 
+                             countdown="120" 
                              autostart="false">
                         <div class="progress">
                           <div class="progress-bar {{progressBar}}" 
                                role="progressbar"
-                               style="width: {{((30-seconds)/30)*100}}%;">
+                               style="width: {{(((minutes * 60) - seconds)/120)*100}}%;">
                           </div> 
                         </div>
-                        <span class="timerSeconds">0:{{30 - seconds | secondsFilter}}</span>
+                        <span class="timerSeconds">{{minutes}}:{{seconds
+                        | secondsFilter}}</span>
                       </timer>
 
                     </div><!-- recordingButtons -->

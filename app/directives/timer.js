@@ -99,9 +99,9 @@ angular.module('fv')
           var bar = 'progress-bar-';
           if ($scope.seconds > 10) {
             $scope.progressBar = bar + 'success';
-          } else if ($scope.seconds <=5) {
+          } else if ($scope.minutes === 0 && $scope.seconds <=10) {
             $scope.progressBar = bar + 'danger';
-          } else if ($scope.seconds <= 10) {
+          } else if ($scope.minutes === 0 && $scope.seconds <= 20) {
             $scope.progressBar = bar + 'warning';
           }
         }

@@ -38,9 +38,9 @@ function logErrors(err, req, res, next) {
 // Create an Express web app (more info: http://expressjs.com/)
 var app = express();
 app.use(logErrors);
-
-app.use(express.bodyParser());
-
+app.use(express.json());
+app.use(express.urlencoded());
+//app.use(express.bodyParser());
 /**
  * The recording message
  *see: https://www.twilio.com/docs/howto/twilio-client-record
@@ -55,7 +55,8 @@ app.get('/record', function(request, response) {
     .record({action:'/thanks',
              method:'GET',
              finishOnKey:'#',
-             maxLength:'30'})
+             transcribeCallback: '/transcription',
+             maxLength:'120'})
     .say('I did not hear a recording. Goodbye.',
          {voice:'alice', language:'en-GB'});
   // Render the TwiML XML document
@@ -152,10 +153,9 @@ var findActivity = function(id) {
  * Find sid and return it or error
  */
 var findSid = function(request) {
-  console.log('findSid');
   var parseQueryString = true;
   var refererData = url.parse(request.headers.referer, parseQueryString).query;
-  console.log('sid: ' + refererData.RecordingSid);
+
   var query = new Parse.Query(CallSid);
   query.equalTo('sid', refererData.RecordingSid);
   var promise = new Parse.Promise();
@@ -163,12 +163,8 @@ var findSid = function(request) {
   query.find()
     .then(function(results) {
       var sid = results[0];
-      console.log('findSid: sid:');
-      console.log(sid);
       promise.resolve(sid);
     }, function(error) {
-      console.log('findSid error:');
-      console.log(error);
       promise.reject(error);
     });
   return promise;
@@ -209,7 +205,6 @@ app.get('/thanks', function(request, response) {
         .play(queryData.RecordingUrl)
         .say('Goodbye',
              {voice:'alice', language:'en-GB'});
-      console.log('ending thanks');
       // Render the TwiML XML document
       response.type('text/xml');
       response.send(twiml.toString());
@@ -220,14 +215,10 @@ app.get('/thanks', function(request, response) {
   });
 
 });
-
 /**
  * At completion, move file form Twilio to Parse
  */
 app.get('/callback', function(request, response) {
-  // Create a TwiML response generator object
-  console.log('in /callback');
-  
   Parse.Promise.when([findSid(request),
                       getWave(request)])
     .then(
@@ -254,6 +245,33 @@ app.get('/callback', function(request, response) {
         response.send(error);
       });
 });
+/**
+ * Twilio call back w/ transcribed text
+ */
+app.post('/transcription', function(request, response) {
+  var query = new Parse.Query(CallSid);
+  query.equalTo('sid', request.body.RecordingSid);
+  query.first()
+    .then(
+      function(callSid) {
+        return findActivity(callSid.get('activity'));
+      })
+    .then(
+      function(activity) {
+        Parse.Cloud.useMasterKey();
+        return activity.save({
+          transcription: request.body.TranscriptionText
+        });
+      })
+    .then(
+      function() {
+        response.send('ok');
+      },
+      function(error){
+        response.send(error);
+      });
+});
+
 /**
  * The callback from LoginRadius
  * see https://www.loginradius.com/account/manage
@@ -805,20 +823,16 @@ var createReferredUser = function(email, firstName, lastName) {
  * Scale thumbnail image
  */
 var scaleImage = function(request, response) {
-  console.log('scaleImage');
   var obj = request.object;
   
   if (!obj.get('photo')) {
-    console.log('scaleImage: no photo');
     return response ? response.success() : null;
   }
   
   if (!obj.dirty('photo')) {
-    console.log('scaleImage: photo not dirty');
     return response ? response.success() : null;
   }
   
-  console.log('scaleImage: getting photo');
   Parse.Cloud.httpRequest({
     url: obj.get('photo').url()
   })
@@ -828,7 +842,6 @@ var scaleImage = function(request, response) {
       return image.setData(response.buffer);
     })
     .then(function(image) {
-      console.log('scaleImage: got image');
       // Crop the image to the smaller of width or height.
       var size = Math.min(image.width(), image.height());
       return image.crop({
@@ -911,7 +924,7 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     })
     .always(
       function() {
-        return scaleImage(request,response);
+        return scaleImage(request, response);
       });
 });
 
@@ -1353,6 +1366,7 @@ Parse.Cloud.define('updateReferredUser', function(request,response) {
 Parse.Cloud.beforeSave('Activity', function(request, response) {
   return scaleImage(request, response);
 });
+
 Parse.Cloud.job('sendSubscriberEmails', function(request, status) {
   console.log('sendSubscriberEmails input');
   var query = new Parse.Query(SubscriptionJob);
