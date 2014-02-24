@@ -33,12 +33,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour'])
         templateUrl: 'account/account.html',
         controller: 'AccountCtrl'
       })
-/**
       .when('/register', {
         templateUrl: 'register/register.html',
         controller: 'RegisterCtrl'
       })
-*/
       .when('/activities', {
         templateUrl: 'activities/index.html',
         controller: 'ActivitiesIndexCtrl'
@@ -75,11 +73,7 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour'])
         redirectTo: '/'
       });
     
-  })/**
-  .config(function($locationProvider){
-    $locationProvider.html5Mode(true).hashPrefix('!');
   })
-*/
   .run(function($rootScope, $location, Family, CONFIG) {
     Parse.initialize(CONFIG.defaults.parse.applicationId,
                  CONFIG.defaults.parse.javascriptKey);
