@@ -3,16 +3,30 @@
 angular.module('fv')
   .controller('SearchCtrl', function ($scope, $location, User, Search, Activity, Family, $modal) {
     $scope.init = function() {
+      $scope.search = {};
       $scope.$on('onTourEnd', function() {
         $location.path('/login');
       });
- 
-      $scope.search = {};
-      $scope.search.q = '';
-      $scope.performSearch();
+
+//      $scope.performSearch();
       $scope.familyRequestSent = false;
       $scope.modalData = undefined;
     };
+    var termKey = 'q';
+
+    $scope.$watch(function () {
+      return $location.search();
+    }, function() {
+      $scope.q = $location.search()[termKey] || '';
+      console.log('setting q');
+    });
+     
+    $scope.$watch('q', function(term) {
+      console.log('setting search');
+      $location.search(termKey, term);
+      $scope.performSearch();
+    });
+    
     $scope.showTour = function() {
       $scope.$broadcast('show');
     };
@@ -61,10 +75,21 @@ angular.module('fv')
           });
     };
     /**
+     * If user presses enter, start search
+              <!--ng-keypress="checkForEnter($event)"-->
+    $scope.checkForEnter = function(ev) {
+      if (ev.which === 13) {
+        $scope.performSearch();
+      }
+    };
+     */
+    /**
      * Search 
      */
     $scope.performSearch = function() {
-      Search.search($scope.search)
+//      $location.search({q : $scope.search.q});
+      console.log('searching');
+      Search.search($scope.q)
         .then(
           function(response) {
             $scope.search.items = response;

@@ -897,6 +897,22 @@ var scaleImage = function(request, response) {
  * is verified, reset to verified.
  */
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
+  var toLowerCase = function(w) {
+    return w.toLowerCase();
+  };
+  
+  var firstName = request.object.get('firstName').split(/\b/);
+  var lastName = request.object.get('lastName').split(/\b/);
+  var words = _.union(firstName, lastName);
+
+  words = _.map(words, toLowerCase);
+  
+  words = _.filter(words, function(w) {
+    return w.length > 4;
+  });
+  
+  request.object.set('words', words);
+
   //if run before inttial save of user, user will not be found
   findUser({userId: request.object.id})
   .then(
@@ -927,9 +943,6 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
         return scaleImage(request, response);
       });
 });
-
-
-
 /**
  * If user is saved with VerifiedEmail false, 
  * send Email Confirmation
@@ -1361,9 +1374,25 @@ Parse.Cloud.define('updateReferredUser', function(request,response) {
       });
 });
 /**
+ *  split the comment and transcription into an array of words for searching
  *  Scale image for activity
  */
 Parse.Cloud.beforeSave('Activity', function(request, response) {
+  var activity = request.object;
+  var toLowerCase = function(w) { return w.toLowerCase(); };
+ 
+  var comments = activity.get('comment').split(/\b/);
+  var transcribes = activity.get('transcription').split(/\b/);
+
+  var words = _.union(comments, transcribes);
+  words = _.map(words, toLowerCase);
+  
+  words = _.filter(words, function(w) {
+    return  w.length > 4;
+  });
+  
+  activity.set('words', words);
+
   return scaleImage(request, response);
 });
 

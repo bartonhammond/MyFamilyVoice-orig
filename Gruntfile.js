@@ -60,6 +60,7 @@ module.exports = function (grunt) {
           'public/directives/validFileType.js',
           'public/directives/validFileSize.js',
           'public/directives/qtip.js',
+          'public/directives/debouce.js',
           'public/filters/seconds.js',
           'public/main/MainCtrl.js',
           'public/navbar/NavbarCtrl.js',
@@ -87,11 +88,11 @@ module.exports = function (grunt) {
       },
       html: {
         src: ['app/master.html','config/includeJavaScript.html'],
-        dest: 'public/master.html'
+        dest: 'public/index.html'
       },
       htmlMin: {
         src: ['app/master.html','config/includeJavaScriptMin.html'],
-        dest: 'public/master.html'
+        dest: 'public/index.html'
       }
     },
     ngmin: {

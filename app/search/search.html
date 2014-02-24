@@ -21,20 +21,39 @@
         <button type="button" class="btn btn-default" ng-click="ok()">Close</button>
       </div>
 </script>
-<tour>
-  <div>
-    <input tourtip="This is the search page.  You can find people and
-           stories here.  This search box is where you enter family
-           names or places that you want to search for.  Let's look next at a story."
-           tourtip-placement="right"
-           tourtip-step="0"
-           tourtip-offset="60"
-           style="width: 35%" type="text"
-           ng-model="search.q"></input>
-    <i ng-click="performSearch()"
-       class="fa fa-search fa-2"></i> 
-  </div>
-  
+ <tour>
+   <div class="searchBgnd">
+     <div>
+       <input tourtip="This is the search page.  You can find people and
+                       stories here.  This search box is where you enter family
+                       names or places that you want to search for.  Let's look next at a story."
+              tourtip-placement="right"
+              tourtip-step="0"
+              tourtip-offset="60"
+              type="text"
+              placeholder="Search..."
+              class="searchTerm"
+              autofocus
+              fv-debounce=600
+              style="width: 33%"
+              ng-model="q"/>
+       <i ng-click="performSearch()"
+          class="fa fa-search fa-2x">
+       </i> 
+     </div>
+     <div>
+       <button type='button' 
+               ng-click="performSearch()"
+               class="btn btn-main searchBtn">
+         MyFamilyVoice Search
+       </button>
+       <button type='button' 
+               ng-click="addNewStory()"
+             class="btn btn-main newStoryBtn">
+         Add New Story
+     </button>
+     </div>
+   </div>
   <div class="table-responsive">
     <table class="table table-hover">
       <tr class="row-top-buffer"

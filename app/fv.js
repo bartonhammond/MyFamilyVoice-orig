@@ -33,10 +33,12 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour'])
         templateUrl: 'account/account.html',
         controller: 'AccountCtrl'
       })
+/**
       .when('/register', {
         templateUrl: 'register/register.html',
         controller: 'RegisterCtrl'
       })
+*/
       .when('/activities', {
         templateUrl: 'activities/index.html',
         controller: 'ActivitiesIndexCtrl'
@@ -73,19 +75,11 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour'])
         redirectTo: '/'
       });
     
+  })/**
+  .config(function($locationProvider){
+    $locationProvider.html5Mode(true).hashPrefix('!');
   })
-  .config(function($sceDelegateProvider) {
-    $sceDelegateProvider.resourceUrlWhitelist([
-      // Allow same origin resource loads.
-      'self',
-      // Allow loading from our assets domain.  Notice the difference between * and **.
-      'http://files.parse.com/**'
-    ]);
-    
-    // The blacklist overrides the whitelist so the open redirect here is blocked.
-    $sceDelegateProvider.resourceUrlBlacklist([
-    ]);
-  })
+*/
   .run(function($rootScope, $location, Family, CONFIG) {
     Parse.initialize(CONFIG.defaults.parse.applicationId,
                  CONFIG.defaults.parse.javascriptKey);

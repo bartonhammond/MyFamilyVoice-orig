@@ -120,7 +120,7 @@ angular.module('fv')
       });
 
       /* jshint camelcase: false*/
-      LoginRadius_SocialLogin.util.ready(loginRadius);
+//      LoginRadius_SocialLogin.util.ready(loginRadius);
       if ($routeParams.link) {
         $rootScope.loginLink = $routeParams.link;
       }
