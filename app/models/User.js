@@ -11,6 +11,7 @@ angular.module('fv').
         this.lastName = user.get('lastName');
         this.isSocial = user.get('isSocial');
         this.thumbNail = user.get('thumbnail');
+        this.recaptcha = user.get('recaptcha');
       }
       this.signUp = function(userId, password, firstName, lastName, primaryEmail, isSocial, verifiedEmail) {
         return Parse.User.signUp(
@@ -46,6 +47,7 @@ angular.module('fv').
         Parse.User.current().set('firstName', this.firstName);
         Parse.User.current().set('lastName', this.lastName);
         Parse.User.current().set('primaryEmail',this.primaryEmail);
+        Parse.User.current().set('recaptcha',this.recaptcha);
         if (file) {
           Parse.User.current().set('photo', file);
         }

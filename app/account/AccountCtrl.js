@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('AccountCtrl', function ($scope, $location, User, requestNotificationChannel) {
+  .controller('AccountCtrl', function ($scope, $location, User, CONFIG, requestNotificationChannel, vcRecaptchaService, recaptchaService) {
     /**
      * Init loginRadius
      */
@@ -30,18 +30,28 @@ angular.module('fv')
         :
         null;
     };
+    $scope.recaptchaPublicKey = function() {
+      return CONFIG.defaults.recaptcha;
+    };
 
     $scope.save = function() {
       if ($scope.signupForm.$valid) {
         requestNotificationChannel.requestStarted();
         $('#submitBtn').attr('disabled','disabled');
-        $scope.user.save($scope.photoFile)
+        
+        recaptchaService.verifyRecaptcha(vcRecaptchaService.data())
+          .then(
+            function() {
+              $scope.user.recaptcha = true;
+              return $scope.user.save($scope.photoFile);
+            })
           .then(
             function() {
               $location.path('/activities');
             },
             function(error) {
               $scope.signupForm.submitted = true;
+              vcRecaptchaService.reload();
               console.log(error);
             })
           .finally(
@@ -49,7 +59,6 @@ angular.module('fv')
               $('#submitBtn').attr('disabled',false);
               requestNotificationChannel.requestEnded();
             });
-
       } else {
         $scope.signupForm.submitted = true;
       }

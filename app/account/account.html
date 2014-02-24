@@ -134,6 +134,15 @@
               </div>
             </div>
           </div>
+          <div ng-hide="user.recaptcha">
+            <p>The following is to prove you are a human and not a
+              computer so as to prevent machines from joining MyFamilyVoice.</p>
+            <div  vc-recaptcha
+                  tabindex="3"
+                  theme="clean"
+                  key="{{recaptchaPublicKey()}}">
+            </div>
+          </div>
           <!---- Submit -------------------------------------------------->          
           <div class="control-group">
             <div class="controls">

@@ -61,6 +61,7 @@ module.exports = function (grunt) {
           'public/directives/validFileSize.js',
           'public/directives/qtip.js',
           'public/directives/debouce.js',
+          'public/directives/recapthca.js',
           'public/filters/seconds.js',
           'public/main/MainCtrl.js',
           'public/navbar/NavbarCtrl.js',
@@ -69,6 +70,7 @@ module.exports = function (grunt) {
           'public/admin/AdminCtrl.js',
           'public/confirmEmail/ConfirmEmailCtrl.js',
           'public/account/AccountCtrl.js',
+          'public/account/RecaptchaService.js',
           'public/activities/ActivitiesIndexCtrl.js',
           'public/activities/ActivitiesUpdateCtrl.js',
           'public/search/SearchCtrl.js',
@@ -312,6 +314,15 @@ module.exports = function (grunt) {
             rename: function(dest) {
               return dest + '/config.js';
             }
+          },
+          {
+            src: ['<%= fv.devCloudConfig %>'],
+            dest: '<%= server_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
           }
         ]
       },
@@ -334,6 +345,15 @@ module.exports = function (grunt) {
             rename: function(dest) {
               return dest + '/config.js';
             }
+          },
+          {
+            src: ['<%= fv.nodeCloudConfig %>'],
+            dest: '<%= server %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
           }
         ]
       },
@@ -351,6 +371,15 @@ module.exports = function (grunt) {
           {
             src: ['<%= fv.prodCloudConfig %>'],
             dest: '<%= parse_dir %>',
+            cwd: '.',
+            expand: true,
+            rename: function(dest) {
+              return dest + '/config.js';
+            }
+          },
+          {
+            src: ['<%= fv.prodCloudConfig %>'],
+            dest: '<%= server %>',
             cwd: '.',
             expand: true,
             rename: function(dest) {
