@@ -1,5 +1,5 @@
 exports.accounts = {
-  site: 'https://familyvoice-11092.onmodulus.net/master.html#/',
+  site: 'https://familyvoice-11092.onmodulus.net/',
   twilio: {
       accountSID: 'AC5be60567ea132f150762244ccf788ae6',
       authToken: '42420dd155a5997e75882993599a2d25',

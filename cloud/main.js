@@ -27,6 +27,8 @@ var Referral = Parse.Object.extend('Referral');
 var RegisterUser = Parse.Object.extend('RegisterUser');
 var Subscription = Parse.Object.extend('Subscription');
 var SubscriptionJob = Parse.Object.extend('SubscriptionJob');
+
+var stopWords  = ['a', 'about', 'above', 'above', 'across', 'after', 'afterwards', 'again', 'against', 'all', 'almost', 'alone', 'along', 'already', 'also','although','always','am','among', 'amongst', 'amoungst', 'amount',  'an', 'and', 'another', 'any','anyhow','anyone','anything','anyway', 'anywhere', 'are', 'around', 'as',  'at', 'back','be','became', 'because','become','becomes', 'becoming', 'been', 'before', 'beforehand', 'behind', 'being', 'below', 'beside', 'besides', 'between', 'beyond', 'bill', 'both', 'bottom','but', 'by', 'call', 'can', 'cannot', 'cant', 'co', 'con', 'could', 'couldnt', 'cry', 'de', 'describe', 'detail', 'do', 'done', 'down', 'due', 'during', 'each', 'eg', 'eight', 'either', 'eleven','else', 'elsewhere', 'empty', 'enough', 'etc', 'even', 'ever', 'every', 'everyone', 'everything', 'everywhere', 'except', 'few', 'fifteen', 'fify', 'fill', 'find', 'fire', 'first', 'five', 'for', 'former', 'formerly', 'forty', 'found', 'four', 'from', 'front', 'full', 'further', 'get', 'give', 'go', 'had', 'has', 'hasnt', 'have', 'he', 'hence', 'her', 'here', 'hereafter', 'hereby', 'herein', 'hereupon', 'hers', 'herself', 'him', 'himself', 'his', 'how', 'however', 'hundred', 'ie', 'if', 'in', 'inc', 'indeed', 'interest', 'into', 'is', 'it', 'its', 'itself', 'keep', 'last', 'latter', 'latterly', 'least', 'less', 'ltd', 'made', 'many', 'may', 'me', 'meanwhile', 'might', 'mill', 'mine', 'more', 'moreover', 'most', 'mostly', 'move', 'much', 'must', 'my', 'myself', 'name', 'namely', 'neither', 'never', 'nevertheless', 'next', 'nine', 'no', 'nobody', 'none', 'noone', 'nor', 'not', 'nothing', 'now', 'nowhere', 'of', 'off', 'often', 'on', 'once', 'one', 'only', 'onto', 'or', 'other', 'others', 'otherwise', 'our', 'ours', 'ourselves', 'out', 'over', 'own','part', 'per', 'perhaps', 'please', 'put', 'rather', 're', 'same', 'see', 'seem', 'seemed', 'seeming', 'seems', 'serious', 'several', 'she', 'should', 'show', 'side', 'since', 'sincere', 'six', 'sixty', 'so', 'some', 'somehow', 'someone', 'something', 'sometime', 'sometimes', 'somewhere', 'still', 'such', 'system', 'take', 'ten', 'than', 'that', 'the', 'their', 'them', 'themselves', 'then', 'thence', 'there', 'thereafter', 'thereby', 'therefore', 'therein', 'thereupon', 'these', 'they', 'thickv', 'thin', 'third', 'this', 'those', 'though', 'three', 'through', 'throughout', 'thru', 'thus', 'to', 'together', 'too', 'top', 'toward', 'towards', 'twelve', 'twenty', 'two', 'un', 'under', 'until', 'up', 'upon', 'us', 'very', 'via', 'was', 'we', 'well', 'were', 'what', 'whatever', 'when', 'whence', 'whenever', 'where', 'whereafter', 'whereas', 'whereby', 'wherein', 'whereupon', 'wherever', 'whether', 'which', 'while', 'whither', 'who', 'whoever', 'whole', 'whom', 'whose', 'why', 'will', 'with', 'within', 'without', 'would', 'yet', 'you', 'your', 'yours', 'yourself', 'yourselves', 'the'];
 /**
  * configure Express
  */
@@ -107,16 +109,11 @@ var getWave = function(request) {
  * Update user recording count if new recording
  */
 var updateUserRecordingCount = function(user, activity) {
-  console.log('updateUserRecordingCount');
-  console.log(user);
-  console.log(activity);
   var audio = activity.get('file');
 
   if (audio) {
-    console.log('updateUserRecordingCount re-recording');
     return user;
   } else {
-    console.log('updateUserRecordingCount new recording');
     Parse.Cloud.useMasterKey();
     user.increment('recordings');
     return user.save();
@@ -240,8 +237,6 @@ app.get('/callback', function(request, response) {
         response.send('ok');
       },
       function(error){
-        console.log('callback error:');
-        console.log(error);
         response.send(error);
       });
 });
@@ -390,10 +385,7 @@ Parse.Cloud.define('loginWithSocialLogin', function(request, response) {
  * Find confirmEmai record and return it or error
  */
 var findConfirmEmail = function(request) {
-  console.log('findConfirmEmail request:');
-  console.log(request);
   var link = JSON.parse(request.body);
-  console.log('link: ' + link.link);
   var query = new Parse.Query(ConfirmEmail);
   query.equalTo('link', link.link);
   var promise = new Parse.Promise();
@@ -401,8 +393,6 @@ var findConfirmEmail = function(request) {
   query.find()
     .then(function(results) {
       var link = results[0];
-      console.log('findConfirmEmail link');
-      console.log(link);
       promise.resolve(link);
     }, function(error) {
       promise.reject(error);
@@ -413,34 +403,24 @@ var findConfirmEmail = function(request) {
  * Confirm the email 
  */
 Parse.Cloud.define('confirmEmail', function(request, response) {
-  console.log('confirmEmail request');
-  console.log(request);
   Parse.Promise.when([findConfirmEmail(request, response)])
     .then(
       function(link) {
-        console.log('confirmEmail found link');
-        console.log(link);
         var id = link.get('userId');
         return Parse.Promise.when([findUser({userId: id})]);
 
       })
     .then(
       function(user) {
-        console.log('confirmEmail found user:');
-        console.log(user);
         user.set('verifiedEmail', true);
         Parse.Cloud.useMasterKey();
         return user.save();
       })
     .then(
       function(updatedUser) {
-        console.log('confirmEmail updated user');
-        console.log(updatedUser);
-        response.success();
+        response.success(updatedUser);
       },
       function(error) {
-        console.log('confirmEmail findConfirmEmail error');
-        console.log(error);
         response.error(error);
       });
 });
@@ -508,18 +488,14 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
         url: 'https://mandrillapp.com/api/1.0/messages/send-template.json',
         body: params,
         success: function(data) {
-          console.log('sendConfirmEmail success:');
           response.success(data);
         },
         error: function(error) {
-          console.log('sendConfirmEmail error:');
           response.error(error);
         }
       });
     },
     function(error) {
-      console.log('sendConfirmEmail error');
-      console.log(error);
       response.error(error);
 
     });
@@ -637,27 +613,49 @@ Parse.Cloud.define('sendReferralEmail', function(request, response) {
         });
       },
       function(error) {
-        console.log('sendReferralEmail error');
-        console.log(error);
         response.error(error);
         
       });
 });
+var buildSearchQuery = function(request, query) {
+  if (_.isEmpty(request.params)) {
+    return query;
+  }
+  var q = request.params.q;
+  if (q) {
+    var terms = q.trim().split(' ');
 
+    if (terms.length === 1) {
+      query.equalTo('words',terms[0].toLowerCase().trim());
+    } else {
+      terms =_.map(terms, function(term) {
+        return term.toLowerCase().trim();
+      });
+      
+      if (terms && terms.length > 0) {
+        query.containsAll('words',terms);
+      }
+    }
+  }
+  return query;
+  
+};
 /**
  * Find all users
  */
-var findUsers = function() {
+var findUsers = function(request) {
   var query = new Parse.Query(Parse.User);
+  query = buildSearchQuery(request, query);
   return query.find();
 };
 /**
  * Find all activities with audio
  * client code will retrieve likes
  */
-var findActivities = function() {
+var findActivities = function(request) {
   Parse.Cloud.useMasterKey();
   var query = new Parse.Query(Activity);
+  query = buildSearchQuery(request, query);
   query.exists('file');
   query.include('user');
   return query.find();
@@ -901,17 +899,33 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     return w.toLowerCase();
   };
   
-  var firstName = request.object.get('firstName').split(/\b/);
-  var lastName = request.object.get('lastName').split(/\b/);
+  var firstName = request.object.get('firstName').split(' ');
+  var lastName = request.object.get('lastName').split(' ');
+  
+  firstName = _.map(firstName, toLowerCase);
+  lastName = _.map(lastName, toLowerCase);
+
   var words = _.union(firstName, lastName);
 
-  words = _.map(words, toLowerCase);
+  words = _.difference(words, stopWords);
   
   words = _.filter(words, function(w) {
     return w.length > 4;
   });
   
-  request.object.set('words', words);
+  /**
+   * Support partial startswith matching
+   */
+  //01234 = length > 4 - it's 5
+  var expanded = [];
+  _.each(words, function(word) {
+    expanded.push(word);
+    for (var i = 5; i < word.length; i++) {
+      expanded.push(word.substring(0,i));
+    }
+  });
+
+  request.object.set('words', expanded);
 
   //if run before inttial save of user, user will not be found
   findUser({userId: request.object.id})
@@ -1002,7 +1016,6 @@ var updateUserViewedCount = function(user) {
 Parse.Cloud.define('activityListened', function(request, response) {
   console.log('activityListened userId: ' + request.params.userId);
   if (request.params.userId) {
-    console.log('got userid');
     Parse.Promise.when([findActivity(request.params.activityId),
                         findUser({userId: request.params.activityUserId}),
                         findUser({userId: request.params.userId})])
@@ -1017,12 +1030,9 @@ Parse.Cloud.define('activityListened', function(request, response) {
           response.success(activity);
         },
       function(error) {
-        console.log('activityListened error: ');
-        console.log(error);
         response.error(error);
       });
   } else {
-    console.log('did not get userid');
     Parse.Promise.when([findActivity(request.params.activityId),
                         findUser({userId: request.params.activityUserId})])
       .then(
@@ -1035,8 +1045,6 @@ Parse.Cloud.define('activityListened', function(request, response) {
           response.success(activity);
         },
         function(error) {
-          console.log('activityListened error: ');
-          console.log(error);
           response.error(error);
         });
   }
@@ -1102,8 +1110,6 @@ var createFamily = function(loggedOnUser, familyUser) {
             promise.resolve(family);
           });
       } else {
-        console.log('createFamily: results');
-        console.log(results);
         promise.resolve('ok');
       }
     },function(error) {
@@ -1137,14 +1143,10 @@ Parse.Cloud.define('subscribeToFamily', function(request, response) {
  * for confirmation
  */
 var emailFamilyRequest  =  function(family,response) {
-  console.log('emailFamilyRequest');
-
   var _family = family.get('family');
   var _kin = family.get('kin');
   var link = family.get('link');
  
-  console.log('_family.id: ' + _family.id + ' _kin.id: ' + _kin.id);
-
   //Send email for Family member confirmation
   Parse.Promise.when([findUser({userId: _family.id}),
                      findUser({userId: _kin.id})])
@@ -1187,7 +1189,7 @@ var emailFamilyRequest  =  function(family,response) {
           },
           'async': true
         };
-        console.log(params);
+
         Parse.Cloud.httpRequest({
           method: 'POST',
           headers: {
@@ -1204,8 +1206,7 @@ var emailFamilyRequest  =  function(family,response) {
         });
       },
       function(error) {
-        console.log('sendConfirmEmail error');
-        console.log(error);
+        return response.error(error);
       });
 };
 /**
@@ -1254,12 +1255,9 @@ Parse.Cloud.define('activityLike', function(request, response) {
       })
     .then(
       function(activity) {
-        console.log('activityLike: success');
         response.success(activity);
       },
       function(error) {
-        console.log('activityLike: error');
-        console.log(error);
         response.error(error);
       });
 });
@@ -1280,7 +1278,6 @@ Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
         response.success(count);
       },
       function(error) {
-        console.log('unapprovedFamilyRequestCount error: ' + error.message);
         response.error(error);
       });
 });
@@ -1288,10 +1285,7 @@ Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
  * Find confirmEmai record and return it or error
  */
 var findConfirmFamily = function(request) {
-  console.log('findConfirmFamily request:');
-  console.log(request);
   var link = JSON.parse(request.body);
-  console.log('link: ' + link.link);
   var query = new Parse.Query(Family);
   query.equalTo('link', link.link);
   var promise = new Parse.Promise();
@@ -1299,8 +1293,6 @@ var findConfirmFamily = function(request) {
   query.find()
     .then(function(results) {
       var link = results[0];
-      console.log('findConfirmFamily link');
-      console.log(link);
       promise.resolve(link);
     }, function(error) {
       promise.reject(error);
@@ -1356,7 +1348,6 @@ Parse.Cloud.define('updateReferredUser', function(request,response) {
       })
     .then(
       function(user) {
-        console.log('updateReferredUser objectId: ' + user.id + ' primaryEmail: ' + user.get('primaryEmail') + ' firstName: ' + user.get('firstName'));
         Parse.Cloud.run('sendConfirmEmail', {objectId: user.id,
                                              primaryEmail: user.get('primaryEmail'),
                                              firstName: user.get('firstName')}, {
@@ -1369,7 +1360,6 @@ Parse.Cloud.define('updateReferredUser', function(request,response) {
         });
       },
       function(error) {
-        console.log('unapprovedFamilyRequestCount error: ' + error.message);
         response.error(error);
       });
 });
@@ -1381,28 +1371,52 @@ Parse.Cloud.beforeSave('Activity', function(request, response) {
   var activity = request.object;
   var toLowerCase = function(w) { return w.toLowerCase(); };
  
-  var comments = activity.get('comment').split(/\b/);
-  var transcribes = activity.get('transcription').split(/\b/);
-
-  var words = _.union(comments, transcribes);
-  words = _.map(words, toLowerCase);
+  var comments = activity.get('comment').split(' ');
+  var transcribes = activity.get('transcription').split(' ');
+  var userId = activity.get('user').id;
   
-  words = _.filter(words, function(w) {
-    return  w.length > 4;
-  });
-  
-  activity.set('words', words);
+  findUser({userId: userId})
+    .then(
+      function(user) {
+        var firstName = user.get('firstName').split(' ');
+        var lastName = user.get('lastName').split(' ');
+        
+        comments = _.map(comments, toLowerCase);
+        transcribes = _.map(transcribes, toLowerCase);
+        firstName = _.map(firstName, toLowerCase);
+        lastName = _.map(lastName, toLowerCase);
 
-  return scaleImage(request, response);
+        var words = _.union(comments, transcribes, firstName, lastName);
+
+        words = _.difference(words, stopWords);
+
+        words = _.filter(words, function(w) {
+          return w.length > 4;
+        });
+
+        /**
+         * Support partial startswith matching
+         */
+        //01234 = length > 4 - it's 5
+        var expanded = [];
+        _.each(words, function(word) {
+          expanded.push(word);
+          for (var i = 5; i < word.length; i++) {
+            expanded.push(word.substring(0,i));
+          }
+        });
+        
+        activity.set('words', expanded);
+
+        return scaleImage(request, response);
+      });
 });
 
 Parse.Cloud.job('sendSubscriberEmails', function(request, status) {
-  console.log('sendSubscriberEmails input');
   var query = new Parse.Query(SubscriptionJob);
   query.first()
     .then(
       function(job) {
-        console.log('sendSubscriberEmails job: ');
         if (!job) {
           var subJob = new SubscriptionJob();
           return subJob.save({lastJob: moment().startOf('year'),
@@ -1419,9 +1433,8 @@ Parse.Cloud.job('sendSubscriberEmails', function(request, status) {
         status.success('Migration completed successfully.');
       },
       function(error) {
-        console.log('sendSubscriberEmails error: ' + error.message);
         // Set the job's error status
-        status.error('Uh oh, something went wrong.');
+        status.error(error);
       });
 });
 /*
@@ -1432,11 +1445,6 @@ Parse.Cloud.job('sendSubscriberEmails', function(request, status) {
  * create a family
  */
 Parse.Cloud.define('createReferral', function(request, response) {
-  console.log('createReferral');
-  console.log('email: ' + request.params.email);
-  console.log('firstName: ' + request.params.firstName);
-  console.log('lastName: ' + request.params.lastName);
-  console.log('userId: ' + request.user.id);
   var _user, _referredUser;
   Parse.Promise.when([findUser({userId: request.user.id})])
     .then(
