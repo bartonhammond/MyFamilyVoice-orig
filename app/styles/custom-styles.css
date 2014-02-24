@@ -130,3 +130,19 @@ img.center {
     width: 300px;
     padding: 15px;
 }
+.searchBgnd {
+    text-align: center;
+    background: url(../images/grid_noise.png) repeat;
+    background-size: cover;
+}
+.searchTerm {
+    margin: 15px;
+}
+.searchBtn {
+    margin: 0 15px 15px 15px;
+    text-transform: capitalize;
+}
+.newStoryBtn {
+    margin: 0 15px 15px 15px;
+    text-transform: capitalize;
+}    

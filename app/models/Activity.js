@@ -14,6 +14,7 @@ angular.module('fv').
         this.photo = activity.get('photo');
         this.thumbnail = activity.get('thumbnail');
         this.liked = activity.get('liked');
+        this.transcription = activity.get('transcription');
       }
 
       this.get = function (id) {
@@ -39,13 +40,13 @@ angular.module('fv').
           this.activity.set('photo', file);
         }
         this.activity.save()
-        .then(
-          function(activity) {
-            defer.resolve(activity);
-          },
-          function(aError) {
-            defer.reject(aError);
-          });
+          .then(
+            function(activity) {
+              defer.resolve(activity);
+            },
+            function(aError) {
+              defer.reject(aError);
+            });
         return defer.promise;
       };
       /**
