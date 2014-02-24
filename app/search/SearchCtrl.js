@@ -39,6 +39,22 @@ angular.module('fv')
       return Parse.User.current() && Parse.User.current().authenticated();
     };
 
+    $scope.verifiedUser = function() {
+      return $scope.authenticated() &&
+        Parse.User.current().get('verifiedEmail') &&
+        Parse.User.current().get('recaptcha');
+    };
+    
+    $scope.verifiedEmail = function() {
+      return $scope.authenticated() &&
+        Parse.User.current().get('verifiedEmail');
+    };
+
+    $scope.recaptcha = function() {
+      return $scope.authenticated() &&
+        Parse.User.current().get('recaptcha');
+    };
+
     $scope.showModal = function(index) {
       /* jshint unused: false*/
       var modalInstance = $modal.open({

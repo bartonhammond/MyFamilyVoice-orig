@@ -47,13 +47,29 @@
                class="btn btn-main searchBtn">
          MyFamilyVoice Search
        </button>
-       <button type='button' 
+       <button ng-show="verifiedUser()"
+               type='button' 
                ng-click="addNewStory()"
-             class="btn btn-main newStoryBtn">
+               class="btn btn-main newStoryBtn">
          Add New Story
-     </button>
+       </button>
      </div>
    </div>
+   <div ng-show="authenticated() && !verifiedUser()" 
+        class="alert alert-success">
+     Note: To enjoy all of MyFamilyVoice 
+     <span ng-show="!verifiedEmail()">you must verify you email
+       address.  Please check your email for an email from MyFamilyVoice
+       to confirm your address.  
+     </span>
+     <span ng-show="!verifiedEmail()  && !recaptcha()"> 
+       And 
+     </span>
+     <span ng-show="!recaptcha()">
+       you must complete the Account information.
+     </span>
+   </div>
+   
   <div class="table-responsive">
     <table class="table table-hover">
       <tr class="row-top-buffer"

@@ -6,3 +6,4 @@ public
 **/*.*~
 cloud/config.js
 dist
+server/config.js
