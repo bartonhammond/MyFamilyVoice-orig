@@ -714,6 +714,30 @@ var findFamilies = function(request) {
   return promise;
 };
 /*
+ * Find members
+ */
+Parse.Cloud.define('findMembers', function(request, response) {
+  var query = new Parse.Query(Parse.User);
+  query = buildSearchQuery(request, query);
+  query.equalTo('verifiedEmail',true);
+  query.equalTo('recaptcha', true);
+
+  query.find()
+    .then(
+      function(results) {
+        var rtn = [];
+        _.each(results, function(user) {
+          rtn.push({name: user.get('firstName') + ' ' + user.get('lastName'),
+                    id: user.id});
+        });
+        response.success(rtn);
+      },
+      function(error) {
+        response.error(error);
+      });
+});
+
+/*
  * Search
  */
 Parse.Cloud.define('search', function(request, response) {

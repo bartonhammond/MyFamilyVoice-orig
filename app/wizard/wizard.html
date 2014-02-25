@@ -1,0 +1,138 @@
+<section class="formPage">  
+  <div class="container" >
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3 text-center signup">
+          <h3>Story Creation</h3>
+          <p>Please enter the following information so we can create a Story</p>
+          <div rc-wizard="sampleWizard" 
+               rc-disabled="rc.firstForm.submitInProgress">
+            <ul class="nav rc-nav-wizard">
+              <li class="active">
+                <a class="active" href="#first" data-toggle="tab">
+                  <span class="badge">1</span>
+                  <span>Type of Story</span>
+                </a>
+              </li>
+              <li>
+                <a href="#second" data-toggle="tab">
+                  <span class="badge">2</span>
+                  <span>Find Member</span>
+                </a>
+              </li>
+              <li>
+                <a href="#last" data-toggle="tab">
+                  <span class="badge">3</span>
+                  <span>Enter Story</span>
+                </a>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <form class="tab-pane active form-horizontal" 
+                    id="first" 
+                    name="firstForm" 
+                    rc-submit="saveState()" 
+                    rc-step 
+                    novalidate>
+                <p>Who is this story intended for?</p>
+                <div class="control-group">
+                  <div class="controls">
+                    <div class="storyType">
+                      <input type="radio" 
+                             ng-model="storyType" 
+                             value="self"><span class="storyName">Yourself</span>
+                      <br/>
+                      <input type="radio" 
+                             ng-model="storyType"
+                             value="member"><span class="storyName">Member</span><br/>
+                      <div ng-show="storyType === 'member'">
+                        <pre>Model: {{asyncSelected | json}}</pre>
+                        <pre>Result: {{results[asyncSelected] | json}}</pre>
+                        <input type="text" 
+                               ng-model="asyncSelected" 
+                               placeholder="Search for existing member" 
+                               typeahead="member.name for member in findMembers($viewValue) | filter:$viewValue" 
+                               typeahead-loading="loadingMembers" 
+                               typeahead-on-select="onSelect($item,$model)"
+                               class="form-control">
+                        <i ng-show="loadingMenbers" 
+                           class="fa fa-spinner fa-2x">
+                        </i>
+                      </div>
+                      
+                      <input type="radio"
+                             ng-model="storyType" 
+                             value="memory"><span class="storyName">Memory</span><br/>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <form class="tab-pane" id="second" name="secondForm" rc-submit rc-step>
+                <h2>Enter second step data</h2>
+                <div class="form-group">
+                  <label class="control-label">Street Address</label>
+                  <input name="streetAddress" class="form-control" type="text" 
+                         ng-model="user.streetAddress" />
+                </div>
+                <div class="form-group">
+                  <label class="control-label">City</label>
+                  <input name="city" class="form-control" type="text" 
+                         ng-model="user.city" />
+                </div>
+                <div class="form-group">
+                  <label class="control-label">State</label>
+                  <input name="state" class="form-control" type="text" 
+                         ng-model="user.state" />
+                </div>
+                <div class="form-group">
+                  <label class="control-label">City</label>
+                  <input name="postalCode" class="form-control" type="text" 
+                         ng-model="user.postalCode" />
+                </div>
+              </form>
+              <form class="tab-pane" id="last" name="lastForm" rc-submit="completeWizard()" rc-step>
+                <h2>Finish last step</h2>
+                <div class="form-group">
+                  <label class="control-label">First Name:</label>
+                  <p class="form-control-static">{{ user.firstName }}</p>
+                </div>
+                <div class="form-group">
+                  <label class="control-label">Last Name:</label>
+                  <p class="form-control-static">{{ user.lastName }}</p>
+                </div>
+                <div class="form-group">
+                  <label class="control-label">Address:</label>
+                  <p class="form-control-static">
+                    {{ user.streetAddress }}
+                    <br />
+                    {{ user.city }}, {{ user.state }} {{ user.postalCode }}
+                  </p>
+                </div>
+              </form>
+            </div>
+            <div class="form-group">
+              <div class="pull-right">
+                <a class="btn btn-main" 
+                   ng-click="rc.sampleWizard.backward()"
+                   ng-show="rc.sampleWizard.currentIndex > rc.sampleWizard.firstIndex">
+                  Back
+                </a>
+                <a class="btn btn-main"
+                   style="margin-top: 15px" 
+                   data-loading-text="Please Wait..." 
+                   ng-click="rc.sampleWizard.forward()" 
+                   ng-show="rc.sampleWizard.currentIndex < rc.sampleWizard.navigationLength">
+                  <i class="fa fa-arrow-circle-right" 
+                     style="margin-right: 5px">
+                  </i>Continue
+                </a>
+                <a class="btn btn-main" 
+                   ng-click="rc.sampleWizard.forward()" 
+                   ng-show="rc.sampleWizard.currentIndex == rc.sampleWizard.navigationLength">Complete
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
