@@ -2,7 +2,7 @@
 /**
  * Main module for MyFamilyVoice
  */
-angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour', 'vcRecaptcha'])
+angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour', 'vcRecaptcha','rcWizard', 'rcForm', 'rcDisabledBootstrap'])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
@@ -68,6 +68,10 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour', '
       .when('/referral/add', {
         templateUrl: 'referral/create.html',
         controller: 'ReferralCreateCtrl'
+      })
+      .when('/wizard', {
+        templateUrl: 'wizard/wizard.html',
+        controller: 'WizardCtrl'
       })
       .otherwise({
         redirectTo: '/'

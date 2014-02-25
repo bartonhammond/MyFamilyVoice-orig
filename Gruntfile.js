@@ -78,6 +78,7 @@ module.exports = function (grunt) {
           'public/family/ConfirmFamilyCtrl.js',
           'public/referral/ReferralIndexCtrl.js',
           'public/referral/ReferralCreateCtrl.js',
+          'public/wizard/WizardCtrl.js',
           'public/models/Referral.js',
           'public/models/User.js',
           'public/models/Role.js',
@@ -348,7 +349,7 @@ module.exports = function (grunt) {
           },
           {
             src: ['<%= fv.nodeCloudConfig %>'],
-            dest: '<%= server %>',
+            dest: '<%= server_dir %>',
             cwd: '.',
             expand: true,
             rename: function(dest) {

@@ -13,6 +13,7 @@ angular.module('fv').
         this.thumbNail = user.get('thumbnail');
         this.recaptcha = user.get('recaptcha');
       }
+      
       this.signUp = function(userId, password, firstName, lastName, primaryEmail, isSocial, verifiedEmail) {
         return Parse.User.signUp(
           userId,
@@ -107,7 +108,25 @@ angular.module('fv').
           return self.saveUser();
         }
       };//save
-    };//user
       
+      /**
+       * List users with verifiedEmail and recaptcha
+       * for val
+       */
+      this.findMembers = function(val) {
+        var defer = $q.defer();
+        
+        Parse.Cloud.run('findMembers', {q: val})
+          .then(
+            function(members) {
+              defer.resolve(members);
+            },
+            function(error) {
+              defer.reject(error);
+            });
+        return defer.promise;
+      };
+    };//user
+    
     return User;
   });
