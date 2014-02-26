@@ -29,6 +29,26 @@ angular.module('fv')
       }
     });
 
+    $scope.isSearch = function() {
+      return $location.path().indexOf('search') > -1;
+    };
+
+    $scope.search = function() {
+      $location.path('/search');
+    };
+
+    $scope.login = function() {
+      $location.path('/login');
+    };
+
+    $scope.activities = function() {
+      $location.path('/activities');
+    };
+
+    $scope.account = function() {
+      $location.path('/account');
+    };
+
     //Logout user
     $scope.logout = function() {
       Parse.User.logOut();

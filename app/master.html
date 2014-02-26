@@ -52,10 +52,49 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand img-responsive"
-                 href="index.html"><img src="images/logo.gif" alt="logo"></a>
+              <a ng-hide="authenticated" class="navbar-brand img-responsive"
+                 href="index.html"><img class="logo"
+                 src="images/logo.gif" alt="logo">
+              </a>
+
             </div>
             <div class="navbar-collapse collapse">
+
+              <div ng-show="authenticated" 
+                   class="col-sm-3 col-md-3 pull-left" 
+                   style="padding-left: 0">
+                <form class="navbar-form" style="padding:0" role="search">
+                  <div class="input-group">
+                    <div class="input-group-btn">
+                      <button class="btn btn-default"
+                              type="submit"
+                              style="background-image:url('./favicon.png');background-repeat:no-repeat;
+                              background-position: 50% 50%;
+                              vertical-align:baseline;
+                              background-size: contain; 
+                              width:32px; height:32px;"
+                              >
+                      </button>
+                    </div>
+                    <input type="text" 
+                           class="form-control"
+                           style="height: 33px; width: 450px;
+                           margin-left: 6px; margin-top:1px;"
+                           placeholder="Search" 
+                           name="srch-term" 
+                           id="srch-term">
+                    <div class="input-group-btn">
+                      <button class="btn btn-default"
+                      type="submit">
+                        <i class="fa fa-search fa-lg"
+                           style="vertical-align: baseline">
+                        </i>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
               <ul class="nav navbar-nav navbar-right">
                 <li class="active"><a tourtip="Thanks for looking at
                                       the MyFamilyVoice tour.  We are
@@ -65,19 +104,19 @@
                                       tourtip-placement="right"
                                       tourtip-step="0"
                                       href="index.html">Home</a></li>
-                <li><a href="#/search"
+                <li><a ng-click="search()"
                        tourtip="You can search for family, friends or
                        anyone and listen to their stories or memories.
                        We'll look at that next."
                        tourtip-placement="right"
                        tourtip-step="2"
                        >Search</a></li>
-                <li><a ng-show='authenticated' href="#/account">Account</a></li>
+                <li><a ng-show='authenticated' ng-click="account()">Account</a></li>
                 <li><a ng-show='authenticated'
-                       href="#/activities">Activities</a></li>
+                       ng-click="activities()">Activities</a></li>
                 <li><a ng-show='authenticated' ng-click="logout()" >Log Out</a></li>
                 <li><a ng-hide='authenticated' 
-                       href="#/login"
+                       ng-click="login()"
                        tourtip="You can login with an existing account
                        or sign in with Social Media.  There's also a
                        link to register for a new account. We'll look
@@ -95,7 +134,7 @@
       </tour>
     </div>
     <loading></loading>
-    <div class='lower' ng-view=""></div>
+    <div class='lower container' ng-view=""></div>
     <section id="footer">
       <div class="container">
         <div class="row">

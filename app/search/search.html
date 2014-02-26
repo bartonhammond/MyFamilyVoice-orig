@@ -23,7 +23,6 @@
 </script>
  <tour>
    <div class="searchBgnd">
-     <div>
        <input tourtip="This is the search page.  You can find people and
                        stories here.  This search box is where you enter family
                        names or places that you want to search for.  Let's look next at a story."
@@ -40,20 +39,6 @@
        <i ng-click="performSearch()"
           class="fa fa-search fa-2x">
        </i> 
-     </div>
-     <div>
-       <button type='button' 
-               ng-click="performSearch()"
-               class="btn btn-main searchBtn">
-         MyFamilyVoice Search
-       </button>
-       <button ng-show="verifiedUser()"
-               type='button' 
-               ng-click="addNewStory()"
-               class="btn btn-main newStoryBtn">
-         Add New Story
-       </button>
-     </div>
    </div>
    <div ng-show="authenticated() && !verifiedUser()" 
         class="alert alert-success">
