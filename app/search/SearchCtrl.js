@@ -26,7 +26,7 @@ angular.module('fv')
       $location.search(termKey, term);
       $scope.performSearch();
     });
-    
+
     $scope.showTour = function() {
       $scope.$broadcast('show');
     };
@@ -55,6 +55,9 @@ angular.module('fv')
         Parse.User.current().get('recaptcha');
     };
 
+    $scope.mousedown = function() {
+      $('.dropdown-toggle').dropdown();
+    };
     $scope.showModal = function(index) {
       /* jshint unused: false*/
       var modalInstance = $modal.open({

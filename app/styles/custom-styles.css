@@ -164,3 +164,17 @@ img.center {
     background-color: #FF755A;
     outline: 0;
 }
+#search-options {
+    z-index:999;
+    position:relative;
+    background:#eee;
+    padding:10px;
+    border:1px solid #ccc;
+}
+.logo {
+    height: 35px;
+}
+html {
+    position: relative;
+    min-height: 100%;
+}

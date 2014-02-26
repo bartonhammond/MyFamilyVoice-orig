@@ -208,13 +208,14 @@ a:hover {
 }
 
 .navbar-brand {
-  margin-top: 15px;
+  margin-top: 11px;
+  padding: 0;
 }
 
 .navbar .nav > li > a {
   color: #FFFFFF;
   float: none;
-  padding: 35px 16px;
+//  padding: 35px 16px;
   text-decoration: none;
   text-shadow: none;
 }
@@ -1012,6 +1013,9 @@ ul.social-icons li a:hover {
 }
 
 #footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   background: #26292B;
   padding-top: 20px;
   padding-bottom: 20px;
