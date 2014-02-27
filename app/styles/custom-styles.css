@@ -164,12 +164,20 @@ img.center {
     background-color: #FF755A;
     outline: 0;
 }
-#search-options {
-    z-index:999;
+#globalSearch {
     position:relative;
-    background:#eee;
-    padding:10px;
-    border:1px solid #ccc;
+    top:-50px;
+}
+#searchOptions {
+    position: absolute; 
+    z-index:3000; 
+    top:43px; 
+    left: 37px;
+    background:white; 
+    width: 492px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 .logo {
     height: 35px;
@@ -177,4 +185,8 @@ img.center {
 html {
     position: relative;
     min-height: 100%;
+}
+.searchTable-hover>tbody>tr:hover>td, .searchTable-hover>tbody>tr:hover>th {
+    background-color: #FF755A;
+    color: white;
 }

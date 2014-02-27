@@ -1,4 +1,33 @@
-<div id="globalSearch" ng-init="init()" style="position:relative; top:-50px;">
+<div id="globalSearch" ng-init="init()">
+  <div ng-show="dropdown"
+       id="searchOptions">
+    <table class="table table-hover searchTable-hover" style="margin-bottom: 0">
+      <tr class="row-top-buffer"  ng-click="option('member')">
+        <td class="col-md-2">
+          <i class="fa fa-users fa-2x"></i>
+        </td>
+        <td class="col-md-10">
+          Members stories
+        </td>
+      </tr>
+      <tr class="row-top-buffer"  ng-click="option('my')">
+        <td class="col-md-2">
+          <i class="fa fa-user fa-2x"></i>
+        </td>
+        <td class="col-md-10">
+          My Stories
+        </td>
+      </tr>
+      <tr class="row-top-buffer" ng-click="option('memorial')">
+        <td class="col-md-2">
+          <i class="fa fa-arrows fa-2x"></i>
+        </td>
+        <td class="col-md-10">
+          Memorials
+        </td>
+      </tr>
+    </table>
+  </div>
   <tour>
     <div class="col-sm-3 col-md-3 pull-left" 
          style="padding-left: 0; z-index: 2500">
@@ -30,6 +59,7 @@
                         margin-left: 6px; margin-top:1px;"
                  placeholder="Search..." 
                  fv-debounce=600
+                 ng-mousedown="dropdownToggle()"
                  ng-model="q">
           <div class="input-group-btn">
             <button class="btn btn-default"
@@ -66,7 +96,6 @@
         <button type="button" class="btn btn-default" ng-click="ok()">Close</button>
       </div>
     </script>
-
     <span ng-show="authenticated">
       <div ng-show="!verifiedUser">
         <div class="table-responsive">
@@ -229,9 +258,6 @@
         </tr>
       </table>
     </div>
-
-    
-    
 </div>
 </tour>
 </div>
