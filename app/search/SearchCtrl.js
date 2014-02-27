@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('SearchCtrl', function ($scope, $location, User, Search, Activity, Family, $modal, requestNotificationChannel) {
+  .controller('SearchCtrl', function ($scope, $location, $window, User, Search, Activity, Family, $modal, requestNotificationChannel) {
     $scope.search = {};
     $scope.init = function() {
       $scope.dropdown = false;
@@ -21,21 +21,48 @@ angular.module('fv')
       $scope.recaptcha = $scope.authenticated &&
         Parse.User.current().get('recaptcha');
 
-      $scope.familyRequestSent = false;
       $scope.modalData = undefined;
     };
 
     $scope.option = function(val) {
-      console.log(val);
+      console.log('option: ' + val);
+      $('#searchTerm').attr('placeholder', val);
       $scope.dropdown = false;
+      $window.onclick = null;
     };
-
+    
     $scope.dropdownToggle = function() {
-      $scope.dropdown = true;
-      $('html').click(function() {
+      console.log('dropdownToggle');
+      $scope.dropdown = !$scope.dropdown;
+      if ($scope.dropdown) {
+        $window.onclick = function (event) {
+          closeSearchWhenClickingElsewhere(event, $scope.dropdownToggle);
+        };
+      } else {
         $scope.dropdown = false;
-      });
+        $window.onclick = null;
+        $scope.$apply();
+      }
+      
     };
+    function closeSearchWhenClickingElsewhere(event, callbackOnClose) {
+      
+      var clickedElement = event.target;
+      if (!clickedElement) {
+        return;
+      }
+
+      var elementClasses = clickedElement.classList;
+
+      var clickedOnSearchDrawer = elementClasses.contains('searchOption') ||
+        (clickedElement.parentElement !== null && clickedElement.parentElement.classList.contains('searchOption'));
+      
+      if (!clickedOnSearchDrawer) {
+        callbackOnClose();
+        return;
+      }
+      
+    }
 
     $scope.goHome = function() {
       $location.path('/');
@@ -53,9 +80,6 @@ angular.module('fv')
       $scope.$broadcast('hide');
     };
 
-    $scope.mousedown = function() {
-      $('.dropdown-toggle').dropdown();
-    };
     $scope.showModal = function(index) {
       /* jshint unused: false*/
       var modalInstance = $modal.open({
@@ -137,19 +161,6 @@ angular.module('fv')
           console.log(error);
         });
     };
-    /**
-     * On search, only Users have Join Family
-     */
-    $scope.joinFamily = function(index) {
-      (new Family()).join($scope.search.items[index].objectId)
-        .then(
-          function() {
-            $scope.search.items[index].familyRequestSent = true;
-          },
-          function(error) {
-            console.log(error);
-          });
-    };
     $scope.userThumbnail = function() {
       if (Parse.User.current() && Parse.User.current().authenticated) {
         return $scope.proxyUrl(Parse.User.current().get('thumbnail'));
@@ -166,7 +177,7 @@ angular.module('fv')
     };
 
     /**
-     * On search, only Users have Join Family
+     * On search, only Users can subscribe
      */
     $scope.subscribe = function(index) {
       var userId = $scope.search.items[index].objectId;
