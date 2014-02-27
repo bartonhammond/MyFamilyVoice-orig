@@ -1,14 +1,25 @@
 'use strict';
 
 angular.module('fv')
-  .controller('SearchCtrl', function ($scope, $location, User, Search, Activity, Family, $modal) {
+  .controller('SearchCtrl', function ($scope, $location, User, Search, Activity, Family, $modal, requestNotificationChannel) {
+    $scope.search = {};
     $scope.init = function() {
-      $scope.search = {};
       $scope.$on('onTourEnd', function() {
         $location.path('/login');
       });
+      $scope.authenticated =  !_.isNull(Parse.User.current()) &&
+        Parse.User.current().authenticated();
+      
+      $scope.verifiedUser = $scope.authenticated &&
+        Parse.User.current().get('verifiedEmail') &&
+        Parse.User.current().get('recaptcha');
+      
+      $scope.verifiedEmail = $scope.authenticated &&
+        Parse.User.current().get('verifiedEmail');
 
-//      $scope.performSearch();
+      $scope.recaptcha = $scope.authenticated &&
+        Parse.User.current().get('recaptcha');
+
       $scope.familyRequestSent = false;
       $scope.modalData = undefined;
     };
@@ -27,26 +38,6 @@ angular.module('fv')
 
     $scope.hideTour = function() {
       $scope.$broadcast('hide');
-    };
-
-    $scope.authenticated = function() {
-      return Parse.User.current() && Parse.User.current().authenticated();
-    };
-
-    $scope.verifiedUser = function() {
-      return $scope.authenticated() &&
-        Parse.User.current().get('verifiedEmail') &&
-        Parse.User.current().get('recaptcha');
-    };
-    
-    $scope.verifiedEmail = function() {
-      return $scope.authenticated() &&
-        Parse.User.current().get('verifiedEmail');
-    };
-
-    $scope.recaptcha = function() {
-      return $scope.authenticated() &&
-        Parse.User.current().get('recaptcha');
     };
 
     $scope.mousedown = function() {
@@ -88,20 +79,13 @@ angular.module('fv')
           });
     };
     /**
-     * If user presses enter, start search
-              <!--ng-keypress="checkForEnter($event)"-->
-    $scope.checkForEnter = function(ev) {
-      if (ev.which === 13) {
-        $scope.performSearch();
-      }
-    };
-     */
-    /**
      * Search 
      */
     $scope.performSearch = function() {
-//      $location.search({q : $scope.search.q});
-      console.log('searching');
+      if ($scope.q < 5) {
+        return;
+      }
+      requestNotificationChannel.requestStarted();
       Search.search($scope.q)
         .then(
           function(response) {
@@ -111,6 +95,10 @@ angular.module('fv')
                 getRelations(item);
               }//if
             });
+          })
+        .finally(
+          function() {
+            requestNotificationChannel.requestEnded();
           });
     };
     /**
