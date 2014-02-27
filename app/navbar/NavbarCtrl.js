@@ -1,7 +1,6 @@
 'use strict';
 angular.module('fv')
   .controller('NavbarCtrl', function ($scope, $location, $window, CONFIG) {
-    
     //Is there a current user?
     $scope.init = function() {
       $scope.$on('onTourEnd', function() {
@@ -31,6 +30,10 @@ angular.module('fv')
 
     $scope.isSearch = function() {
       return $location.path().indexOf('search') > -1;
+    };
+
+    $scope.home = function() {
+      $location.path('/');
     };
 
     $scope.search = function() {

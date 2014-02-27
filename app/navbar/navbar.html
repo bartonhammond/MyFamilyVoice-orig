@@ -1,0 +1,60 @@
+<tour>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a ng-hide="isSearch()" 
+           tourtip="Thanks for looking at
+                    the MyFamilyVoice tour.  We are
+                    now at the Home page.  Let's
+                    look at a few of the options."
+           tourtip-next-label="Learn more"
+           tourtip-placement="right"
+           tourtip-step="0"
+           class="navbar-brand img-responsive"
+           href="index.html"><img class="logo"
+                                  src="images/logo.gif" alt="logo">
+        </a>
+
+      </div>
+      <div class="navbar-collapse collapse">
+        
+        <div ng-show="isSearch()" 
+             class="col-sm-3 col-md-3 pull-left" 
+             style="padding-left: 0">
+          <ng-include src="'search/globalSearch.html'">
+        </div>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li><a ng-click="search()"
+                 tourtip="You can search for family, friends or
+                          anyone and listen to their stories or memories.
+                          We'll look at that next."
+                 tourtip-placement="right"
+                 tourtip-step="2"
+                 >Search</a></li>
+          <li><a ng-show='authenticated' ng-click="account()">Account</a></li>
+          <li><a ng-show='authenticated'
+                 ng-click="activities()">Activities</a></li>
+          <li><a ng-show='authenticated' ng-click="logout()" >Log Out</a></li>
+          <li><a ng-hide='authenticated' 
+                 ng-click="login()"
+                 tourtip="You can login with an existing account
+                          or sign in with Social Media.  There's also a
+                          link to register for a new account. We'll look
+                          at that in a few moments."
+                 tourtip-placement="bottom"
+                 tourtip-offset="50"
+                 tourtip-step="1">
+              Login</a></li>
+          <li><a href="" ng-click="showTour()">Show
+              Tour</a></li>
+        </ul>
+      </div><!--/.navbar-collapse -->
+    </div>
+  </div>
+</tour>

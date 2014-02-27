@@ -1,0 +1,43 @@
+<form class="navbar-form" 
+      style="padding:0"
+      ng-controller="SearchCtrl"
+      role="search">
+  <div class="input-group">
+    <div class="input-group-btn">
+      <button class="btn btn-default"
+              type="submit"
+              ng-click="goHome()"
+              style="background-image:url('./favicon.png');background-repeat:no-repeat;
+                     background-position: 50% 50%;
+                     vertical-align:baseline;
+                     background-size: contain; 
+                     width:32px; height:32px;"
+              >
+      </button>
+    </div>
+    <input type="text" 
+           tourtip="This is the search page.  You can find people and
+                    stories here.  This search box is where you enter family
+                    names or places that you want to search for.  Let's look next at a story."
+           tourtip-placement="right"
+           tourtip-step="0"
+           tourtip-offset="60"
+           class="form-control"
+           style="height: 33px; width: 450px;
+                  margin-left: 6px; margin-top:1px;"
+           placeholder="Search..." 
+           fv-debounce=600
+           name="srch-term" 
+           ng-model="q"
+           id="srch-term">
+    <div class="input-group-btn">
+      <button class="btn btn-default"
+              ng-click="performSearch()"
+              type="submit">
+        <i class="fa fa-search fa-lg"
+           style="vertical-align: baseline">
+        </i>
+      </button>
+    </div>
+  </div>
+</form>
