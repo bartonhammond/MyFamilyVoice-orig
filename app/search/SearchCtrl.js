@@ -12,18 +12,12 @@ angular.module('fv')
       $scope.familyRequestSent = false;
       $scope.modalData = undefined;
     };
-    var termKey = 'q';
 
-    $scope.$watch(function () {
-      return $location.search();
-    }, function() {
-      $scope.q = $location.search()[termKey] || '';
-      console.log('setting q');
-    });
-     
-    $scope.$watch('q', function(term) {
-      console.log('setting search');
-      $location.search(termKey, term);
+    $scope.goHome = function() {
+      $location.path('/');
+    };
+
+    $scope.$watch('q', function() {
       $scope.performSearch();
     });
 

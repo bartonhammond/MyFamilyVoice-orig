@@ -22,24 +22,6 @@
       </div>
 </script>
  <tour>
-   <div class="searchBgnd">
-       <input tourtip="This is the search page.  You can find people and
-                       stories here.  This search box is where you enter family
-                       names or places that you want to search for.  Let's look next at a story."
-              tourtip-placement="right"
-              tourtip-step="0"
-              tourtip-offset="60"
-              type="text"
-              placeholder="Search..."
-              class="searchTerm"
-              autofocus
-              fv-debounce=600
-              style="width: 33%"
-              ng-model="q"/>
-       <i ng-click="performSearch()"
-          class="fa fa-search fa-2x">
-       </i> 
-   </div>
    <div ng-show="authenticated() && !verifiedUser()" 
         class="alert alert-success">
      Note: To enjoy all of MyFamilyVoice 
