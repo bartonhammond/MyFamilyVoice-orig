@@ -4,6 +4,7 @@ angular.module('fv')
   .controller('SearchCtrl', function ($scope, $location, User, Search, Activity, Family, $modal, requestNotificationChannel) {
     $scope.search = {};
     $scope.init = function() {
+      $scope.dropdown = false;
       $scope.$on('onTourEnd', function() {
         $location.path('/login');
       });
@@ -22,6 +23,18 @@ angular.module('fv')
 
       $scope.familyRequestSent = false;
       $scope.modalData = undefined;
+    };
+
+    $scope.option = function(val) {
+      console.log(val);
+      $scope.dropdown = false;
+    };
+
+    $scope.dropdownToggle = function() {
+      $scope.dropdown = true;
+      $('html').click(function() {
+        $scope.dropdown = false;
+      });
     };
 
     $scope.goHome = function() {
