@@ -1,28 +1,29 @@
 <div id="globalSearch" ng-init="init()">
   <div ng-show="dropdown"
+       name="searchOptions"
        id="searchOptions">
     <table class="table table-hover searchTable-hover" style="margin-bottom: 0">
-      <tr class="row-top-buffer"  ng-click="option('member')">
-        <td class="col-md-2">
+      <tr class="row-top-buffer searchOption" id="searchMember" ng-click="option('member')">
+        <td class="col-md-2 searchOption">
           <i class="fa fa-users fa-2x"></i>
         </td>
-        <td class="col-md-10">
+        <td class="col-md-10 searchOption">
           Members stories
         </td>
       </tr>
-      <tr class="row-top-buffer"  ng-click="option('my')">
-        <td class="col-md-2">
+      <tr class="row-top-buffer searchOption" id="searchMy" ng-click="option('my')">
+        <td class="col-md-2 searchOption">
           <i class="fa fa-user fa-2x"></i>
         </td>
-        <td class="col-md-10">
+        <td class="col-md-10 searchOption">
           My Stories
         </td>
       </tr>
-      <tr class="row-top-buffer" ng-click="option('memorial')">
-        <td class="col-md-2">
-          <i class="fa fa-arrows fa-2x"></i>
+      <tr class="row-top-buffer searchOption" id="searchMemorial"  ng-click="option('memorial')">
+        <td class="col-md-2 searchOption" >
+          <i class="fa fa-heart fa-2x"></i>
         </td>
-        <td class="col-md-10">
+        <td class="col-md-10 searchOption">
           Memorials
         </td>
       </tr>
@@ -54,12 +55,13 @@
                  tourtip-placement="right"
                  tourtip-step="0"
                  tourtip-offset="60"
-                 class="form-control"
+                 class="form-control searchOption"
                  style="height: 33px; width: 450px;
                         margin-left: 6px; margin-top:1px;"
-                 placeholder="Search..." 
                  fv-debounce=600
                  ng-mousedown="dropdownToggle()"
+                 id="searchTerm"
+                 name="searchTerm"
                  ng-model="q">
           <div class="input-group-btn">
             <button class="btn btn-default"
@@ -154,28 +156,6 @@
               <br>
               Has been heard: {{item.audioViews}}
               <br>
-              <div ng-show="authenticated"
-                   class="btn-group btn-group-sm">
-                <button ng-click="joinFamily($index)"
-                        type="button" 
-                        ng-disabled="item.isSelf || item.familyStatus"
-                        class="btn btn-default">
-                  <span ng-if="item.familyStatus === 1">Pending</span>
-                  <span ng-if="item.familyStatus === 2">In Family</span>
-                  <span ng-if="!item.familyStatus">Join Family</span>
-                </button>
-              </div>
-              <div ng-show="item.familyRequestSent" 
-                   class="alert alert-success alert-dismissable">
-                <button type="button" 
-                        class="close" 
-                        data-dismiss="alert" 
-                        aria-hidden="true">
-                  &times;
-                </button>
-                Your family request has been sent.  Once approved you
-                will be able to submit questions.
-              </div>
               <div ng-show="authenticated"
                    class="btn-group btn-group-sm">
                 <button ng-click="subscribe($index)"

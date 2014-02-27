@@ -741,6 +741,9 @@ Parse.Cloud.define('findMembers', function(request, response) {
  * Search
  */
 Parse.Cloud.define('search', function(request, response) {
+  if (request.user) {
+    console.log('user: ' + request.user.get('firstName'));
+  }
   Parse.Promise.when([findUsers(request),
                       findActivities(request),
                       findFamilies(request),
