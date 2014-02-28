@@ -31,17 +31,20 @@ angular.module('fv')
 
       $scope.search = {};
       $scope.search.q = '';
-      if ($scope.authenticated) {
-        $scope.search.option = 'my';
-      } else {
-        $scope.search.option = 'all';
-      }
+      $scope.search.option = 'all';
       
       $scope.option($scope.search.option);
     };
 
+    $scope.checkForEnter = function(ev) {
+      if (ev.which === 13) {
+        search();
+      }
+    };
+
     $scope.option = function(val) {
       $scope.search.option = val;
+      $scope.search.q = '';
       $('#searchTerm').attr('placeholder', placeHolder[val]);
       $scope.dropdown = false;
       $window.onclick = null;
@@ -49,7 +52,6 @@ angular.module('fv')
     };
     
     $scope.dropdownToggle = function() {
-      console.log('dropdownToggle');
       $scope.dropdown = !$scope.dropdown;
       if ($scope.dropdown) {
         $window.onclick = function (event) {
@@ -58,7 +60,9 @@ angular.module('fv')
       } else {
         $scope.dropdown = false;
         $window.onclick = null;
-        $scope.$apply();
+        if (!($scope.$$phase || $scope.$root.$$phase)) {
+          $scope.$apply();
+        }
       }
       
     };
@@ -81,7 +85,9 @@ angular.module('fv')
       
     }
 
-    $scope.goHome = function() {
+    $scope.goHome = function(event) {
+      console.log('going home');
+      console.log(event.which);
       $location.path('/');
     };
 
@@ -96,7 +102,13 @@ angular.module('fv')
     $scope.hideTour = function() {
       $scope.$broadcast('hide');
     };
-
+    $scope.showUser = function(index) {
+      $scope.search.option = 'user';
+      $scope.search.q = '';
+      $scope.search.userId = $scope.search.items[index].objectId;
+      $('#searchTerm').attr('placeholder', $scope.search.items[index].description);
+      search();
+    };
     $scope.showModal = function(index) {
       /* jshint unused: false*/
       var modalInstance = $modal.open({

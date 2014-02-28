@@ -42,14 +42,12 @@
         <div class="input-group">
           <div class="input-group-btn">
             <button class="btn btn-default"
-                    type="submit"
-                    ng-click="goHome()"
+                    ng-mousedown="goHome($event)"
                     style="background-image:url('./favicon.png');background-repeat:no-repeat;
                            background-position: 50% 50%;
                            vertical-align:baseline;
                            background-size: contain; 
-                           width:32px; height:32px;"
-                    >
+                           width:32px; height:32px;">
             </button>
           </div>
           <input type="text" 
@@ -63,7 +61,9 @@
                  style="height: 33px; width: 450px;
                         margin-left: 6px; margin-top:1px;"
                  fv-debounce=600
+                 autofocus
                  ng-mousedown="dropdownToggle()"
+                 ng-keypress="checkForEnter($event)"
                  id="searchTerm"
                  name="searchTerm"
                  ng-model="search.q">
@@ -141,7 +141,7 @@
                  tourtip-placement="right"
                  tourtip-step="2"
                  ng-click="showModal($index)" 
-                 style="cursor: pointer"-
+                 style="cursor: pointer"
                  ng-src="{{proxyUrl(item.thumbnail)}}"/>
           </td>
           <td class="col-md-11">
@@ -150,7 +150,8 @@
                           member.  If you would like to see the related stories,
                           just click the person's name. "
                  tourtip-step="3"
-                 ng-href="#/activities/list/{{item.objectId}}">
+                 style="cursor: pointer"
+                 ng-click="showUser($index)">
                 {{item.description}}
               </a>
               <br>

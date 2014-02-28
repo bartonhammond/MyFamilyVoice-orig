@@ -502,7 +502,7 @@ Parse.Cloud.define('sendConfirmEmail', function(request, response) {
 });
 /**
  * Find the referral record by id
-*/
+ */
 var getReferral = function(id) {
   Parse.Cloud.useMasterKey();
   var promise = new Parse.Promise();
@@ -521,7 +521,7 @@ var getReferral = function(id) {
 };
 /**
  * Find the referral record by link
-*/
+ */
 var getReferralByLink = function(link) {
   Parse.Cloud.useMasterKey();
   var promise = new Parse.Promise();
@@ -530,19 +530,19 @@ var getReferralByLink = function(link) {
   query.include('referredUser');
 
   query.first(
-            function(referral) {
-              promise.resolve(referral);
-            },
-            function(error) {
-              promise.reject(error);
-            });
+    function(referral) {
+      promise.resolve(referral);
+    },
+    function(error) {
+      promise.reject(error);
+    });
 
   return promise;
 };
 
 /**
-o * Send referral email
- */
+   o * Send referral email
+*/
 Parse.Cloud.define('sendReferralEmail', function(request, response) {
   var referralId = request.params.id;
   Parse.Promise.when([getReferral(referralId)])
@@ -649,6 +649,8 @@ var findUsers = function(request) {
   if (request.params.option) {
     if (request.params.option === 'my') {
       query.equalTo('objectId', request.user.id);
+    } else if (request.params.option === 'user') {
+      query.equalTo('objectId', request.params.userId);
     } else if (request.params.option === 'all') {
       query.equalTo('verifiedEmail',true);
       query.equalTo('recaptcha', true);
@@ -673,6 +675,10 @@ var findActivities = function(request) {
   if (request.params.option) {
     if (request.params.option === 'my') {
       query.equalTo('user', request.user);
+    } else  if (request.params.option === 'user') {
+      var innerQuery = new Parse.Query(Parse.User);
+      innerQuery.equalTo('objectId', request.params.userId);
+      query.matchesQuery('user',innerQuery);
     } else if (request.params.option === 'memorial') {
       query.equalTo('type', 'memorial');
     }
@@ -735,84 +741,80 @@ Parse.Cloud.define('findMembers', function(request, response) {
  * Search
  */
 Parse.Cloud.define('search', function(request, response) {
-  if (request.user) {
-    console.log('user: ' + request.user.get('firstName'));
-  }
-  console.log('request.params.q:' + request.params.q);
-  console.log('request.params.option:' + request.params.option);
   
   Parse.Promise.when([findUsers(request),
                       findActivities(request),
                       findSubscriptions(request)])
     .then(
       function(users, activities, subscriptions) {
-      var results = [];
-      _.each(users,function(user, index) {
+        var results = [];
+        _.each(users,function(user, index) {
+          
+          var isSelf = false;
+          //If no logged in user
+          if (request.user && users[index].id === request.user.id) {
+            isSelf = true;
+          }
+          var obj = {
+            type: 'user',
+            updatedAt: user.updatedAt,
+            objectId: user.id,
+            isSelf: isSelf,
+            isSubscribed: _.any(subscriptions, function(subscription) {
+              return users[index].id === subscription.get('family').id;
+            }),
+            thumbnail: user.get('thumbnail'),
+            photo: user.get('photo'),
+            description: user.get('firstName') + ' ' + user.get('lastName'),
+            active: moment(user.createdAt).fromNow(),
+            recordings: user.get('recordings'),
+            viewed: user.get('viewed'),
+            audioViews: user.get('audioViews')
+          };
+          results.push(obj);
+        });
         
-        var isSelf = false;
-        //If no logged in user
-        if (request.user && users[index].id === request.user.id) {
-          isSelf = true;
-        }
-        var obj = {
-          type: 'user',
-          updatedAt: user.updatedAt,
-          objectId: user.id,
-          isSelf: isSelf,
-          isSubscribed: _.any(subscriptions, function(subscription) {
-            return users[index].id === subscription.get('family').id;
-          }),
-          thumbnail: user.get('thumbnail'),
-          photo: user.get('photo'),
-          description: user.get('firstName') + ' ' + user.get('lastName'),
-          active: moment(user.createdAt).fromNow(),
-          recordings: user.get('recordings'),
-          viewed: user.get('viewed'),
-          audioViews: user.get('audioViews')
-        };
-        results.push(obj);
-      });
-        
-      _.each(activities, function(activity,index) {
-        var thumbnail, photo;
-        if (!_.isNull(activities[index].get('thumbnail')) &&
-            !_.isUndefined(activities[index].get('thumbnail'))) {
-          thumbnail = activities[index].get('thumbnail');
-          photo = activities[index].get('photo');
-        } else if (!_.isNull(activities[index].get('user').get('thumbnail')) &&
-                   !_.isUndefined(activities[index].get('user').get('thumbnail'))) {
-          thumbnail = activities[index].get('user').get('thumbnail');
-          photo = activities[index].get('user').get('photo');
-        }
-            
-        var obj = {
-          type: 'activity',
-          updatedAt: activity.updatedAt,
-          activity: activity,
-          objectId: activity.id,
-          userId: activity.get('user').id,
-          username: activity.get('user').get('firstName') + ' ' + activity.get('user').get('lastName'),
-          thumbnail: thumbnail,
-          photo: photo,
-          description: activity.get('comment'),
-          active: moment(activity.get('recordedDate')).fromNow(),
-          views: activity.get('views'),
-          audio: activity.get('file'),
-          liked: activity.get('liked'),
-          isLikeCollapsed: true
+        _.each(activities, function(activity,index) {
+          var thumbnail, photo;
+          if (!_.isNull(activities[index].get('thumbnail')) &&
+              !_.isUndefined(activities[index].get('thumbnail'))) {
+            thumbnail = activities[index].get('thumbnail');
+            photo = activities[index].get('photo');
+          } else if (!_.isNull(activities[index].get('user').get('thumbnail')) &&
+                     !_.isUndefined(activities[index].get('user').get('thumbnail'))) {
+            thumbnail = activities[index].get('user').get('thumbnail');
+            photo = activities[index].get('user').get('photo');
+          }
+          
+          var obj = {
+            type: 'activity',
+            updatedAt: activity.updatedAt,
+            activity: activity,
+            objectId: activity.id,
+            userId: activity.get('user').id,
+            username: activity.get('user').get('firstName') + ' ' + activity.get('user').get('lastName'),
+            thumbnail: thumbnail,
+            photo: photo,
+            description: activity.get('comment'),
+            active: moment(activity.get('recordedDate')).fromNow(),
+            views: activity.get('views'),
+            audio: activity.get('file'),
+            liked: activity.get('liked'),
+            isLikeCollapsed: true
 
-        };
+          };
+          results.push(obj);
+        });
+        
         results.sort(function(a,b) {
           return b.updatedAt - a.updatedAt;
         });
-        results.push(obj);
+        
+        response.success(results);
+      },
+      function(error) {
+        response.error(error);
       });
-
-      response.success(results);
-    },
-    function(error) {
-      response.error(error);
-    });
 });
 /**
  * Create 
@@ -831,7 +833,7 @@ var createReferredUser = function(email, firstName, lastName) {
     viewed: 0,
     referral: true
   });
-    
+  
 };
 /**
  * Scale thumbnail image
@@ -851,10 +853,10 @@ var scaleImage = function(request, response) {
     url: obj.get('photo').url()
   })
     .then(
-    function(response) {
-      var image = new ParseImage();
-      return image.setData(response.buffer);
-    })
+      function(response) {
+        var image = new ParseImage();
+        return image.setData(response.buffer);
+      })
     .then(function(image) {
       // Crop the image to the smaller of width or height.
       var size = Math.min(image.width(), image.height());
@@ -945,29 +947,29 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
   //if run before inttial save of user, user will not be found
   findUser({userId: request.object.id})
-  .then(
-    function(user) {
-      if (!_.isNull(user)) {
-        if (_.isEqual(user.get('primaryEmail'), request.object.get('primaryEmail'))) {
-          //Email confirmation 
-          if (!request.object.get('verifiedEmail')) {
-            //Some other update is overwriting like the Account process
-            //This happens when the email confirmation happens and the
-            //user is logged in and therefore out of sync
-            if (user.get('verifiedEmail')) {
-              request.object.set('verifiedEmail',true);
+    .then(
+      function(user) {
+        if (!_.isNull(user)) {
+          if (_.isEqual(user.get('primaryEmail'), request.object.get('primaryEmail'))) {
+            //Email confirmation 
+            if (!request.object.get('verifiedEmail')) {
+              //Some other update is overwriting like the Account process
+              //This happens when the email confirmation happens and the
+              //user is logged in and therefore out of sync
+              if (user.get('verifiedEmail')) {
+                request.object.set('verifiedEmail',true);
+              }
             }
+            //If different, set verifiedEmail to false
+          } else {
+            request.object.set('verifiedEmail',false);
           }
-          //If different, set verifiedEmail to false
-        } else {
-          request.object.set('verifiedEmail',false);
         }
-      }
-    },
-    function(error) {
-      console.log('beforeSave user not found error:');
-      console.log(error);
-    })
+      },
+      function(error) {
+        console.log('beforeSave user not found error:');
+        console.log(error);
+      })
     .always(
       function() {
         return scaleImage(request, response);
@@ -976,13 +978,13 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 /**
  * If user is saved with VerifiedEmail false, 
  * send Email Confirmation
-*/
+ */
 Parse.Cloud.afterSave(Parse.User, function(request) {
   if (!request.object.get('referral') && !request.object.get('verifiedEmail')) {
     var user = {objectId : request.object.id,
                 primaryEmail: request.object.get('primaryEmail'),
                 firstName: request.object.get('firstName')};
-   
+    
     //Only Send Email if no outstanding request
     var query = new Parse.Query(ConfirmEmail);
     query.equalTo('userId', user.objectId);
@@ -1045,9 +1047,9 @@ Parse.Cloud.define('activityListened', function(request, response) {
         function(activity) {
           response.success(activity);
         },
-      function(error) {
-        response.error(error);
-      });
+        function(error) {
+          response.error(error);
+        });
   } else {
     Parse.Promise.when([findActivity(request.params.activityId),
                         findUser({userId: request.params.activityUserId})])
@@ -1121,10 +1123,10 @@ var createFamily = function(loggedOnUser, familyUser) {
           link: link,
           approved: false
         })
-        .then(
-          function(family) {
-            promise.resolve(family);
-          });
+          .then(
+            function(family) {
+              promise.resolve(family);
+            });
       } else {
         promise.resolve('ok');
       }
@@ -1162,10 +1164,10 @@ var emailFamilyRequest  =  function(family,response) {
   var _family = family.get('family');
   var _kin = family.get('kin');
   var link = family.get('link');
- 
+  
   //Send email for Family member confirmation
   Parse.Promise.when([findUser({userId: _family.id}),
-                     findUser({userId: _kin.id})])
+                      findUser({userId: _kin.id})])
     .then(
       function(family, kin) {
         var url = config.accounts.site + 'confirmFamily/'  + link;
@@ -1278,26 +1280,6 @@ Parse.Cloud.define('activityLike', function(request, response) {
       });
 });
 /**
-* Return count of outstanding requests
-*/
-Parse.Cloud.define('unapprovedFamilyRequestCount', function(request,response) {
-  findUser({userId: request.user.id})
-    .then(
-      function(user) {
-        var query = new Parse.Query(Family);
-        query.equalTo('family', user);
-        query.equalTo('approved', false);
-        return query.count();
-      })
-    .then(
-      function(count) {
-        response.success(count);
-      },
-      function(error) {
-        response.error(error);
-      });
-});
-/**
  * Find confirmEmai record and return it or error
  */
 var findConfirmFamily = function(request) {
@@ -1334,8 +1316,8 @@ Parse.Cloud.define('confirmFamily', function(request, response) {
       });
 });
 /**
-* Return count of outstanding requests
-*/
+ * Return count of outstanding requests
+ */
 Parse.Cloud.define('updateReferredUser', function(request,response) {
   getReferralByLink(request.params.link)
     .then(
@@ -1364,16 +1346,17 @@ Parse.Cloud.define('updateReferredUser', function(request,response) {
       })
     .then(
       function(user) {
-        Parse.Cloud.run('sendConfirmEmail', {objectId: user.id,
-                                             primaryEmail: user.get('primaryEmail'),
-                                             firstName: user.get('firstName')}, {
-          success: function() {
-            response.success(user);
-          },
-          error: function(error) {
-            response.error(error);
-          }
-        });
+        Parse.Cloud.run('sendConfirmEmail',
+                        {objectId: user.id,
+                         primaryEmail: user.get('primaryEmail'),
+                         firstName: user.get('firstName')
+                        },
+                        {success: function() {
+                          response.success(user);
+                        }, error: function(error) {
+                          response.error(error);
+                        }
+                        });
       },
       function(error) {
         response.error(error);
@@ -1386,7 +1369,7 @@ Parse.Cloud.define('updateReferredUser', function(request,response) {
 Parse.Cloud.beforeSave('Activity', function(request, response) {
   var activity = request.object;
   var toLowerCase = function(w) { return w.toLowerCase(); };
- 
+  
   var comments = activity.get('comment').split(' ');
   var transcribes = activity.get('transcription').split(' ');
   var userId = activity.get('user').id;

@@ -25,10 +25,6 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour', '
         templateUrl: 'confirmEmail/confirmEmail.html',
         controller: 'ConfirmEmailCtrl'
       })
-      .when('/confirmFamily/:link', {
-        templateUrl: 'family/confirmFamily.html',
-        controller: 'ConfirmFamilyCtrl'
-      })
       .when('/account', {
         templateUrl: 'account/account.html',
         controller: 'AccountCtrl'
@@ -57,10 +53,6 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour', '
         templateUrl: 'search/search.html',
         controller: 'SearchCtrl'
       })
-      .when('/family', {
-        templateUrl: 'family/index.html',
-        controller: 'FamilyIndexCtrl'
-      })
       .when('/referral', {
         templateUrl: 'referral/index.html',
         controller: 'ReferralIndexCtrl'
@@ -78,12 +70,12 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour', '
       });
     
   })
-  .run(function($rootScope, $location, Family, CONFIG) {
+  .run(function($rootScope, $location, CONFIG) {
     Parse.initialize(CONFIG.defaults.parse.applicationId,
                  CONFIG.defaults.parse.javascriptKey);
 
     // enumerate routes that don't need authentication
-    var routesThatDontRequireAuth = ['/search', '/activities', '/login', '/register', '/confirmEmail', '/confirmFamily', '/admin'];
+    var routesThatDontRequireAuth = ['/search', '/activities', '/login', '/register', '/confirmEmail', '/admin'];
     
     // check if current location matches route  
     var routeClean = function (route) {
@@ -106,14 +98,5 @@ angular.module('fv', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'angular-tour', '
         }
       }
 
-      
-      if (!_.isNull(Parse.User.current()) && Parse.User.current().authenticated()) {
-        (new Family()).checkRequests(Parse.User.current().id)
-          .then(
-            function(count) {
-              $rootScope.$broadcast('newfamilyrequests',count);
-            });
-      }
-      
     });
   });
