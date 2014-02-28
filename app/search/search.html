@@ -102,6 +102,16 @@
         <button type="button" class="btn btn-default" ng-click="ok()">Close</button>
       </div>
     </script>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <tr class="row-top-buffer">
+          <td colspan="2">
+            <button type="button" class="btn btn-default" 
+                    ng-click="testPromise()">TestPromise</button>
+          </td>
+        </tr>
+      </table>
+    </div>
     <span ng-show="authenticated">
       <div ng-show="!verifiedUser">
         <div class="table-responsive">
@@ -229,7 +239,7 @@
 	        <div collapse="item.isLikeCollapsed">
 	          <div class="well well-sm">
                     <span ng-repeat="user in item.likes">
-                      <a ng-href="#/activities/list/{{user.id}}">
+                      <a ng-click="showUserLikingThis(item, $index)">
                         <strong>{{user.firstName}}
                           {{user.lastName}}</strong>
                         <span ng-if="!$last">, </span>

@@ -102,6 +102,14 @@ angular.module('fv')
     $scope.hideTour = function() {
       $scope.$broadcast('hide');
     };
+    $scope.showUserLikingThis = function(item, index) {
+      $scope.search.option = 'user';
+      $scope.search.q = '';
+      $scope.search.userId = item.likes[index].userId;
+      $('#searchTerm').attr('placeholder', item.likes[index].firstName + ' ' + item.likes[index].lastName);
+      search();
+    };
+
     $scope.showUser = function(index) {
       $scope.search.option = 'user';
       $scope.search.q = '';
@@ -124,25 +132,15 @@ angular.module('fv')
     $scope.showLikes = function(activity) {
       activity.isLikeCollapsed = !activity.isLikeCollapsed;
     };
-    var getRelations = function(item) {
-      item.activity.relation('likes').query().find()
-        .then(
-          function(likes) {
-            item.likes = [];
-            item.iLikeThis = false;
-            _.each(likes, function(user) {
-              item.likes.push(new User(user));
-              if (Parse.User.current() && Parse.User.current().authenticated() && user.id === Parse.User.current().id) {
-                item.iLikeThis = true;
-                if(!$scope.$$phase) {
-                  $scope.$digest();
-                }
-              }
-            });
-          },
-          function(error) {
-            console.log(error);
-          });
+    $scope.testPromise = function() {
+      Search.testPromise()
+      .then(
+        function(prom) {
+          console.log('testPromise:' + prom);
+        },
+        function(error) {
+          console.log(error);
+        });
     };
     /**
      * Search 
@@ -159,11 +157,6 @@ angular.module('fv')
         .then(
           function(response) {
             $scope.search.items = response;
-            _.each($scope.search.items, function(item) {
-              if (item.type === 'activity') {
-                getRelations(item);
-              }//if
-            });
           })
         .finally(
           function() {
@@ -176,23 +169,32 @@ angular.module('fv')
      *          false to unlike
      */
     $scope.like = function(activity, action) {
-      activity.isLikeCollapsed = true;
-      if (!action) {
-        activity.iLikeThis = false;
+      if (!$scope.processingLike) {
+        $scope.processingLike = true;
+        activity.isLikeCollapsed = true;
+        activity.liked = action ? activity.liked + 1 : activity.liked -1;
+        activity.iLikeThis = action;
+        if (action) {
+          activity.likes.push({userId: Parse.User.current().id,
+                               firstName: Parse.User.current().get('firstName'),
+                               lastName: Parse.User.current().get('lastName')});
+        } else {
+          activity.likes = _.filter(activity.likes, function(user) {
+            return user.userId !== Parse.User.current().id;
+          });
+        }
+
+        (new Activity()).like(activity.objectId, action)
+          .then(
+            function() {
+              $scope.processingLike = false;
+            },
+            function(error) {
+              console.log(error);
+            });
+      } else {
+        return false;
       }
-      (new Activity()).like(activity.objectId, action)
-      .then(
-        function(updatedActivity) {
-          activity.liked = updatedActivity.get('liked');
-          activity.activity = updatedActivity;
-          getRelations(activity);
-          if(!$scope.$$phase) {
-            $scope.$digest();
-          }
-        },
-        function(error) {
-          console.log(error);
-        });
     };
     $scope.userThumbnail = function() {
       if (Parse.User.current() && Parse.User.current().authenticated) {

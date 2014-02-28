@@ -670,7 +670,9 @@ var findActivities = function(request) {
   Parse.Cloud.useMasterKey();
   var query = new Parse.Query(Activity);
   query = buildSearchQuery(request, query);
-  query.exists('file');
+  if (request.params.option !== 'my') {
+    query.exists('file');
+  }
   query.include('user');
   if (request.params.option) {
     if (request.params.option === 'my') {
@@ -737,6 +739,31 @@ Parse.Cloud.define('findMembers', function(request, response) {
       });
 });
 
+Parse.Cloud.define('testPromise', function(request,response) {
+  var p1 = Parse.Promise.as(1);
+  var p2 = Parse.Promise.as(2);
+  var p3 = Parse.Promise.as(3);
+
+  var promises = [p1, p2, p3];
+  Parse.Promise.when(promises)
+    .then(
+      function() {
+        _.each(arguments, function(arg) {
+          console.log(arg);
+        });
+        return Parse.Promise.as(4);
+      })
+    .then(
+      function(prom) {
+        response.success(prom);
+      },
+      function(error) {
+        console.log(error);
+        response.error(error);
+      });
+});
+
+
 /*
  * Search
  */
@@ -747,6 +774,7 @@ Parse.Cloud.define('search', function(request, response) {
                       findSubscriptions(request)])
     .then(
       function(users, activities, subscriptions) {
+
         var results = [];
         _.each(users,function(user, index) {
           
@@ -774,16 +802,16 @@ Parse.Cloud.define('search', function(request, response) {
           results.push(obj);
         });
         
-        _.each(activities, function(activity,index) {
+        _.each(activities, function(activity) {
           var thumbnail, photo;
-          if (!_.isNull(activities[index].get('thumbnail')) &&
-              !_.isUndefined(activities[index].get('thumbnail'))) {
-            thumbnail = activities[index].get('thumbnail');
-            photo = activities[index].get('photo');
-          } else if (!_.isNull(activities[index].get('user').get('thumbnail')) &&
-                     !_.isUndefined(activities[index].get('user').get('thumbnail'))) {
-            thumbnail = activities[index].get('user').get('thumbnail');
-            photo = activities[index].get('user').get('photo');
+          if (!_.isNull(activity.get('thumbnail')) &&
+              !_.isUndefined(activity.get('thumbnail'))) {
+            thumbnail = activity.get('thumbnail');
+            photo = activity.get('photo');
+          } else if (!_.isNull(activity.get('user').get('thumbnail')) &&
+                     !_.isUndefined(activity.get('user').get('thumbnail'))) {
+            thumbnail = activity.get('user').get('thumbnail');
+            photo = activity.get('user').get('photo');
           }
           
           var obj = {
@@ -801,7 +829,7 @@ Parse.Cloud.define('search', function(request, response) {
             audio: activity.get('file'),
             liked: activity.get('liked'),
             isLikeCollapsed: true
-
+            
           };
           results.push(obj);
         });
@@ -809,7 +837,43 @@ Parse.Cloud.define('search', function(request, response) {
         results.sort(function(a,b) {
           return b.updatedAt - a.updatedAt;
         });
+        return Parse.Promise.as(results);
+      })
+    .then(
+      function(results) {
+        var promises = [];
+        promises.push(Parse.Promise.as(results));
         
+        _.each(results, function(result) {
+          if (result.type === 'activity') {
+            promises.push(result.activity.relation('likes').query().find());
+          }
+        });
+        return Parse.Promise.when(promises);
+      })
+    .then(
+      function() {
+        //first postion is results
+        var results = arguments[0];
+        var outerArgs = arguments;
+        _.each(results, function(result, index) {
+          if (result.type === 'activity') {
+            var userArray = outerArgs[index + 1];
+            var iLikeThis = false;
+            var users = [];
+            _.each(userArray, function(user) {
+              if (request.user.id === user.id) {
+                iLikeThis = true;
+              }
+              users.push({userId: user.id,
+                          firstName: user.get('firstName'),
+                          lastName: user.get('lastName')});
+            });
+            result.likes = users;
+            result.iLikeThis = iLikeThis;
+            result.activity = undefined;
+          }
+        });
         response.success(results);
       },
       function(error) {
@@ -1253,10 +1317,8 @@ var createLikesRelation = function(user, activity, likes) {
   var likeRelation = activity.relation('likes');
   if (likes) {
     likeRelation.add(user);
-    activity.increment('liked');
   } else {
     likeRelation.remove(user);
-    activity.increment('liked',-1);
   }
   return activity.save();
 };
@@ -1273,7 +1335,12 @@ Parse.Cloud.define('activityLike', function(request, response) {
       })
     .then(
       function(activity) {
-        response.success(activity);
+        activity.increment('liked', request.params.like ? 1 : -1);
+        return activity.save();
+      })
+    .then(
+      function(incrementedActivity) {
+        response.success(incrementedActivity);
       },
       function(error) {
         response.error(error);
@@ -1371,7 +1438,8 @@ Parse.Cloud.beforeSave('Activity', function(request, response) {
   var toLowerCase = function(w) { return w.toLowerCase(); };
   
   var comments = activity.get('comment').split(' ');
-  var transcribes = activity.get('transcription').split(' ');
+  
+  var transcribes = activity.get('transcription') ? activity.get('transcription').split(' ') : '';
   var userId = activity.get('user').id;
   
   findUser({userId: userId})
