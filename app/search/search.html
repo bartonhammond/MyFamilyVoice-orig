@@ -187,7 +187,7 @@
                 {{item.description}}
               </a>
               <br>
-              By: <a ng-href="#/activities/list/{{item.userId}}"
+              By: <a ng-click="showUserForActivity($index)"
                      >{{item.username}}</a>
               <br>
               <audio  tourtip="This is what MyFamilyVoice is all about -
@@ -229,7 +229,7 @@
 	        <div collapse="item.isLikeCollapsed">
 	          <div class="well well-sm">
                     <span ng-repeat="user in item.likes">
-                      <a ng-href="#/activities/list/{{user.id}}">
+                      <a ng-click="showUserLikingThis(item, $index)">
                         <strong>{{user.firstName}}
                           {{user.lastName}}</strong>
                         <span ng-if="!$last">, </span>
