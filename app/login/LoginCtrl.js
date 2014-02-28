@@ -134,7 +134,7 @@ angular.module('fv')
           .then(
             function() {
               $rootScope.$broadcast('userloggedin');
-              $location.path('/activities');
+              $location.path('/search');
             }, function(response) {
               $scope.error = response.message;
             })

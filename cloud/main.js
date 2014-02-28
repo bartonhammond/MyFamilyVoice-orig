@@ -646,6 +646,18 @@ var buildSearchQuery = function(request, query) {
 var findUsers = function(request) {
   var query = new Parse.Query(Parse.User);
   query = buildSearchQuery(request, query);
+  if (request.params.option) {
+    if (request.params.option === 'my') {
+      query.equalTo('objectId', request.user.id);
+    } else if (request.params.option === 'all') {
+      query.equalTo('verifiedEmail',true);
+      query.equalTo('recaptcha', true);
+    } else if (request.params.option === 'memorial') {
+      query.equalTo('type', 'memorial');
+    }
+  }
+
+  query.descending('updatedAt');
   return query.find();
 };
 /**
@@ -658,6 +670,14 @@ var findActivities = function(request) {
   query = buildSearchQuery(request, query);
   query.exists('file');
   query.include('user');
+  if (request.params.option) {
+    if (request.params.option === 'my') {
+      query.equalTo('user', request.user);
+    } else if (request.params.option === 'memorial') {
+      query.equalTo('type', 'memorial');
+    }
+  }
+  query.descending('updatedAt');
   return query.find();
 };
 /**
@@ -687,34 +707,8 @@ var findSubscriptions = function(request) {
   }
   return promise;
 };
-/**
- * Find all families of any status for logged in user
- */
-var findFamilies = function(request) {
-  var promise = new Parse.Promise();
-  //When search is performed w/o logged in user
-  if (request.user) {
-    findUser({userId: request.user.id})
-      .then(
-        function(user) {
-          var query = new Parse.Query(Family);
-          query.equalTo('kin', user);
-          return query.find();
-        })
-      .then(
-        function(results) {
-          promise.resolve(results);
-        },
-        function(error) {
-          promise.reject(error);
-        });
-  } else {
-    promise.resolve([]);
-  }
-  return promise;
-};
 /*
- * Find members
+ * Find members for autocomplete
  */
 Parse.Cloud.define('findMembers', function(request, response) {
   var query = new Parse.Query(Parse.User);
@@ -744,26 +738,17 @@ Parse.Cloud.define('search', function(request, response) {
   if (request.user) {
     console.log('user: ' + request.user.get('firstName'));
   }
+  console.log('request.params.q:' + request.params.q);
+  console.log('request.params.option:' + request.params.option);
+  
   Parse.Promise.when([findUsers(request),
                       findActivities(request),
-                      findFamilies(request),
                       findSubscriptions(request)])
     .then(
-      function(users, activities, families, subscriptions) {
+      function(users, activities, subscriptions) {
       var results = [];
       _.each(users,function(user, index) {
-        var family = _.find(families, function(family) {
-          return users[index].id === family.get('family').id;
-        });
         
-        var familyStatus = 0; //no request pending 
-        if (family) {
-          if (family.get('approved')) {
-            familyStatus = 2;
-          } else {
-            familyStatus = 1; //pending
-          }
-        }
         var isSelf = false;
         //If no logged in user
         if (request.user && users[index].id === request.user.id) {
@@ -771,9 +756,9 @@ Parse.Cloud.define('search', function(request, response) {
         }
         var obj = {
           type: 'user',
-          objectId: users[index].id,
+          updatedAt: user.updatedAt,
+          objectId: user.id,
           isSelf: isSelf,
-          familyStatus: familyStatus,
           isSubscribed: _.any(subscriptions, function(subscription) {
             return users[index].id === subscription.get('family').id;
           }),
@@ -787,7 +772,7 @@ Parse.Cloud.define('search', function(request, response) {
         };
         results.push(obj);
       });
-
+        
       _.each(activities, function(activity,index) {
         var thumbnail, photo;
         if (!_.isNull(activities[index].get('thumbnail')) &&
@@ -802,10 +787,11 @@ Parse.Cloud.define('search', function(request, response) {
             
         var obj = {
           type: 'activity',
+          updatedAt: activity.updatedAt,
           activity: activity,
-          objectId: activities[index].id,
-          userId: activities[index].get('user').id,
-          username: activities[index].get('user').get('firstName') + ' ' + activities[index].get('user').get('lastName'),
+          objectId: activity.id,
+          userId: activity.get('user').id,
+          username: activity.get('user').get('firstName') + ' ' + activity.get('user').get('lastName'),
           thumbnail: thumbnail,
           photo: photo,
           description: activity.get('comment'),
@@ -816,6 +802,9 @@ Parse.Cloud.define('search', function(request, response) {
           isLikeCollapsed: true
 
         };
+        results.sort(function(a,b) {
+          return b.updatedAt - a.updatedAt;
+        });
         results.push(obj);
       });
 

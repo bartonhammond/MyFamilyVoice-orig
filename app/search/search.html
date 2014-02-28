@@ -3,15 +3,18 @@
        name="searchOptions"
        id="searchOptions">
     <table class="table table-hover searchTable-hover" style="margin-bottom: 0">
-      <tr class="row-top-buffer searchOption" id="searchMember" ng-click="option('member')">
+      <tr class="row-top-buffer searchOption" 
+          ng-click="option('all')">
         <td class="col-md-2 searchOption">
           <i class="fa fa-users fa-2x"></i>
         </td>
         <td class="col-md-10 searchOption">
-          Members stories
+          All stories
         </td>
       </tr>
-      <tr class="row-top-buffer searchOption" id="searchMy" ng-click="option('my')">
+      <tr ng-show='authenticated' 
+          class="row-top-buffer searchOption" 
+          ng-click="option('my')">
         <td class="col-md-2 searchOption">
           <i class="fa fa-user fa-2x"></i>
         </td>
@@ -19,7 +22,8 @@
           My Stories
         </td>
       </tr>
-      <tr class="row-top-buffer searchOption" id="searchMemorial"  ng-click="option('memorial')">
+      <tr class="row-top-buffer searchOption" 
+          ng-click="option('memorial')">
         <td class="col-md-2 searchOption" >
           <i class="fa fa-heart fa-2x"></i>
         </td>
@@ -62,7 +66,7 @@
                  ng-mousedown="dropdownToggle()"
                  id="searchTerm"
                  name="searchTerm"
-                 ng-model="q">
+                 ng-model="search.q">
           <div class="input-group-btn">
             <button class="btn btn-default"
                     ng-click="performSearch()"

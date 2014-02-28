@@ -2,12 +2,18 @@
 
 angular.module('fv')
   .controller('SearchCtrl', function ($scope, $location, $window, User, Search, Activity, Family, $modal, requestNotificationChannel) {
-    $scope.search = {};
+    var placeHolder = {};
+    placeHolder.my = 'My stories';
+    placeHolder.all = 'All stories';
+    placeHolder.memorial = 'Memorials';
+    
     $scope.init = function() {
       $scope.dropdown = false;
+
       $scope.$on('onTourEnd', function() {
         $location.path('/login');
       });
+
       $scope.authenticated =  !_.isNull(Parse.User.current()) &&
         Parse.User.current().authenticated();
       
@@ -22,13 +28,24 @@ angular.module('fv')
         Parse.User.current().get('recaptcha');
 
       $scope.modalData = undefined;
+
+      $scope.search = {};
+      $scope.search.q = '';
+      if ($scope.authenticated) {
+        $scope.search.option = 'my';
+      } else {
+        $scope.search.option = 'all';
+      }
+      
+      $scope.option($scope.search.option);
     };
 
     $scope.option = function(val) {
-      console.log('option: ' + val);
-      $('#searchTerm').attr('placeholder', val);
+      $scope.search.option = val;
+      $('#searchTerm').attr('placeholder', placeHolder[val]);
       $scope.dropdown = false;
       $window.onclick = null;
+      search();
     };
     
     $scope.dropdownToggle = function() {
@@ -68,7 +85,7 @@ angular.module('fv')
       $location.path('/');
     };
 
-    $scope.$watch('q', function() {
+    $scope.$watch('search.q', function() {
       $scope.performSearch();
     });
 
@@ -119,11 +136,14 @@ angular.module('fv')
      * Search 
      */
     $scope.performSearch = function() {
-      if ($scope.q < 5) {
+      if ($scope.search.q.length < 5) {
         return;
       }
+      search();
+    };
+    var search = function() {
       requestNotificationChannel.requestStarted();
-      Search.search($scope.q)
+      Search.search($scope.search)
         .then(
           function(response) {
             $scope.search.items = response;
@@ -138,6 +158,7 @@ angular.module('fv')
             requestNotificationChannel.requestEnded();
           });
     };
+
     /**
      * action = true to like
      *          false to unlike

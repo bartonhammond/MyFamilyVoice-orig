@@ -3,11 +3,11 @@ angular.module('fv').
   factory('Search', function($q) {
     
     var Search = {
-      search: function(q) {
+      search: function(search) {
         
         var defer = $q.defer();
 
-        Parse.Cloud.run('search', {q: q})
+        Parse.Cloud.run('search', {q: search.q, option: search.option})
           .then(
             function(response) {
               defer.resolve(response);
