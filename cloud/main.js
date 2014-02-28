@@ -738,32 +738,6 @@ Parse.Cloud.define('findMembers', function(request, response) {
         response.error(error);
       });
 });
-
-Parse.Cloud.define('testPromise', function(request,response) {
-  var p1 = Parse.Promise.as(1);
-  var p2 = Parse.Promise.as(2);
-  var p3 = Parse.Promise.as(3);
-
-  var promises = [p1, p2, p3];
-  Parse.Promise.when(promises)
-    .then(
-      function() {
-        _.each(arguments, function(arg) {
-          console.log(arg);
-        });
-        return Parse.Promise.as(4);
-      })
-    .then(
-      function(prom) {
-        response.success(prom);
-      },
-      function(error) {
-        console.log(error);
-        response.error(error);
-      });
-});
-
-
 /*
  * Search
  */

@@ -17,23 +17,7 @@ angular.module('fv').
             });
         
         return defer.promise;
-      },
-      testPromise: function() {
-        
-        var defer = $q.defer();
-
-        Parse.Cloud.run('testPromise')
-          .then(
-            function(response) {
-              defer.resolve(response);
-            },
-            function(error) {
-              defer.reject(error);
-            });
-        
-        return defer.promise;
       }
-
     };
     return Search;
   });

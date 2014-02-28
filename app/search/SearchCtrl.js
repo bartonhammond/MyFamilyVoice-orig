@@ -102,6 +102,9 @@ angular.module('fv')
     $scope.hideTour = function() {
       $scope.$broadcast('hide');
     };
+    /**
+     * Likes array clicked
+     */
     $scope.showUserLikingThis = function(item, index) {
       $scope.search.option = 'user';
       $scope.search.q = '';
@@ -109,7 +112,19 @@ angular.module('fv')
       $('#searchTerm').attr('placeholder', item.likes[index].firstName + ' ' + item.likes[index].lastName);
       search();
     };
-
+    /*
+     * Activity user clicked
+     */
+    $scope.showUserForActivity = function(index) {
+      $scope.search.option = 'user';
+      $scope.search.q = '';
+      $scope.search.userId = $scope.search.items[index].userId;
+      $('#searchTerm').attr('placeholder', $scope.search.items[index].username);
+      search();
+    };
+    /*
+     * User clicked
+     */
     $scope.showUser = function(index) {
       $scope.search.option = 'user';
       $scope.search.q = '';
@@ -131,16 +146,6 @@ angular.module('fv')
     };
     $scope.showLikes = function(activity) {
       activity.isLikeCollapsed = !activity.isLikeCollapsed;
-    };
-    $scope.testPromise = function() {
-      Search.testPromise()
-      .then(
-        function(prom) {
-          console.log('testPromise:' + prom);
-        },
-        function(error) {
-          console.log(error);
-        });
     };
     /**
      * Search 

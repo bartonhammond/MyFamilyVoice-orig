@@ -102,16 +102,6 @@
         <button type="button" class="btn btn-default" ng-click="ok()">Close</button>
       </div>
     </script>
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <tr class="row-top-buffer">
-          <td colspan="2">
-            <button type="button" class="btn btn-default" 
-                    ng-click="testPromise()">TestPromise</button>
-          </td>
-        </tr>
-      </table>
-    </div>
     <span ng-show="authenticated">
       <div ng-show="!verifiedUser">
         <div class="table-responsive">
@@ -197,7 +187,7 @@
                 {{item.description}}
               </a>
               <br>
-              By: <a ng-href="#/activities/list/{{item.userId}}"
+              By: <a ng-click="showUserForActivity($index)"
                      >{{item.username}}</a>
               <br>
               <audio  tourtip="This is what MyFamilyVoice is all about -
