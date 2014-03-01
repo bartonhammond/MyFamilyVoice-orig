@@ -672,6 +672,7 @@ var findActivities = function(request) {
   query = buildSearchQuery(request, query);
   if (request.params.option !== 'my') {
     query.exists('file');
+    query.equalTo('approved',true);
   }
   query.include('user');
   if (request.params.option) {
@@ -760,14 +761,14 @@ Parse.Cloud.define('search', function(request, response) {
           var obj = {
             type: 'user',
             updatedAt: user.updatedAt,
-            objectId: user.id,
+            userId: user.id,
             isSelf: isSelf,
             isSubscribed: _.any(subscriptions, function(subscription) {
               return users[index].id === subscription.get('family').id;
             }),
             thumbnail: user.get('thumbnail'),
             photo: user.get('photo'),
-            description: user.get('firstName') + ' ' + user.get('lastName'),
+            userName: user.get('firstName') + ' ' + user.get('lastName'),
             active: moment(user.createdAt).fromNow(),
             recordings: user.get('recordings'),
             viewed: user.get('viewed'),
@@ -795,7 +796,7 @@ Parse.Cloud.define('search', function(request, response) {
             activity: activity,
             objectId: activity.id,
             userId: activity.get('user').id,
-            username: activity.get('user').get('firstName') + ' ' + activity.get('user').get('lastName'),
+            userName: activity.get('user').get('firstName') + ' ' + activity.get('user').get('lastName'),
             thumbnail: thumbnail,
             photo: photo,
             description: activity.get('comment'),

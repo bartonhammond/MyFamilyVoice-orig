@@ -80,28 +80,6 @@
       </form>
     </div>
 
-    <script type="text/ng-template" id="myModalContent.html">
-      <div class="modal-header">
-        <button type="button" class="close" ng-click="ok()">&times;</button>
-        <h4 class="modal-title">{{modalData.description}}</h4>
-      </div>
-      <div class="modal-body">
-        <div ng-show="modalData" >
-          <img class="center"  
-               width="500"
-               ng-src="{{proxyUrl(modalData.photo)}}"/>
-          <span ng-show="modalData.audio">
-            <div style="vertical-align: top">Listen:</div>
-            <audio ng-click="listened(modalData, $event)"
-                   ng-attr-src="{{proxyUrl(modalData.audio)}}"
-                   controls preload></audio> 
-          </span>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="ok()">Close</button>
-      </div>
-    </script>
     <span ng-show="authenticated">
       <div ng-show="!verifiedUser">
         <div class="table-responsive">
@@ -152,7 +130,7 @@
                  tourtip-step="3"
                  style="cursor: pointer"
                  ng-click="showUser($index)">
-                {{item.description}}
+                {{item.userName}}
               </a>
               <br>
               Active since: {{item.active}}
@@ -194,7 +172,7 @@
                         aria-hidden="true">
                   &times;
                 </button>
-                You are now subscribed to {{item.description}}.
+                You are now subscribed to {{item.userName}}.
               </div>
             </div>
             <div ng-if="item.type === 'activity'">
@@ -203,7 +181,7 @@
               </a>
               <br>
               By: <a ng-click="showUserForActivity($index)"
-                     >{{item.username}}</a>
+                     >{{item.userName}}</a>
               <br>
               <audio  tourtip="This is what MyFamilyVoice is all about -
                                the ability to listen to your family's voice

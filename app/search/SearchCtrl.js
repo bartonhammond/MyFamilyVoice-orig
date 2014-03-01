@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('SearchCtrl', function ($scope, $location, $window, User, Search, Activity, Family, $modal, requestNotificationChannel) {
+  .controller('SearchCtrl', function ($scope, $location, $window, User, Search, Activity, Family, requestNotificationChannel) {
     var placeHolder = {};
     placeHolder.my = 'My stories';
     placeHolder.all = 'All stories';
@@ -26,8 +26,6 @@ angular.module('fv')
 
       $scope.recaptcha = $scope.authenticated &&
         Parse.User.current().get('recaptcha');
-
-      $scope.modalData = undefined;
 
       $scope.search = {};
       $scope.search.q = '';
@@ -120,34 +118,31 @@ angular.module('fv')
      * Activity user clicked
      */
     $scope.showUserForActivity = function(index) {
-      $scope.search.option = 'user';
+      if ($scope.authenticated && $scope.search.items[index].userId === Parse.User.current().id) {
+        $scope.search.option = 'my';
+      } else {
+        $scope.search.option = 'user';
+      }
       $scope.search.q = '';
       $scope.search.userId = $scope.search.items[index].userId;
-      $('#searchTerm').attr('placeholder', $scope.search.items[index].username);
+      $('#searchTerm').attr('placeholder', $scope.search.items[index].userName);
       search();
     };
     /*
      * User clicked
      */
     $scope.showUser = function(index) {
-      $scope.search.option = 'user';
+      if ($scope.authenticated && $scope.search.items[index].userId === Parse.User.current().id) {
+        $scope.search.option = 'my';
+      } else {
+        $scope.search.option = 'user';
+      }
       $scope.search.q = '';
-      $scope.search.userId = $scope.search.items[index].objectId;
-      $('#searchTerm').attr('placeholder', $scope.search.items[index].description);
+      $scope.search.userId = $scope.search.items[index].userId;
+      $('#searchTerm').attr('placeholder', $scope.search.items[index].userName);
       search();
     };
-    $scope.showModal = function(index) {
-      /* jshint unused: false*/
-      var modalInstance = $modal.open({
-        templateUrl: 'myModalContent.html',
-        controller: 'ModalInstanceCtrl',
-        resolve: {
-          modalData: function () {
-            return $scope.search.items[index];
-          }
-        }
-      });
-    };
+
     $scope.showLikes = function(activity) {
       activity.isLikeCollapsed = !activity.isLikeCollapsed;
     };
@@ -224,7 +219,7 @@ angular.module('fv')
      * On search, only Users can subscribe
      */
     $scope.subscribe = function(index) {
-      var userId = $scope.search.items[index].objectId;
+      var userId = $scope.search.items[index].userId;
       var status = $scope.search.items[index].subscribed;
       (new Family()).subscribe(userId, !status)
         .then(
@@ -238,12 +233,12 @@ angular.module('fv')
     /**
      *  update the count of listened to
      */
-    $scope.listened = function(obj, event) {
+    $scope.listened = function(activity, event) {
       if (event.currentTarget.paused) {
-        (new Activity()).listened(obj.objectId,
-                                  obj.userId)
-          .then(function (activity) {
-            obj.views = activity.get('views');
+        (new Activity()).listened(activity.objectId,
+                                  activity.userId)
+          .then(function (_activity) {
+            activity.views = _activity.get('views');
           }, function(error) {
             console.log(error);
           });
@@ -259,27 +254,6 @@ angular.module('fv')
 
     $scope.newQuestion = function() {
       $location.path('/activities/add');
-    };
-    
-  }).controller('ModalInstanceCtrl',function ($scope, $modalInstance, modalData, Activity) {
-    
-    $scope.modalData = modalData;
-    $scope.listened = function(event) {
-      if (event.currentTarget.paused) {
-        (new Activity()).listened($scope.modalData.objectId,
-                                  $scope.modalData.userId);
-      }
-    };
-     /**
-     * Make url point to server to proxy stream content
-     */
-    $scope.proxyUrl = function(obj) {
-      //http://files.parse.com/3e0d5059-d213-40a3-a224-44351b90a9d1/cb8020bb-6210-440a-b69f-6c62bb9cb1a4-recording.mp3
-      return obj ? obj._url.replace('http://files.parse.com','/parse') : '';
-    };
-
-    $scope.ok = function () {
-      $modalInstance.close();
     };
     
   });
