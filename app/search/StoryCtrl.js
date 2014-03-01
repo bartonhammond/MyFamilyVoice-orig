@@ -5,14 +5,30 @@ angular.module('fv')
     
     var self = this;
 
-    $scope.init = function(aUser) {
+    $scope.init = function(obj) {
       console.log('storyCtrl: init');
-      console.log(aUser);
-      $scope.userJson = aUser;
+      console.log(obj);
+      if (obj.type === 'user') {
+        $scope.userJson = obj;
+      } else {
+        $scope.activityJson = obj;
+      }
       
       $scope.$watch('userJson.hideAddStory',function(newVal) {
+        if (_.isUndefined(newVal)) {
+          return;
+        }
         if (!newVal) {
           self.prepareActivity();
+        }
+      });
+
+      $scope.$watch('activityJson.hideAddStory',function(newVal) {
+        if (_.isUndefined(newVal)) {
+          return;
+        }
+        if (!newVal) {
+          self.getCurrentActivity();
         }
       });
 
@@ -30,7 +46,11 @@ angular.module('fv')
         $scope.activity.save($scope.photoFile)
           .then(
             function() {
-              $scope.userJson.hideAddStory = true;
+              if (!_.isUndefined($scope.userJson)) {
+                $scope.userJson.hideAddStory = true;
+              } else {
+                $scope.activityJson.hideAddStory = true;
+              }
             },
             function(error) {
               $scope.error = error;
@@ -90,6 +110,16 @@ angular.module('fv')
         var activity = new Activity(_activity);
         $scope.activity = activity;
       }
+    };
+    self.getCurrentActivity = function() {
+      (new Activity()).get($scope.activityJson.objectId)
+      .then(
+        function(activity) {
+          $scope.activity = new Activity(activity);
+        },
+        function(error) {
+          console.log(error);
+        });
     };
     /**
      * Set file for checking photo size and valid type 

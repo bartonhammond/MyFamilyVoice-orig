@@ -755,7 +755,7 @@ Parse.Cloud.define('search', function(request, response) {
           
           var isSelf = false;
           //If no logged in user
-          if (request.user && users[index].id === request.user.id) {
+          if (request.user && user.id === request.user.id) {
             isSelf = true;
           }
           var obj = {
@@ -789,7 +789,6 @@ Parse.Cloud.define('search', function(request, response) {
             thumbnail = activity.get('user').get('thumbnail');
             photo = activity.get('user').get('photo');
           }
-          
           var obj = {
             type: 'activity',
             updatedAt: activity.updatedAt,
@@ -804,8 +803,8 @@ Parse.Cloud.define('search', function(request, response) {
             views: activity.get('views'),
             audio: activity.get('file'),
             liked: activity.get('liked'),
-            isLikeCollapsed: true
-            
+            isLikeCollapsed: true,
+            hideAddStory: true //collapse
           };
           results.push(obj);
         });
