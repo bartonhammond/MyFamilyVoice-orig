@@ -44,6 +44,7 @@
               <div class="input-prepend">
                 <span class='fv-label' >Photo:</span>
                 <input type="file" 
+                       fv-file-select="onFileSelect($files)" 
                        id="fileToUpload"
                        name="fileToUpload"
                        ng-model="photo"
@@ -72,6 +73,9 @@
             Please choose another image.
           </span>
         </div>
+        
+        <img style="margin-top: 5px;"
+             width="750" ng-src="{{imageSrc}}" />
         <!---- Current Imaage -------------------------------------------------->          
         <div ng-if="getThumbnail()" class="control-group">
           <div class="controls">
