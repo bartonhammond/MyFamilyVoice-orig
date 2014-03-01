@@ -2,12 +2,17 @@
      ng-controller="StoryCtrl">
   <div class="row">
     <div class="col-xs-8  ">
-      <h3 style="margin-top:-7px">New Story</h3>
-      <span ng-show="item.isSelf">
-        <p>You are creating a new Story for yourself.</p>
-      </span>
-      <span ng-show="!item.isSelf">
-        <p>You are creating a new Story for {{item.userName}}.</p>
+      <span ng-show="activity.hasWriteAccess()">
+        <h3 style="margin-top:-7px">
+          <span ng-if="item.type === 'user'">New Story</span>
+          <span ng-if="item.type === 'activity'">Story</span>
+        </h3>
+        <span ng-show="item.type === 'user' && item.isSelf">
+          <p>You are creating a new Story for yourself.</p>
+        </span>
+        <span ng-show="item.type === 'user' && !item.isSelf">
+          <p>You are creating a new Story for {{item.userName}}.</p>
+        </span>
       </span>
 
       <form id="roleForm" 
@@ -16,7 +21,8 @@
             class="form-horizontal">
         
         <!-- Question --------------------------------------->
-        <div class="control-group">
+        <div ng-show="activity.hasWriteAccess()"
+             class="control-group">
           <div class="controls">
             <div class="input-prepend">
               <span class='fv-label'>Please enter a description of
@@ -44,7 +50,7 @@
         </div>
 
         <!---- Imaage -------------------------------------------------->          
-        <div ng-hide="isRecording()">
+        <div ng-show="activity.hasWriteAccess()">
           <div class="control-group">
             <div class="controls">
               <div class="input-prepend">
@@ -82,15 +88,17 @@
         <!------------Preview image  ---------------------------------------->
         <div ng-if="imageSrc">
           <img style="margin-top: 5px;"
-               width="750" ng-src="{{imageSrc}}" />
+               width="750" 
+               ng-src="{{imageSrc}}" />
         </div>
         <!---- Current Imaage -------------------------------------------------->          
         <div ng-if="getThumbnail() && ! imageSrc" class="control-group">
-          <img width="750"
+          <img style="margin-top: 5px"
+               width="750"
                ng-src="{{proxyUrl(activity.photo)}}"></img>
         </div>
         <!--  Recording buttons ------------------------------->
-        <div  class="control-group">
+        <div ng-show="activity.hasWriteAccess()"  class="control-group">
           <div class="controls">
             <div class="input-prepend" style="margin-top: 10px">
               <span ng-show="!recording">
@@ -152,20 +160,35 @@
             </div>
           </div>
         </div>
+
         <div ng-show="!activity.hasWriteAccess()">
           <div class="control-group">
             <div class="controls">
-              <button
-                 id="submitBtn"
-                 type="submit" 
-                 ng-click="userJson.hideAddStory=true"
-                 class="btn-main">
-                <i class="fa fa-arrow-circle-o-left"></i>
-                Close
-              </button>
+              <span ng-if="item.type === 'user'">
+                <button
+                   id="submitBtn"
+                   type="submit" 
+                   ng-click="userJson.hideAddStory=true"
+                   class="btn-main">
+                  <i class="fa fa-arrow-circle-o-left"></i>
+                  Close
+                </button>
+              </span>
+              <span ng-if="item.type === 'activity'">
+                <button
+                   id="submitBtn"
+                   type="submit" 
+                   ng-click="activityJson.hideAddStory=true"
+                   class="btn-main">
+                  <i class="fa fa-arrow-circle-o-left"></i>
+                  Close
+                </button>
+              </span>
             </div>
           </div>
         </div>
+
+
       </form>
     </div>
   </div>
