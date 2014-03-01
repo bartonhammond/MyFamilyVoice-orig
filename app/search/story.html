@@ -3,7 +3,13 @@
   <div class="row">
     <div class="col-xs-8  ">
       <h3 style="margin-top:-7px">New Story</h3>
-      <p>You are creating a new Story for {{item.description}}.</p>
+      <span ng-show="item.isSelf">
+        <p>You are creating a new Story for yourself.</p>
+      </span>
+      <span ng-show="!item.isSelf">
+        <p>You are creating a new Story for {{item.userName}}.</p>
+      </span>
+
       <form id="roleForm" 
             novalidate="" 
             name="roleForm"
@@ -73,27 +79,16 @@
             Please choose another image.
           </span>
         </div>
-        
-        <img style="margin-top: 5px;"
-             width="750" ng-src="{{imageSrc}}" />
-        <!---- Current Imaage -------------------------------------------------->          
-        <div ng-if="getThumbnail()" class="control-group">
-          <div class="controls">
-            <div class="input-prepend">
-              <span class='fv-label account-label' style="display:none">Current</span>
-              <span class="add-on" style="display:none">
-                <i class="fa fa-picture-o">
-                </i>
-              </span>
-              <div>
-                <img class="center"
-                     width="500"
-                     ng-src="{{proxyUrl(activity.photo)}}"></img>
-              </div>
-            </div>
-          </div>
+        <!------------Preview image  ---------------------------------------->
+        <div ng-if="imageSrc">
+          <img style="margin-top: 5px;"
+               width="750" ng-src="{{imageSrc}}" />
         </div>
-
+        <!---- Current Imaage -------------------------------------------------->          
+        <div ng-if="getThumbnail() && ! imageSrc" class="control-group">
+          <img width="750"
+               ng-src="{{proxyUrl(activity.photo)}}"></img>
+        </div>
         <!--  Recording buttons ------------------------------->
         <div  class="control-group">
           <div class="controls">
@@ -145,28 +140,28 @@
         </div>
         <br>
         <!-- Submit ------------------------------------------>
-        <div ng-show="activity.hasWriteAccess()  && !isRecording()">
+        <div ng-show="activity.hasWriteAccess()">
           <div class="control-group">
             <div class="controls">
               <button type="submit" 
                       ng-click="submit()"
                       class="btn-main">
                 <i class="fa fa-sign-in"></i>
-                Submit
+                Save
               </button>
             </div>
           </div>
         </div>
-        <div ng-show="!activity.hasWriteAccess()  || isRecording()">
+        <div ng-show="!activity.hasWriteAccess()">
           <div class="control-group">
             <div class="controls">
               <button
                  id="submitBtn"
                  type="submit" 
-                 ng-click="user.hideAddStory=true"
+                 ng-click="userJson.hideAddStory=true"
                  class="btn-main">
                 <i class="fa fa-arrow-circle-o-left"></i>
-                Return
+                Close
               </button>
             </div>
           </div>

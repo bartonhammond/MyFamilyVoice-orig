@@ -15,6 +15,7 @@ angular.module('fv').
         this.thumbnail = activity.get('thumbnail');
         this.liked = activity.get('liked');
         this.transcription = activity.get('transcription');
+        this.approved = activity.get('approved');
       }
 
       this.get = function (id) {
