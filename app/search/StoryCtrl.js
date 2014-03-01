@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fv')
-  .controller('StoryCtrl', function ($scope, User, Activity, fileReader, requestNotificationChannel) {
+  .controller('StoryCtrl', function ($scope, $timeout, User, Activity, fileReader, requestNotificationChannel) {
     
     var self = this;
 
@@ -55,11 +55,11 @@ angular.module('fv')
             function(error) {
               $scope.error = error;
             })
-        .finally(
-          function() {
-            $('#submitBtn').attr('disabled',false);
-            requestNotificationChannel.requestEnded();
-          });
+          .finally(
+            function() {
+              $('#submitBtn').attr('disabled',false);
+              requestNotificationChannel.requestEnded();
+            });
       } else {
         $scope.roleForm.submitted = true;
       }
@@ -90,6 +90,10 @@ angular.module('fv')
               
               var activity = new Activity(_activity);
               $scope.activity = activity;
+              if ($scope.activity.hasWriteAccess()) {
+                self.getToken();
+              }
+
             },
             function(error) {
               console.log(error.message);
@@ -109,18 +113,87 @@ angular.module('fv')
         
         var activity = new Activity(_activity);
         $scope.activity = activity;
+        if ($scope.activity.hasWriteAccess()) {
+          self.getToken();
+        }
       }
     };
+
     self.getCurrentActivity = function() {
       (new Activity()).get($scope.activityJson.objectId)
-      .then(
-        function(activity) {
-          $scope.activity = new Activity(activity);
-        },
-        function(error) {
-          console.log(error);
-        });
+        .then(
+          function(activity) {
+            $scope.activity = new Activity(activity);
+            if ($scope.activity.hasWriteAccess()) {
+              self.getToken();
+            }
+          },
+          function(error) {
+            console.log(error);
+          });
     };
+
+    $scope.beginRecording = function() {
+      $('#startRecording').css('color','green');
+      $scope.recording = true;
+      Twilio.Device.connect({activity: $scope.activity.id,
+                             user: Parse.User.current().id});
+    };
+    
+    $scope.stopRecording = function() {
+      $('#startRecording').css('color','white');
+      $scope.recording = false;
+      $scope.$broadcast('timer-stop');
+      self.connection.sendDigits('#');
+    };
+
+    $('#startRecording').hover(
+      function() {
+        $('#startRecording').css('color','green');
+      },
+      function() {
+        if (!$scope.recording) {
+          $('#startRecording').css('color','white');
+        }
+      });
+
+    
+    $('#stopRecording').hover(
+      function() {
+        if ($scope.recording) {
+          $('#stopRecording').css('color','red');
+        }
+      },
+      function() {
+        $('#stopRecording').css('color','white');
+      });
+
+    self.getToken = function() {
+      $scope.recording = false;
+      Parse.Cloud.run('getToken')
+        .then(
+          function(data) {
+            console.log(data);
+            Twilio.Device.setup(data,{'debug':true});
+          });
+    };
+
+    Twilio.Device.error(function (error) {
+      console.log('Twilio error' + error.message);
+    });
+
+    Twilio.Device.connect(function(conn) {
+      self.connection = conn;
+      $timeout(function() {
+        $('#myTimer').show();
+        $scope.$broadcast('timer-start');
+      },8500);
+    });
+
+    Twilio.Device.disconnect(function (conn) {
+      self.connection = conn;
+    });
+
     /**
      * Set file for checking photo size and valid type 
      */
