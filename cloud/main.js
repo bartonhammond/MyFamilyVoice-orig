@@ -771,7 +771,8 @@ Parse.Cloud.define('search', function(request, response) {
             active: moment(user.createdAt).fromNow(),
             recordings: user.get('recordings'),
             viewed: user.get('viewed'),
-            audioViews: user.get('audioViews')
+            audioViews: user.get('audioViews'),
+            hideAddStory: true //collapse
           };
           results.push(obj);
         });

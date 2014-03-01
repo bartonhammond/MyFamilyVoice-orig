@@ -46,7 +46,12 @@ MyFamilyVoice records the voice of your family for future generations
    modulus deploy - will prompt for project
 
 ## AngularUI Bootstrap 
-   create build: Tooltip, Collapse, Modal, Buttons, ProgressBar, Typeahead, DropDown
+   create build: Tooltip, Collapse, Modal, Buttons, ProgressBar,
+   Typeahead, DropDown
+
+## Color scheme
+   http://www.colorcombos.com/color-schemes/420/ColorCombo420.html
+## 
 ####################################################
 # Registration
 * Social Login

@@ -190,6 +190,16 @@ html {
     background-color: #FF755A;
     color: white;
 }
-
+.fv-qtip {
+    border-color: grey;
+    background-color: white;
+}
 .searchOption {
+}
+.fv-tooltip {
+  z-index: 1041;
+  border-color: grey !important;
+  background-color: white !important;
+  font-size: 1.4rem !important;
+  max-width: 225px;
 }

@@ -102,6 +102,10 @@ angular.module('fv')
     $scope.hideTour = function() {
       $scope.$broadcast('hide');
     };
+
+    $scope.addStory = function(index) {
+      $scope.search.items[index].hideAddStory = !$scope.search.items[index].hideAddStory;
+    };
     /**
      * Likes array clicked
      */

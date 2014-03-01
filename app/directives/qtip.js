@@ -13,14 +13,12 @@ angular.module('fv')
           //clean previous definition
           $(element).qtip('destroy', true);
 
-          scope.qtipSkin = 'qtip-light';
-
           element.qtip({
             content: {
               text: value
             },
             style: {
-              classes: scope.qtipSkin + ' qtip-rounded qtip-shadow'
+              classes:  'qtip-bootstrap gtip-rounded qtip-shadow fv-tooltip '
             },
             show: {
               event: 'mouseover',
@@ -35,7 +33,7 @@ angular.module('fv')
             position: {
               viewport: $(window),// Keep it on-screen at all times if possible
               target: (attrs.target ? attrs.target :'event'),
-              my: 'top center',
+              my: 'top left',
               at:  'bottom center'
             }
           });

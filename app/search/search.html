@@ -161,6 +161,15 @@
               <br>
               Has been heard: {{item.audioViews}}
               <br>
+            
+              <div ng-show="authenticated"
+                   class="btn-group btn-group-sm">
+                <button ng-click="item.hideAddStory= !item.hideAddStory"
+                        type="button" 
+                        class="btn btn-default">
+                  Add Story
+                </button>
+              </div>
               <div ng-show="authenticated"
                    class="btn-group btn-group-sm">
                 <button ng-click="subscribe($index)"
@@ -171,6 +180,12 @@
                   <span ng-if="!item.isSubscribed">Subscribe</span>
                 </button>
               </div>
+              <div ng-show="!item.hideAddStory" 
+                   style="margin-top:4px"
+                   class="alert alert-warning">
+                <ng-include src="'search/story.html'"></ng-include>
+              </div>
+
               <div ng-show="item.subscribed" 
                    class="alert alert-success alert-dismissable">
                 <button type="button" 
