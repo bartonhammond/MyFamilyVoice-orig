@@ -74,6 +74,7 @@ module.exports = function (grunt) {
           'public/activities/ActivitiesIndexCtrl.js',
           'public/activities/ActivitiesUpdateCtrl.js',
           'public/search/SearchCtrl.js',
+          'public/search/StoryCtrl.js',
           'public/family/FamilyIndexCtrl.js',
           'public/family/ConfirmFamilyCtrl.js',
           'public/referral/ReferralIndexCtrl.js',
