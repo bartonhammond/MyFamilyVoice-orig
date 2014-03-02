@@ -10,7 +10,7 @@
                       just click the picture and you'll see a larger image."
              tourtip-placement="right"
              tourtip-step="2"
-             ng-click="item.hideAddStory= !item.hideAddStory"
+             ng-click="toggleHideAddStory(item)"
              style="cursor: pointer"
              ng-src="{{proxyUrl(item.thumbnail)}}"/>
       </td>

@@ -44,10 +44,6 @@ angular.module('fv')
       $location.path('/login');
     };
 
-    $scope.activities = function() {
-      $location.path('/activities');
-    };
-
     $scope.account = function() {
       $location.path('/account');
     };

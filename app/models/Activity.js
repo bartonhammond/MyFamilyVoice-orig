@@ -15,7 +15,6 @@ angular.module('fv').
         this.thumbnail = activity.get('thumbnail');
         this.liked = activity.get('liked');
         this.transcription = activity.get('transcription');
-        this.approved = activity.get('approved');
       }
 
       this.get = function (id) {
@@ -58,7 +57,7 @@ angular.module('fv').
         var self = this;
         if (file) {
           var defer = $q.defer();
-          var parseFile = new Parse.File(file.name, file);
+          var parseFile = new Parse.File(file.name.replace(/\W+/g, ''), file);
           parseFile.save()
             .then(
               function(savedFile) {
@@ -114,6 +113,9 @@ angular.module('fv').
 
       this.hasWriteAccess = function() {
         return Parse.User.current() && this.activity.getACL().getWriteAccess(Parse.User.current().id);
+      };
+      this.canRecord = function() {
+        return !_.isNull(Parse.User.current()) && this.activity  &&  this.activity.get('user').id === Parse.User.current().id;
       };
       /**
        * Constrain list to only activities owned by id

@@ -2,7 +2,6 @@
 
 angular.module('fv')
   .controller('StoryCtrl', function ($scope, $timeout, User, Activity, fileReader, requestNotificationChannel) {
-    
     var self = this;
 
     $scope.init = function(obj) {
@@ -13,12 +12,13 @@ angular.module('fv')
       } else {
         $scope.activityJson = obj;
       }
-      
+
       $scope.$watch('userJson.hideAddStory',function(newVal) {
         if (_.isUndefined(newVal)) {
           return;
         }
         if (!newVal) {
+          $scope.roleForm.$setPristine();
           self.prepareActivity();
         }
       });
@@ -28,10 +28,33 @@ angular.module('fv')
           return;
         }
         if (!newVal) {
+          $scope.roleForm.$setPristine();
           self.getCurrentActivity();
         }
       });
 
+      $scope.$watch('roleForm.$pristine', function(newVal) {
+        if (_.isUndefined(newVal)) {
+          return;
+        }
+        if ($scope.activityJson) {
+          $scope.activityJson.pristine = $scope.roleForm.$pristine;
+        } else {
+          $scope.userJson.pristine = $scope.roleForm.$pristine;
+        }
+      });
+    };
+    $scope.close = function() {
+      $scope.imageSrc = '';
+      if ($scope.userJson) {
+        $scope.userJson.hideAddStory = true;
+        $scope.userJson.pristine = true;
+        $scope.userJson.showSaveOrClose = false;
+      } else if ($scope.activityJson) {
+        $scope.activityJson.hideAddStory = true;
+        $scope.activityJson.pristine = true;
+        $scope.activityJson.showSaveOrClose = false;
+      }
     };
     $scope.getThumbnail = function() {
       return $scope.activity && !_.isNull($scope.activity.thumbnail) && !_.isUndefined($scope.activity.thumbnail) ?
@@ -80,7 +103,6 @@ angular.module('fv')
               _activity.set('user', $scope.user);
               _activity.set('liked',0);
               _activity.set('views',0);
-              _activity.set('approved',false);
               var acl = new Parse.ACL();
               acl.setPublicReadAccess(true);
               acl.setWriteAccess($scope.user.id,true);
@@ -103,7 +125,6 @@ angular.module('fv')
         var _Activity = Parse.Object.extend('Activity');
         var _activity = new _Activity();
         _activity.set('user', Parse.User.current());
-        _activity.set('approved',true);
         _activity.set('liked',0);
         _activity.set('views',0);
         var acl = new Parse.ACL();
@@ -132,12 +153,20 @@ angular.module('fv')
             console.log(error);
           });
     };
-
     $scope.beginRecording = function() {
       $('#startRecording').css('color','green');
       $scope.recording = true;
-      Twilio.Device.connect({activity: $scope.activity.id,
-                             user: Parse.User.current().id});
+      //Save Activity so that twilio recording can be attached.
+      $scope.activity.save()
+          .then(
+            function(activity) {
+              $scope.activity = new Activity(activity);
+              Twilio.Device.connect({activity: $scope.activity.id,
+                                     user: Parse.User.current().id});
+            },
+            function(error) {
+              $scope.error = error;
+            });
     };
     
     $scope.stopRecording = function() {
@@ -145,11 +174,14 @@ angular.module('fv')
       $scope.recording = false;
       $scope.$broadcast('timer-stop');
       self.connection.sendDigits('#');
-      if ($scope.userJson) {
-        $scope.userJson.hideAddStory = true;
-      } else {
-        $scope.activityJson.hideAddStory = true;
-      }
+      $scope.activity.save()
+        .then(
+          function(activity) {
+            $scope.activity = new Activity(activity);
+          },
+          function(error) {
+            $scope.error = error;
+          });
     };
 
     self.getToken = function() {

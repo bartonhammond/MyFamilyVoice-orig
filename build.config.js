@@ -9,7 +9,7 @@ module.exports = {
   fv: {
     js: [ 'js/**', '*.js', 'main/**/*.js','navbar/**/*.js', 'login/**/*.js',
           'admin/**/*.js', 'models/**/*.js', 'confirmEmail/**/*.js',
-        'account/**/*.js', 'activities/**/*.js', 'search/**/*.js',
+        'account/**/*.js',  'search/**/*.js',
         'directives/**/*.js', 'family/**/*.js', 'register/**/*.js',
         'factory/**/*.js', 'filters/**/*.js', 'referral/**/*.js',
         'wizard/**/*.js'],

@@ -244,6 +244,7 @@ app.get('/callback', function(request, response) {
  * Twilio call back w/ transcribed text
  */
 app.post('/transcription', function(request, response) {
+  console.log('transcription: ' + request.body.TranscriptionText);
   var query = new Parse.Query(CallSid);
   query.equalTo('sid', request.body.RecordingSid);
   query.first()
@@ -672,7 +673,6 @@ var findActivities = function(request) {
   query = buildSearchQuery(request, query);
   if (request.params.option !== 'my') {
     query.exists('file');
-    query.equalTo('approved',true);
   }
   query.include('user');
   if (request.params.option) {
