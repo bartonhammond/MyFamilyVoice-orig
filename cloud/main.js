@@ -829,25 +829,30 @@ Parse.Cloud.define('search', function(request, response) {
     .then(
       function() {
         //first postion is results
-        var results = arguments[0];
+        var results  = arguments[0];
+
+        var activities = _.filter(results, function(res) {
+          return res.type === 'activity';
+        });
+        
         var outerArgs = arguments;
-        _.each(results, function(result, index) {
-          if (result.type === 'activity') {
-            var userArray = outerArgs[index + 1];
-            var iLikeThis = false;
-            var users = [];
-            _.each(userArray, function(user) {
-              if (request.user.id === user.id) {
-                iLikeThis = true;
-              }
-              users.push({userId: user.id,
-                          firstName: user.get('firstName'),
-                          lastName: user.get('lastName')});
-            });
-            result.likes = users;
-            result.iLikeThis = iLikeThis;
-            result.activity = undefined;
-          }
+        
+        _.each(activities, function(activity, index) {
+          var userArray = outerArgs[index + 1];
+          var iLikeThis = false;
+          var users = [];
+          _.each(userArray, function(user) {
+            if (request.user && (request.user.id === user.id)) {
+              iLikeThis = true;
+            }
+            users.push({userId: user.id,
+                        firstName: user.get('firstName'),
+                        lastName: user.get('lastName')});
+          });
+          activity.likes = users;
+          activity.iLikeThis = iLikeThis;
+          //Save the bandwidth
+          activity.activity = undefined;
         });
         response.success(results);
       },

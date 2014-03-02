@@ -148,47 +148,36 @@
         </div>
         <br>
         <!-- Submit ------------------------------------------>
-        <div ng-show="activity.hasWriteAccess()">
-          <div class="control-group">
-            <div class="controls">
-              <button type="submit" 
-                      ng-click="submit()"
-                      class="btn-main">
-                <i class="fa fa-sign-in"></i>
-                Save
-              </button>
-            </div>
-          </div>
+        <div ng-show="activity.hasWriteAccess()"
+             class="btn-group btn-group-sm">
+          <button ng-click="submit()"
+                  type="button"
+                  class="btn btn-default">
+            <i class="fa fa-sign-in"></i>
+            Save
+          </button>
         </div>
+        
 
-        <div ng-show="!activity.hasWriteAccess()">
-          <div class="control-group">
-            <div class="controls">
-              <span ng-if="item.type === 'user'">
-                <button
-                   id="submitBtn"
-                   type="submit" 
-                   ng-click="userJson.hideAddStory=true"
-                   class="btn-main">
-                  <i class="fa fa-arrow-circle-o-left"></i>
-                  Close
-                </button>
-              </span>
-              <span ng-if="item.type === 'activity'">
-                <button
-                   id="submitBtn"
-                   type="submit" 
-                   ng-click="activityJson.hideAddStory=true"
-                   class="btn-main">
-                  <i class="fa fa-arrow-circle-o-left"></i>
-                  Close
-                </button>
-              </span>
-            </div>
-          </div>
+        <div ng-if="item.type === 'user'"
+             class="btn-group btn-group-sm">
+          <button ng-click="userJson.hideAddStory=true"
+                  type="button"
+                  class="btn btn-default">
+            <i class="fa fa-arrow-circle-o-left"></i>
+            Close
+          </button>
         </div>
-
-
+        
+          <div ng-if="item.type === 'activity'"
+               class="btn-group btn-group-sm">
+            <button ng-click="activityJson.hideAddStory=true"
+                    type="button"
+                    class="btn btn-default">
+              <i class="fa fa-arrow-circle-o-left"></i>
+              Close
+            </button>
+          </div>
       </form>
     </div>
   </div>
