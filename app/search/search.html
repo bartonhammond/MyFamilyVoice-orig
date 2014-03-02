@@ -1,39 +1,5 @@
-<div id="globalSearch" ng-init="init()">
-  <div ng-show="dropdown"
-       name="searchOptions"
-       id="searchOptions">
-    <table class="table table-hover searchTable-hover" style="margin-bottom: 0">
-      <tr class="row-top-buffer searchOption" 
-          ng-click="option('all')">
-        <td class="col-md-2 searchOption">
-          <i class="fa fa-users fa-2x"></i>
-        </td>
-        <td class="col-md-10 searchOption">
-          All stories
-        </td>
-      </tr>
-      <tr ng-show='authenticated' 
-          class="row-top-buffer searchOption" 
-          ng-click="option('my')">
-        <td class="col-md-2 searchOption">
-          <i class="fa fa-user fa-2x"></i>
-        </td>
-        <td class="col-md-10 searchOption">
-          My Stories
-        </td>
-      </tr>
-      <tr class="row-top-buffer searchOption" 
-          ng-click="option('memorial')">
-        <td class="col-md-2 searchOption" >
-          <i class="fa fa-heart fa-2x"></i>
-        </td>
-        <td class="col-md-10 searchOption">
-          Memorials
-        </td>
-      </tr>
-    </table>
-  </div>
-  <tour>
+<div ng-init="init()">
+  <div style="position: fixed; z-index: 5555; top:0">
     <div class="col-sm-3 col-md-3 pull-left" 
          style="padding-left: 0; z-index: 2500">
       <form class="navbar-form" 
@@ -79,7 +45,42 @@
         </div>
       </form>
     </div>
-
+    <div ng-show="dropdown"
+         name="searchOptions"
+         id="searchOptions">
+      <table class="table table-hover searchTable-hover" style="margin-bottom: 0">
+        <tr class="row-top-buffer searchOption" 
+            ng-click="option('all')">
+          <td class="col-md-2 searchOption">
+            <i class="fa fa-users fa-2x"></i>
+          </td>
+          <td class="col-md-10 searchOption">
+            All stories
+          </td>
+        </tr>
+        <tr ng-show='authenticated' 
+            class="row-top-buffer searchOption" 
+            ng-click="option('my')">
+          <td class="col-md-2 searchOption">
+            <i class="fa fa-user fa-2x"></i>
+          </td>
+          <td class="col-md-10 searchOption">
+            My Stories
+          </td>
+        </tr>
+        <tr class="row-top-buffer searchOption" 
+            ng-click="option('memorial')">
+          <td class="col-md-2 searchOption" >
+            <i class="fa fa-heart fa-2x"></i>
+          </td>
+          <td class="col-md-10 searchOption">
+            Memorials
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <tour>
     <span ng-show="authenticated">
       <div ng-show="!verifiedUser">
         <div class="table-responsive">
