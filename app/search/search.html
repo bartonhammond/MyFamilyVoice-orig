@@ -1,86 +1,87 @@
 <div ng-init="init()">
-  <div style="position: fixed; z-index: 5555; top:0">
-    <div class="col-sm-3 col-md-3 pull-left" 
-         style="padding-left: 0; z-index: 2500">
-      <form class="navbar-form" 
-            style="padding:0"
-            role="search">
-        <div class="input-group">
-          <div class="input-group-btn">
-            <button class="btn btn-default"
-                    ng-mousedown="goHome($event)"
-                    style="background-image:url('./favicon.png');background-repeat:no-repeat;
-                           background-position: 50% 50%;
-                           vertical-align:baseline;
-                           background-size: contain; 
-                           width:32px; height:32px;">
-            </button>
-          </div>
-          <input type="text" 
-                 tourtip="This is the search page.  You can find people and
-                          stories here.  This search box is where you enter family
-                          names or places that you want to search for.  Let's look next at a story."
-                 tourtip-placement="right"
-                 tourtip-step="0"
-                 tourtip-offset="60"
-                 class="form-control searchOption"
-                 style="height: 33px; width: 450px;
-                        margin-left: 6px; margin-top:1px;"
-                 fv-debounce=600
-                 autofocus
-                 ng-mousedown="dropdownToggle()"
-                 ng-keypress="checkForEnter($event)"
-                 id="searchTerm"
-                 name="searchTerm"
-                 ng-model="search.q">
-          <div class="input-group-btn">
-            <button class="btn btn-default"
-                    ng-click="performSearch()"
-                    type="submit">
-              <i class="fa fa-search fa-lg"
-                 style="vertical-align: baseline">
-              </i>
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-    <div ng-show="dropdown"
-         name="searchOptions"
-         id="searchOptions">
-      <table class="table table-hover searchTable-hover" style="margin-bottom: 0">
-        <tr class="row-top-buffer searchOption" 
-            ng-click="option('all')">
-          <td class="col-md-2 searchOption">
-            <i class="fa fa-users fa-2x"></i>
-          </td>
-          <td class="col-md-10 searchOption">
-            All stories
-          </td>
-        </tr>
-        <tr ng-show='authenticated' 
-            class="row-top-buffer searchOption" 
-            ng-click="option('my')">
-          <td class="col-md-2 searchOption">
-            <i class="fa fa-user fa-2x"></i>
-          </td>
-          <td class="col-md-10 searchOption">
-            My Stories
-          </td>
-        </tr>
-        <tr class="row-top-buffer searchOption" 
-            ng-click="option('memorial')">
-          <td class="col-md-2 searchOption" >
-            <i class="fa fa-heart fa-2x"></i>
-          </td>
-          <td class="col-md-10 searchOption">
-            Memorials
-          </td>
-        </tr>
-      </table>
-    </div>
-  </div>
   <tour>
+    <div style="position: fixed; z-index: 5555; top:0">
+      <div class="col-sm-3 col-md-3 pull-left" 
+           style="padding-left: 0; z-index: 2500">
+        <form class="navbar-form" 
+              style="padding:0"
+              role="search">
+          <div class="input-group">
+            <div class="input-group-btn">
+              <button class="btn btn-default"
+                      ng-mousedown="goHome($event)"
+                      style="background-image:url('./favicon.png');background-repeat:no-repeat;
+                             background-position: 50% 50%;
+                             vertical-align:baseline;
+                             background-size: contain; 
+                             width:32px; height:32px;">
+              </button>
+            </div>
+            <input type="text" 
+                   tourtip="This is the search page.  You can find people and
+                            stories here.  This search box is where you enter family
+                            names or places that you want to search for.  Let's look next at a story."
+                   tourtip-placement="right"
+                   tourtip-step="0"
+                   tourtip-offset="60"
+                   class="form-control searchOption"
+                   style="height: 33px; width: 450px;
+                          margin-left: 6px; margin-top:1px;"
+                   fv-debounce=600
+                   autofocus
+                   ng-mousedown="dropdownToggle()"
+                   ng-keypress="checkForEnter($event)"
+                   id="searchTerm"
+                   name="searchTerm"
+                   ng-model="search.q">
+            <div class="input-group-btn">
+              <button class="btn btn-default"
+                      ng-click="performSearch()"
+                      type="submit">
+                <i class="fa fa-search fa-lg"
+                   style="vertical-align: baseline">
+                </i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div ng-show="dropdown"
+           name="searchOptions"
+           id="searchOptions">
+        <table class="table table-hover searchTable-hover" style="margin-bottom: 0">
+          <tr class="row-top-buffer searchOption" 
+              ng-click="option('all')">
+            <td class="col-md-2 searchOption">
+              <i class="fa fa-users fa-2x"></i>
+            </td>
+            <td class="col-md-10 searchOption">
+              All stories
+            </td>
+          </tr>
+          <tr ng-show='authenticated' 
+              class="row-top-buffer searchOption" 
+              ng-click="option('my')">
+            <td class="col-md-2 searchOption">
+              <i class="fa fa-user fa-2x"></i>
+            </td>
+            <td class="col-md-10 searchOption">
+              My Stories
+            </td>
+          </tr>
+          <tr class="row-top-buffer searchOption" 
+              ng-click="option('memorial')">
+            <td class="col-md-2 searchOption" >
+              <i class="fa fa-heart fa-2x"></i>
+            </td>
+            <td class="col-md-10 searchOption">
+              Memorials
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
     <span ng-show="authenticated">
       <div ng-show="!verifiedUser">
         <div class="table-responsive">
