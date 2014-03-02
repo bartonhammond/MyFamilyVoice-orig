@@ -73,8 +73,6 @@ module.exports = function (grunt) {
           'public/confirmEmail/ConfirmEmailCtrl.js',
           'public/account/AccountCtrl.js',
           'public/account/RecaptchaService.js',
-          'public/activities/ActivitiesIndexCtrl.js',
-          'public/activities/ActivitiesUpdateCtrl.js',
           'public/search/SearchCtrl.js',
           'public/search/StoryCtrl.js',
           'public/family/FamilyIndexCtrl.js',

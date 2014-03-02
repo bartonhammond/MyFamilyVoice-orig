@@ -42,10 +42,11 @@
     <link rel="shortcut icon" href="/favicon.png">
   </head>
   <body ng-app="fv" ng-cloak>
-    <div class="container" ng-controller="NavbarCtrl" ng-init="init()">
-    <ng-include src="'navbar/navbar.html'">
-    </div>
     <loading></loading>
+    <div class="container" ng-controller="NavbarCtrl" ng-init="init()">
+      <ng-include src="'navbar/navbar.html'">
+    </div>
+    
     <div class='lower container' ng-view=""></div>
     <section id="footer">
       <div class="container">

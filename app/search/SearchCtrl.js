@@ -33,7 +33,13 @@ angular.module('fv')
       
       $scope.option($scope.search.option);
     };
-
+    $scope.toggleHideAddStory = function(item) {
+      if (item.pristine) {
+        item.hideAddStory= !item.hideAddStory;
+      } else {
+        item.showSaveOrClose = true;
+      }
+    };
     $scope.checkForEnter = function(ev) {
       if (ev.which === 13) {
         search();
@@ -161,6 +167,9 @@ angular.module('fv')
         .then(
           function(response) {
             $scope.search.items = response;
+            _.each($scope.search.items, function(item) {
+              item.pristine = true;
+            });
           })
         .finally(
           function() {

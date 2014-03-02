@@ -1,5 +1,5 @@
 <div ng-if="item.type === 'activity'">
-  <a href ng-click="item.hideAddStory= !item.hideAddStory">
+  <a href ng-click="toggleHideAddStory(item)">
     {{item.description}}
   </a>
   <br>

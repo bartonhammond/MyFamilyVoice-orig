@@ -1,7 +1,14 @@
 <div ng-init="init(item)" 
      ng-controller="StoryCtrl">
+
   <div class="row">
     <div class="col-xs-8  ">
+      <div ng-show="item.showSaveOrClose" 
+           style="margin-top:4px"
+           class="alert alert-danger">
+        There have been changes to this Story.  Please Close or Save
+      </div>
+
       <span ng-show="activity.hasWriteAccess()">
         <h3 style="margin-top:-7px">
           <span ng-if="item.type === 'user'">New Story</span>
@@ -98,7 +105,7 @@
                ng-src="{{proxyUrl(activity.photo)}}"></img>
         </div>
         <!--  Recording buttons ------------------------------->
-        <div ng-show="activity.hasWriteAccess()"  class="control-group">
+        <div ng-show="roleForm.$valid && activity.canRecord()"  class="control-group">
           <div class="controls">
             <div class="input-prepend" style="margin-top: 10px">
               <span ng-show="!recording">
@@ -158,7 +165,16 @@
         </div>
         <br>
         <!-- Submit ------------------------------------------>
-        <div ng-show="activity.hasWriteAccess()"
+        <div class="btn-group btn-group-sm">
+          <button ng-click="close()"
+                  type="button"
+                  class="btn btn-main">
+            <i class="fa fa-arrow-circle-o-left"></i>
+            Close
+          </button>
+        </div>
+        
+        <div ng-show="roleForm.$dirty && activity.hasWriteAccess()"
              class="btn-group btn-group-sm">
           <button ng-click="submit()"
                   type="button"
@@ -167,27 +183,6 @@
             Save
           </button>
         </div>
-        
-
-        <div ng-if="item.type === 'user'"
-             class="btn-group btn-group-sm">
-          <button ng-click="userJson.hideAddStory=true"
-                  type="button"
-                  class="btn btn-main">
-            <i class="fa fa-arrow-circle-o-left"></i>
-            Close
-          </button>
-        </div>
-        
-          <div ng-if="item.type === 'activity'"
-               class="btn-group btn-group-sm">
-            <button ng-click="activityJson.hideAddStory=true"
-                    type="button"
-                    class="btn btn-main">
-              <i class="fa fa-arrow-circle-o-left"></i>
-              Close
-            </button>
-          </div>
       </form>
     </div>
   </div>
