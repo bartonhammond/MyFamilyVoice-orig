@@ -1,0 +1,28 @@
+<div class="table-responsive">
+  <table class="table table-hover">
+    
+    <tr class="row-top-buffer"
+        ng-repeat="item in search.items">
+      <td ng-show="item.type === 'activity'"
+          class="col-md-1">
+        <img tourtip="Sometimes this picture might not be big enough
+                      to see the details while listening to the story.  If so
+                      just click the picture and you'll see a larger image."
+             tourtip-placement="right"
+             tourtip-step="2"
+             ng-click="item.hideAddStory= !item.hideAddStory"
+             style="cursor: pointer"
+             ng-src="{{proxyUrl(item.thumbnail)}}"/>
+      </td>
+      <td ng-show="item.type === 'user'"
+          class="col-md-1">
+        <img ng-src="{{proxyUrl(item.thumbnail)}}"/>
+      </td>
+      
+      <td class="col-md-11">
+        <ng-include src="'search/user.html'"></ng-include>
+        <ng-include src="'search/activity.html'"></ng-include>
+      </td>
+    </tr>
+  </table>
+</div>

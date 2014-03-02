@@ -1,0 +1,66 @@
+<div ng-if="item.type === 'activity'">
+  <a href ng-click="item.hideAddStory= !item.hideAddStory">
+    {{item.description}}
+  </a>
+  <br>
+  By: <a ng-click="showUserForActivity($index)"
+         >{{item.userName}}</a>
+  <br>
+  <audio  tourtip="This is what MyFamilyVoice is all about -
+                   the ability to listen to your family's voice
+                   recordings - anytime, anywhere.  Just press the
+                   start button and listen."
+          tourtip-step="1"
+          ng-click="listened(item, $event)"
+          ng-attr-src="{{proxyUrl(item.audio)}}" 
+          preload=false controls>
+  </audio> 
+  <br>
+  Recorded: {{item.active}}
+  <br>
+  Listened: {{item.views}} times
+  <br>
+  <div class="likes-container">
+    <div>
+      <span ng-show="authenticated">
+        <a href>
+          <span ng-show="item.iLikeThis"
+                ng-click="like(item, false)"
+                fv-tooltip="Click if you want to unlike">
+            Unlike
+          </span>
+          <span ng-show="!item.iLikeThis"
+                ng-click="like(item, true)"
+                fv-tooltip="Click if you want to like this audio">
+            Like
+          </span>
+        </a> 
+      </span>
+      <span>
+        <span fv-tooltip="Click to see who likes this" >
+          <i class="fa fa-thumbs-o-up fa-lg"
+             style="cursur: pointer"
+             ng-click="showLikes(item)"></i>
+          {{item.liked}}
+        </span>
+      </span>
+    </div>
+      
+    <div collapse="item.isLikeCollapsed">
+      <div class="well well-sm" style="margin-top: 4px">
+        <span ng-repeat="user in item.likes">
+          <a ng-click="showUserLikingThis(item, $index)">
+            <strong>{{user.firstName}}
+              {{user.lastName}}</strong>
+            <span ng-if="!$last">, </span>
+          </a>
+        </span>
+      </div> 
+    </div>
+  </div>
+  <div ng-show="!item.hideAddStory" 
+       style="margin-top:4px"
+       class="alert alert-warning">
+    <ng-include src="'search/story.html'"></ng-include>
+  </div>
+</div>
