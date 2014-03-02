@@ -165,8 +165,8 @@ img.center {
     outline: 0;
 }
 #globalSearch {
-    position:relative;
-    top:-50px;
+    position: absolute;
+    top: 0px;
 }
 #searchOptions {
     position: absolute; 

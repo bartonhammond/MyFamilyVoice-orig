@@ -145,6 +145,11 @@ angular.module('fv')
       $scope.recording = false;
       $scope.$broadcast('timer-stop');
       self.connection.sendDigits('#');
+      if ($scope.userJson) {
+        $scope.userJson.hideAddStory = true;
+      } else {
+        $scope.activityJson.hideAddStory = true;
+      }
     };
 
     $('#startRecording').hover(
