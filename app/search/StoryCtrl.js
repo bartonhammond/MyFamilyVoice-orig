@@ -152,27 +152,6 @@ angular.module('fv')
       }
     };
 
-    $('#startRecording').hover(
-      function() {
-        $('#startRecording').css('color','green');
-      },
-      function() {
-        if (!$scope.recording) {
-          $('#startRecording').css('color','white');
-        }
-      });
-
-    
-    $('#stopRecording').hover(
-      function() {
-        if ($scope.recording) {
-          $('#stopRecording').css('color','red');
-        }
-      },
-      function() {
-        $('#stopRecording').css('color','white');
-      });
-
     self.getToken = function() {
       $scope.recording = false;
       Parse.Cloud.run('getToken')

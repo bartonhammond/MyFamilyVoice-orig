@@ -118,13 +118,23 @@
                   <span ng-click="beginRecording()"
                         fv-tooltip="Begin recording"
                         ng-disabled="recording">
-                    <i id="startRecording" class="fa fa-play fa-lg"></i>
+                    <i id="startRecording" 
+                        ng-class="{green: hover}" 
+                        ng-mouseenter="hover = true"
+                        ng-mouseleave="hover = false"
+                       class="fa fa-play fa-lg">
+                    </i>
                   </span>
                   <!-- recording button -->
                   <span ng-click="stopRecording()"
                         fv-tooltip="Stop recording"
                         ng-disabled="!recording">
-                    <i id="stopRecording" class="fa fa-stop fa-lg"></i>
+                    <i id="stopRecording" 
+                       ng-class="{red: hover}" 
+                       ng-mouseenter="hover = true"
+                       ng-mouseleave="hover = false"
+                       class="fa fa-stop fa-lg">
+                    </i>
                   </span>
                   <timer interval="1000"
                          id='myTimer'

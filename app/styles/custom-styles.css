@@ -203,3 +203,9 @@ html {
   font-size: 1.4rem !important;
   max-width: 225px;
 }
+.green {
+    color: green;
+}
+.red {
+    color: red;
+}
