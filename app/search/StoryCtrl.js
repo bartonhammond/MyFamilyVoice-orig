@@ -154,7 +154,6 @@ angular.module('fv')
           });
     };
     $scope.beginRecording = function() {
-      $('#startRecording').css('color','green');
       $scope.recording = true;
       //Save Activity so that twilio recording can be attached.
       $scope.activity.save()
@@ -170,14 +169,14 @@ angular.module('fv')
     };
     
     $scope.stopRecording = function() {
-      $('#startRecording').css('color','white');
       $scope.recording = false;
       $scope.$broadcast('timer-stop');
       self.connection.sendDigits('#');
-      $scope.activity.save()
+      $scope.activity.save($scope.photoFile)
         .then(
           function(activity) {
             $scope.activity = new Activity(activity);
+            $scope.roleForm.setPristine();
           },
           function(error) {
             $scope.error = error;

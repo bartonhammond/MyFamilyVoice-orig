@@ -126,10 +126,7 @@
                         fv-tooltip="Begin recording"
                         ng-disabled="recording">
                     <i id="startRecording" 
-                        ng-class="{green: hover}" 
-                        ng-mouseenter="hover = true"
-                        ng-mouseleave="hover = false"
-                       class="fa fa-play fa-lg">
+                       class="fa fa-play fa-lg green">
                     </i>
                   </span>
                   <!-- recording button -->
@@ -137,10 +134,9 @@
                         fv-tooltip="Stop recording"
                         ng-disabled="!recording">
                     <i id="stopRecording" 
-                       ng-class="{red: hover}" 
                        ng-mouseenter="hover = true"
                        ng-mouseleave="hover = false"
-                       class="fa fa-stop fa-lg">
+                       class="fa fa-stop fa-lg red">
                     </i>
                   </span>
                   <timer interval="1000"
